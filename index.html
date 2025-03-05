@@ -3,93 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3D 页面展示</title>
-    <style>
-        body {
-            margin: 0;
-        }
-
-        canvas {
-            display: block;
-        }
-    </style>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <title>𝓆𝓆𝒮𝓅𝒶𝒸𝑒</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
 </head>
 <body>
-    <script>
-        // 创建场景、相机、渲染器
-        const scene = new THREE.Scene();
-        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-        const renderer = new THREE.WebGLRenderer();
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        document.body.appendChild(renderer.domElement);
-
-        // 创建球体的函数
-        function createSphere(color, position, page) {
-            const geometry = new THREE.SphereGeometry(1, 32, 32);
-            const material = new THREE.MeshBasicMaterial({ color: color });
-            const sphere = new THREE.Mesh(geometry, material);
-            sphere.position.set(position.x, position.y, position.z);
-            sphere.userData.page = page; // 为每个球体添加自定义数据，指向对应的页面
-            scene.add(sphere);
-            return sphere;
-        }
-
-        // 创建3个球体，分别对应不同的页面
-        const dreamSphere = createSphere(0xFF5733, { x: -3, y: 1, z: -5 }, 'dream');
-        const modelSphere = createSphere(0x33FF57, { x: 0, y: 1, z: -5 }, '3d-model');
-        const aboutSphere = createSphere(0x3357FF, { x: 3, y: 1, z: -5 }, 'about');
-
-        // 添加相机的位置
-        camera.position.z = 10;
-
-        // 动画函数
-        function animate() {
-            requestAnimationFrame(animate);
-
-            // 动画使球体旋转
-            dreamSphere.rotation.x += 0.01;
-            dreamSphere.rotation.y += 0.01;
-            modelSphere.rotation.x += 0.01;
-            modelSphere.rotation.y += 0.01;
-            aboutSphere.rotation.x += 0.01;
-            aboutSphere.rotation.y += 0.01;
-
-            renderer.render(scene, camera);
-        }
-
-        animate();
-
-        // 监听鼠标点击事件
-        let raycaster = new THREE.Raycaster();
-        let mouse = new THREE.Vector2();
-        let intersects;
-
-        window.addEventListener('click', (event) => {
-            // 计算鼠标位置
-            mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-            mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-
-            // 更新射线的投射
-            raycaster.updateMatrixWorld();
-            raycaster.setFromCamera(mouse, camera);
-
-            // 获取与球体的交集
-            intersects = raycaster.intersectObjects(scene.children);
-
-            if (intersects.length > 0) {
-                // 判断点击的是哪个球体，跳转到对应页面
-                const page = intersects[0].object.userData.page;
-                if (page === 'dream') {
-                    window.location.href = 'dream.html'; // 假设你的dream页面是 dream.html
-                } else if (page === '3d-model') {
-                    window.location.href = '3d-model.html'; // 3D模型页面
-                } else if (page === 'about') {
-                    window.location.href = 'about.html'; // about页面
-                }
-            }
-        });
-
-    </script>
+    <script src="p5js.js"></script> <!-- 引入 p5.js 代码 -->
 </body>
 </html>
