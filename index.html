@@ -18,6 +18,8 @@
         }
     </style>
 </head>
+
+
 <body>
     <script>
         let scene, camera, renderer, model;
@@ -37,6 +39,8 @@
             loader.load('Mouse.glb', function (gltf) {
                 model = gltf.scene; // 获取模型
                 scene.add(model); // 将模型添加到场景中
+            }, undefined, function (error) {
+                console.error('模型加载失败', error);
             });
 
             // 设置光源
@@ -67,6 +71,8 @@
         }
 
         init();
+
     </script>
+
 </body>
 </html>
