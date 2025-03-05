@@ -4,9 +4,57 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>𝓆𝓆𝒮𝓅𝒶𝒸𝑒</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 </head>
 <body>
-    <script src="p5js.js"></script> <!-- 引入 p5.js 代码 -->
+    <script>
+        let scene, camera, renderer, model;
+
+        // 初始化 Three.js 场景
+        function init() {
+            scene = new THREE.Scene();
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+
+            // 设置渲染器
+            renderer = new THREE.WebGLRenderer();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            document.body.appendChild(renderer.domElement);
+
+            // 加载 3D 模型（假设使用一个 .obj 或 .glb 格式）
+            const loader = new THREE.GLTFLoader();
+            loader.load('Mouse.glb', function (gltf) {
+                model = gltf.scene; // 获取模型
+                scene.add(model); // 将模型添加到场景中
+            });
+
+            // 设置光源
+            const light = new THREE.AmbientLight(0x404040); // 环境光
+            scene.add(light);
+
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+            directionalLight.position.set(5, 5, 5).normalize();
+            scene.add(directionalLight);
+
+            // 设置相机位置
+            camera.position.z = 5;
+
+            // 动画循环
+            animate();
+        }
+
+        // 动画函数，渲染并旋转模型
+        function animate() {
+            requestAnimationFrame(animate);
+
+            if (model) {
+                model.rotation.x += 0.01;
+                model.rotation.y += 0.01;
+            }
+
+            renderer.render(scene, camera);
+        }
+
+        init();
+    </script>
 </body>
 </html>
