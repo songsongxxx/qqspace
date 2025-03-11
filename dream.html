@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dream</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: #f0f8ff;
+            overflow: hidden;
+            position: relative;
+        }
+        .bubble {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            background-color: rgba(74, 144, 226, 0.8);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 16px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            animation: float 5s infinite alternate ease-in-out;
+            text-align: center;
+            padding: 10px;
+        }
+        @keyframes float {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-50px); }
+        }
+        input {
+            margin-bottom: 10px;
+            padding: 10px;
+            font-size: 16px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>输入文字或录制声音生成泡泡</h1>
+    <input type="text" id="bubbleText" placeholder="输入文字...">
+    <button onclick="createBubble()">生成文字泡泡</button>
+    <button onclick="startRecording()">录制声音</button>
+    <button onclick="stopRecording()" disabled>停止录制</button>
+    <div id="bubbleContainer"></div>
+    
+    <script>
+        let mediaRecorder;
+        let audioChunks = [];
+        
+        function createBubble(text, audioURL = null) {
+            if (!text && !audioURL) return;
+            
+            const bubble = document.createElement("div");
+            bubble.classList.add("bubble");
+            
+            if (text) {
+                bubble.textContent = text;
+            }
+            
+            if (audioURL) {
+                const audio = document.createElement("audio");
+                audio.src = audioURL;
+                audio.controls = true;
+                bubble.appendChild(audio);
+            }
+            
+            // 设置随机位置
+            const x = Math.random() * (window.innerWidth - 100);
+            const y = Math.random() * (window.innerHeight - 100);
+            bubble.style.left = `${x}px`;
+            bubble.style.top = `${y}px`;
+            bubble.style.animationDuration = `${3 + Math.random() * 3}s`;
+            
+            document.getElementById("bubbleContainer").appendChild(bubble);
+            
+            // 清空输入框
+            document.getElementById("bubbleText").value = "";
+        }
+
+        function startRecording() {
+            navigator.mediaDevices.getUserMedia({ audio: true })
+                .then(stream => {
+                    mediaRecorder = new MediaRecorder(stream);
+                    audioChunks = [];
+                    mediaRecorder.ondataavailable = event => {
+                        audioChunks.push(event.data);
+                    };
+                    mediaRecorder.onstop = () => {
+                        const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+                        const audioURL = URL.createObjectURL(audioBlob);
+                        createBubble("🎤 录音泡泡", audioURL);
+                    };
+                    mediaRecorder.start();
+                    document.querySelector("button[onclick='stopRecording()']").disabled = false;
+                });
+        }
+
+        function stopRecording() {
+            if (mediaRecorder && mediaRecorder.state !== "inactive") {
+                mediaRecorder.stop();
+                document.querySelector("button[onclick='stopRecording()']").disabled = true;
+            }
+        }
+    </script>
+</body>
+</html>
