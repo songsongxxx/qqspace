@@ -1,119 +1,163 @@
-<!DOCTYPE html>
-<html lang="zh">
+let mediaRecorder;
+let audioChunks = [];
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>dream</title>
-    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="dreamstyle.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128/examples/js/loaders/GLTFLoader.js"></script> <!-- GLTF 加载器 -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/examples/js/loaders/GLTFLoader.js"></script>
-
-</head>
-
-<body>
-    <!-- 🌟 导航栏 -->
-    <div class="navbar">
-        <a href="index.html">index</a>
-        <a href="dream.html">dream</a>
-        <a href="qq_space.html">qq space</a>
-        <a href="audrey_home.html">audrey's home</a>
-        <a href="george_home.html">george's home</a>
-        <a href="yewen_home.html">yewen's Home</a>
-    </div>
+function createBubble() {
+    const text = document.getElementById("bubbleText").value.trim();
+    const imageFile = document.getElementById("imageUpload").files[0];
+    if (!text && !imageFile) {
+        alert("Please enter text or upload an image.");
+        return;
+    }
+    let imageURL = null;
+    if (imageFile) {
+        imageURL = URL.createObjectURL(imageFile);
+    }
+    generateBubble(text, null, imageURL);
+}
 
 
-    <div id="controls">
+function generateBubble(text, audioURL = null, imageURL = null) {
+    if (!text && !audioURL && !imageURL) return;
 
-        <!-- 自定义上传文件按钮 -->
-        <input type="file" id="imageUpload" accept="image/*" hidden>
-        <label for="imageUpload" class="custom-file-upload"> dreamming</label>
+    const bubble = document.createElement("div");
+    bubble.classList.add("bubble");
+
+    if (text) {
+        bubble.textContent = text;
+    }
+
+    if (audioURL) {
+        const audio = document.createElement("audio");
+        audio.src = audioURL;
+        audio.controls = true;
+        bubble.textContent = "";
+        bubble.appendChild(audio);
+    }
+
+    if (imageURL) {
+        const img = document.createElement("img");
+        img.src = imageURL;
+        bubble.textContent = "";
+        bubble.appendChild(img);
+    }
+
+    const x = Math.random() * (window.innerWidth - 100);
+    const y = Math.random() * (window.innerHeight - 100);
+    bubble.style.left = `${x}px`;
+    bubble.style.top = `${y}px`;
+
+    document.getElementById("bubbleContainer").appendChild(bubble);
+    document.getElementById("bubbleText").value = "";
+    document.getElementById("imageUpload").value = "";
 
 
-        <input type="text" id="bubbleText" placeholder="texting">
-        <input type="file" id="imageUpload" accept="image/*">
-        <button onclick="createBubble()">Generate Bubble</button>
-        <button onclick="startRecording()">Start Recording</button>
-        <button onclick="stopRecording()" disabled>Stop Recording</button>
-    </div>
+    moveBubble(bubble);
+    setTimeout(() => decayBubble(bubble, text, audioURL, imageURL), 60000);
+}
 
-    <div id="bubbleContainer"></div>
-    <div id="junkyard"></div> <!-- 底部的“电子垃圾” -->
+function startRecording() {
+    navigator.mediaDevices.getUserMedia({ audio: true })
+        .then(stream => {
+            mediaRecorder = new MediaRecorder(stream);
+            audioChunks = [];
 
+            mediaRecorder.ondataavailable = event => {
+                audioChunks.push(event.data);
+            };
 
+            mediaRecorder.onstop = () => {
+                const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+                const audioURL = URL.createObjectURL(audioBlob);
+                generateBubble(null, audioURL);
+            };
 
-    <script>
-        // 初始化 Three.js 场景
-        const scene = new THREE.Scene();
-        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-        const renderer = new THREE.WebGLRenderer({ antialias: true });
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        document.body.appendChild(renderer.domElement);
-
-        // 🌞 添加光照（GLTF 需要光照）
-        const ambientLight = new THREE.AmbientLight(0xffffff, 1); // 环境光
-        scene.add(ambientLight);
-        const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
-        directionalLight.position.set(5, 10, 7);
-        scene.add(directionalLight);
-
-
-        // 🎯 加载 GLB 模型
-        const loader = new THREE.GLTFLoader();
-        let model; // 在加载之前定义一个全局变量
-
-        loader.load('key.glb', function (gltf) {
-            model = gltf.scene;
-
-            model.traverse((child) => {
-                if (child.isMesh) {
-                    child.material.transparent = false;
-                    child.material.opacity = 1;
-                }
-            });
-
-            const box = new THREE.Box3().setFromObject(model);
-            const center = new THREE.Vector3();
-            box.getCenter(center);
-            model.position.sub(center);
-
-            const pointLight = new THREE.PointLight(0xffffff, 10);
-            pointLight.position.set(0, 5, 0);
-            scene.add(pointLight);
-
-            model.position.set(0, 0, 0);
-            model.scale.set(1, 1, 1);
-
-            scene.add(model);
-            console.log("✅ Model Loaded:", model);
-            animate();
-        }, undefined, function (error) {
-            console.error("❌ GLB 加载失败:", error);
+            mediaRecorder.start();
+            document.querySelector("button[onclick='stopRecording()']").disabled = false;
         });
+}
 
-        function animate() {
-            requestAnimationFrame(animate);
+function stopRecording() {
+    if (mediaRecorder && mediaRecorder.state !== "inactive") {
+        mediaRecorder.stop();
+        document.querySelector("button[onclick='stopRecording()']").disabled = true;
+    }
+}
 
-            // 如果模型已加载，将其旋转
-            if (model) {
-                model.rotation.y += 0.01; // 每帧绕 Y 轴旋转 0.01 弧度
-            }
+function moveBubble(bubble) {
+    let x = parseFloat(bubble.style.left);
+    let y = parseFloat(bubble.style.top);
+    let speedX = (Math.random() - 0.5) * 1;
+    let speedY = (Math.random() - 0.5) * 1;
 
-            renderer.render(scene, camera);
-        }
+    function animate() {
+        x += speedX;
+        y += speedY;
 
-        // 🔄 监听窗口大小调整
-        window.addEventListener('resize', () => {
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-        });</script>
+        if (x <= 0 || x + bubble.offsetWidth >= window.innerWidth) speedX *= -1;
+        if (y <= 0 || y + bubble.offsetHeight >= window.innerHeight) speedY *= -1;
+
+        bubble.style.left = `${x}px`;
+        bubble.style.top = `${y}px`;
+
+        requestAnimationFrame(animate);
+    }
+
+    animate();
+}
+
+function decayBubble(bubble, text, audioURL, imageURL) {
+    bubble.remove();
+
+    if (text) {
+        text.split(" ").forEach(word => {
+            let junk = document.createElement("div");
+            junk.classList.add("junk");
+            junk.textContent = word;
+            document.getElementById("junkyard").appendChild(junk);
+        });
+    }
+
+    if (audioURL) {
+        let junkAudio = document.createElement("div");
+        junkAudio.classList.add("junk");
+        junkAudio.textContent = "[音频数据损坏]";
+        document.getElementById("junkyard").appendChild(junkAudio);
+    }
+
+    if (imageURL) {
+        let junkImage = document.createElement("div");
+        junkImage.classList.add("junk");
+        junkImage.textContent = "[损坏的图片]";
+        document.getElementById("junkyard").appendChild(junkImage);
+    }
+}
+
+import { getFirestore, doc, getDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/9.6.7/firebase-firestore.js";
+
+const db = getFirestore();
+
+// 删除 3 天前的数据
+async function cleanOldData() {
+    const docRef = doc(db, "dreams", "userText"); // 你的文档路径
+    const docSnap = await getDoc(docRef);
+    
+    if (docSnap.exists()) {
+        const data = docSnap.data();
+        const timestamp = data.timestamp.toDate(); // Firebase 时间戳
+        const now = new Date();
         
-    <script src="dreamscript.js"></script>
+        // 计算时间差（天数）
+        const daysDiff = (now - timestamp) / (1000 * 60 * 60 * 24);
+        
+        if (daysDiff > 3) {
+            await deleteDoc(docRef);
+            console.log("🗑 数据已删除，因超过3天");
+        }
+    }
+}
 
+// 页面加载时检查并清理数据
+window.onload = function () {
+    cleanOldData();
+};
 
-</body>
-
-</html>
