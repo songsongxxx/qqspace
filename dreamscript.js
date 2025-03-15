@@ -19,30 +19,64 @@ const db = getFirestore(app);
 const storage = getStorage(app);
 
 
-async function createBubble() {
+let mediaRecorder;
+let audioChunks = [];
+
+function createBubble() {
     const text = document.getElementById("bubbleText").value.trim();
     const imageFile = document.getElementById("imageUpload").files[0];
 
     if (!text && !imageFile) {
-        alert("请输入文本或上传图片！");
+        alert("Please enter text or upload an image.");
         return;
     }
 
     let imageURL = null;
     if (imageFile) {
-        imageURL = await uploadImageToFirebase(imageFile);
+        imageURL = URL.createObjectURL(imageFile);
     }
 
-    // 🌍 存储到 Firebase Firestore
-    await addDoc(collection(db, "dreams"), {
-        text: text || null,
-        imageURL: imageURL || null,
-        timestamp: new Date() // 记录时间
-    });
-
     generateBubble(text, null, imageURL);
-    alert("🌙 梦境已存储到云端");
 }
+
+function generateBubble(text, audioURL = null, imageURL = null) {
+    if (!text && !audioURL && !imageURL) return;
+
+    const bubble = document.createElement("div");
+    bubble.classList.add("bubble");
+
+    if (text) {
+        bubble.textContent = text;
+    }
+
+    if (audioURL) {
+        const audio = document.createElement("audio");
+        audio.src = audioURL;
+        audio.controls = true;
+        bubble.textContent = "";
+        bubble.appendChild(audio);
+    }
+
+    if (imageURL) {
+        const img = document.createElement("img");
+        img.src = imageURL;
+        bubble.textContent = "";
+        bubble.appendChild(img);
+    }
+
+    const x = Math.random() * (window.innerWidth - 100);
+    const y = Math.random() * (window.innerHeight - 100);
+    bubble.style.left = `${x}px`;
+    bubble.style.top = `${y}px`;
+
+    document.getElementById("bubbleContainer").appendChild(bubble);
+    document.getElementById("bubbleText").value = "";
+    document.getElementById("imageUpload").value = "";
+
+    moveBubble(bubble);
+    setTimeout(() => decayBubble(bubble, text, audioURL, imageURL), 60000);
+}
+
 
 
 async function uploadImageToFirebase(file) {
@@ -85,28 +119,3 @@ async function cleanOldDreams() {
 }
 
 
-function generateBubble(text, audioURL = null, imageURL = null) {
-    if (!text && !audioURL && !imageURL) return;
-
-    const bubble = document.createElement("div");
-    bubble.classList.add("bubble");
-
-    if (text) {
-        bubble.textContent = text;
-    }
-
-    if (imageURL) {
-        const img = document.createElement("img");
-        img.src = imageURL;
-        bubble.textContent = "";
-        bubble.appendChild(img);
-    }
-
-    const x = Math.random() * (window.innerWidth - 100);
-    const y = Math.random() * (window.innerHeight - 100);
-    bubble.style.left = `${x}px`;
-    bubble.style.top = `${y}px`;
-
-    document.getElementById("bubbleContainer").appendChild(bubble);
-    moveBubble(bubble);
-}
