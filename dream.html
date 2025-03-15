@@ -132,32 +132,3 @@ function decayBubble(bubble, text, audioURL, imageURL) {
     }
 }
 
-import { getFirestore, doc, getDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/9.6.7/firebase-firestore.js";
-
-const db = getFirestore();
-
-// 删除 3 天前的数据
-async function cleanOldData() {
-    const docRef = doc(db, "dreams", "userText"); // 你的文档路径
-    const docSnap = await getDoc(docRef);
-    
-    if (docSnap.exists()) {
-        const data = docSnap.data();
-        const timestamp = data.timestamp.toDate(); // Firebase 时间戳
-        const now = new Date();
-        
-        // 计算时间差（天数）
-        const daysDiff = (now - timestamp) / (1000 * 60 * 60 * 24);
-        
-        if (daysDiff > 3) {
-            await deleteDoc(docRef);
-            console.log("🗑 数据已删除，因超过3天");
-        }
-    }
-}
-
-// 页面加载时检查并清理数据
-window.onload = function () {
-    cleanOldData();
-};
-
