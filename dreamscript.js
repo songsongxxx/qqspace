@@ -2,6 +2,11 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.7/firebase
 import { getFirestore, collection, addDoc, query, where, getDocs, deleteDoc } from "https://www.gstatic.com/firebasejs/9.6.7/firebase-firestore.js";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.6.7/firebase-storage.js";
 
+console.log("🔥 Firebase 初始化成功:", app);
+console.log("📂 Firestore 数据库:", db);
+console.log("🖼️ Firebase Storage:", storage);
+
+
 // 🔥 你的 Firebase 配置（替换为你的 Firebase 项目信息）
 const firebaseConfig = {
     apiKey: "AIzaSyCa4PyEJPxS6Yavfc-f-SxlYvq_6yOUngQ",
