@@ -4,20 +4,17 @@ let audioChunks = [];
 function createBubble() {
     const text = document.getElementById("bubbleText").value.trim();
     const imageFile = document.getElementById("imageUpload").files[0];
-
     if (!text && !imageFile) {
         alert("Please enter text or upload an image.");
         return;
     }
-
-
     let imageURL = null;
     if (imageFile) {
         imageURL = URL.createObjectURL(imageFile);
     }
-
     generateBubble(text, null, imageURL);
 }
+
 
 function generateBubble(text, audioURL = null, imageURL = null) {
     if (!text && !audioURL && !imageURL) return;
@@ -134,3 +131,17 @@ function decayBubble(bubble, text, audioURL, imageURL) {
         document.getElementById("junkyard").appendChild(junkImage);
     }
 }
+
+// 保存文本到 localStorage
+function saveText() {
+    const text = document.getElementById("bubbleText").value;
+    localStorage.setItem("savedText", text);
+}
+
+// 页面加载时恢复文本
+window.onload = function () {
+    const savedText = localStorage.getItem("savedText");
+    if (savedText) {
+        document.getElementById("bubbleText").value = savedText;
+    }
+};
