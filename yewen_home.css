@@ -1,0 +1,96 @@
+/* 全局样式 */
+body {
+    /* font-family: 'Press Start 2P', 'Comic Sans MS', 'Verdana', sans-serif; */
+    font-family: "Langar", "Spline Sans Mono", monospace;
+    text-align: center;
+    background-color: #f0f8ff;
+    overflow: hidden;
+    margin: 0;
+    height: 100vh;
+}
+
+.spline-sans-mono {
+    font-family: "Spline Sans Mono", monospace;
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-style: normal;
+  }
+
+.spline-sans-mono-bold {
+    font-family: "Spline Sans Mono", monospace;
+    font-optical-sizing: auto;
+    font-weight: 800;
+    font-style: bold;
+  }
+
+.langar-regular {
+    font-family: "Langar", system-ui;
+    font-weight: 400;
+    font-style: normal;
+  }
+
+  
+/* 导航栏 */
+.navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    backdrop-filter: blur(10px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    padding: 10px 0;
+    z-index: 100;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    font-family: 'Press Start 2P', 'Comic Sans MS', 'Verdana', sans-serif;
+    font-size: clamp(12px, 1.5vw, 18px);
+}
+
+.navbar a {
+    color: rgb(228, 226, 226);
+    text-decoration: none;
+    padding: clamp(6px, 1vw, 12px) clamp(8px, 1.5vw, 16px);
+    font-size: clamp(12px, 1.5vw, 18px);
+    font-weight: 500;
+    transition: 0.3s;
+}
+
+/* 控制面板 */
+#controls {
+    position: absolute;
+    backdrop-filter: blur(10px);
+    padding: clamp(10px, 2vw, 20px);
+    border-radius: 15px;
+    display: flex;
+    gap: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+/* 媒体查询: 针对小屏幕设备 (如手机) 调整位置 */
+@media (max-width: 768px) {
+    #controls {
+        top: 80%;  /* 控制面板在手机端的底部 */
+    }
+}
+
+/* 媒体查询: 针对大屏设备 (如桌面) 调整位置 */
+@media (min-width: 769px) {
+    #controls {
+        top: 15%;  /* 控制面板在桌面端的位置 */
+    }
+}
+
+#controls span {
+    color: #ff0000;
+    cursor: pointer;
+    font-size: 20px;
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+#controls span:hover {
+    color: #faf2f1;
+}
