@@ -109,10 +109,10 @@ export function createBubble(text, audioBase64 = null) {
     document.getElementById("bubbleContainer").appendChild(bubble);
 
     // ✅ 只调用一次漂浮动画
-    moveBubble(bubble);
+   // moveBubble(bubble);
 
     // ✅ 60 秒后泡泡破裂
-    setTimeout(() => decayBubble(bubble, text, audioBase64), 60000);
+    //setTimeout(() => decayBubble(bubble, text, audioBase64), 60000);
 
 }
 
@@ -169,10 +169,9 @@ export async function loadBubbles() {
 // 🎵 Tone.js 变声并播放
 async function processAudioWithTone(audioBlob) {
     console.log("🔄 进入 processAudioWithTone，开始处理音频...");
-    console.log("🗂 原始音频 Blob 大小:", audioBlob.size, "字节");
 
-    if (audioBlob.size === 0) {
-        console.error("❌ 录音文件为空，无法处理音频！");
+    if (!audioBlob || audioBlob.size === 0) {
+        console.error("❌ 录音文件为空，无法处理！");
         return;
     }
 
@@ -249,13 +248,13 @@ function bufferToWavBlob(audioBuffer) {
 //存储 Base64 到 Firestore
 async function storeAudioInFirestore(audioBlob) {
     console.log("📢 进入 storeAudioInFirestore...");
-    console.log("🗂 处理的音频 Blob 大小:", audioBlob.size, "字节");
-
-    if (audioBlob.size === 0) {
-        console.error("❌ 录音文件为空！");
+    
+    if (!audioBlob || audioBlob.size === 0) {
+        console.error("❌ 录音文件为空，无法存入 Firestore！");
         return;
     }
 
+    // 🚀 **转换为 Base64**
     let reader = new FileReader();
     reader.readAsDataURL(audioBlob);
     reader.onloadend = async function () {
