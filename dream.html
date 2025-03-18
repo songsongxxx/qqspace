@@ -24,7 +24,7 @@
         <a href="index.html">index</a>
         <a href="dream.html">dream</a>
         <a href="qq_space.html">qq space</a>
-     <!--    <a href="audrey_home.html">audrey's home</a>
+        <!--    <a href="audrey_home.html">audrey's home</a>
         <a href="george_home.html">george's home</a>
         <a href="yewen_home.html">yewen's Home</a> -->
     </div>
@@ -111,44 +111,49 @@
             camera.updateProjectionMatrix();
         });</script>
 
-<!-- 🎵 加载 dreamscript.js 并正确绑定函数 -->
-<script type="module">
-    import { createBubble, startRecording, stopRecording } from "./dreamscript.js";
+    <!-- 🎵 加载 dreamscript.js 并正确绑定函数 -->
+    <script type="module">
+        import { createBubble, startRecording, stopRecording } from "./dreamscript.js";
 
-    document.addEventListener("DOMContentLoaded", () => {
-        console.log("✅ 页面加载完成，绑定事件");
+        document.addEventListener("DOMContentLoaded", () => {
+            console.log("✅ 页面加载完成，绑定事件");
 
-        const bubbleTextInput = document.getElementById("bubbleText");
-        const bubbleBtn = document.getElementById("bubbleBtn");
-        const recordBtn = document.getElementById("recordBtn");
-        const stopRecordBtn = document.getElementById("stopRecordBtn");
+            const bubbleTextInput = document.getElementById("bubbleText");
+            const bubbleBtn = document.getElementById("bubbleBtn");
+            const recordBtn = document.getElementById("recordBtn");
+            const stopRecordBtn = document.getElementById("stopRecordBtn");
 
-        // 🔥 确保 HTML 元素存在
-        if (!bubbleTextInput || !bubbleBtn || !recordBtn || !stopRecordBtn) {
-            console.error("❌ 绑定事件失败，检查 HTML 是否包含正确的 ID！");
-            return;
-        }
+            // 🔥 确保 HTML 元素存在
+            if (!bubbleTextInput || !bubbleBtn || !recordBtn || !stopRecordBtn) {
+                console.error("❌ 绑定事件失败，检查 HTML 是否包含正确的 ID！");
+                return;
+            }
 
-        // 🌟 生成文字泡泡
-        bubbleBtn.addEventListener("click", () => {
-            const text = bubbleTextInput.value.trim();
-            console.log("📌 用户输入:", text);
-            createBubble(text || "这是默认泡泡");
+            // 🌟 只存入 Firestore，不手动生成泡泡
+            bubbleBtn.addEventListener("click", async () => {
+                const text = bubbleTextInput.value.trim();
+                if (!text) {
+                    console.error("❌ 用户输入为空，不存入 Firestore");
+                    return;
+                }
+
+                console.log("📌 用户输入:", text);
+                await saveBubbleToFirestore(text, null); // 🔥 只存入 Firestore，等待 Firestore 触发 createBubble()
+            });
+
+            // 🎤 开始录音
+            recordBtn.addEventListener("click", () => {
+                console.log("🎙 开始录音...");
+                startRecording();
+            });
+
+            // 🛑 停止录音
+            stopRecordBtn.addEventListener("click", () => {
+                console.log("🛑 停止录音...");
+                stopRecording();
+            });
         });
-
-        // 🎤 开始录音
-        recordBtn.addEventListener("click", () => {
-            console.log("🎙 开始录音...");
-            startRecording();
-        });
-
-        // 🛑 停止录音
-        stopRecordBtn.addEventListener("click", () => {
-            console.log("🛑 停止录音...");
-            stopRecording();
-        });
-    });
-</script>
+    </script>
 
 
 
