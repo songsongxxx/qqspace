@@ -14,7 +14,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/examples/js/loaders/GLTFLoader.js"></script>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.min.js"></script>
-
+    <link rel="icon" href="data:,">
 </head>
 
 
@@ -22,7 +22,6 @@
     <!-- 🌟 导航栏 -->
     <div class="navbar">
         <a href="index.html">index</a>
-        <a href="message_board.html">message board</a>
         <a href="dream.html">dream</a>
         <a href="qq_space.html">qq space</a>
      <!--    <a href="audrey_home.html">audrey's home</a>
@@ -112,19 +111,45 @@
             camera.updateProjectionMatrix();
         });</script>
 
-    <!-- 🎵 加载 dreamscript.js 并正确绑定函数 -->
-    <script type="module">
-        import { createBubble, startRecording, stopRecording } from "./dreamscript.js";
+<!-- 🎵 加载 dreamscript.js 并正确绑定函数 -->
+<script type="module">
+    import { createBubble, startRecording, stopRecording } from "./dreamscript.js";
 
-        document.getElementById("bubbleBtn").addEventListener("click", () => {
-            const text = document.getElementById("bubbleText").value.trim();
-            console.log("📌 用户输入:", text); // ✅ 调试用，确保 `text` 不是 `undefined`
+    document.addEventListener("DOMContentLoaded", () => {
+        console.log("✅ 页面加载完成，绑定事件");
+
+        const bubbleTextInput = document.getElementById("bubbleText");
+        const bubbleBtn = document.getElementById("bubbleBtn");
+        const recordBtn = document.getElementById("recordBtn");
+        const stopRecordBtn = document.getElementById("stopRecordBtn");
+
+        // 🔥 确保 HTML 元素存在
+        if (!bubbleTextInput || !bubbleBtn || !recordBtn || !stopRecordBtn) {
+            console.error("❌ 绑定事件失败，检查 HTML 是否包含正确的 ID！");
+            return;
+        }
+
+        // 🌟 生成文字泡泡
+        bubbleBtn.addEventListener("click", () => {
+            const text = bubbleTextInput.value.trim();
+            console.log("📌 用户输入:", text);
             createBubble(text || "这是默认泡泡");
         });
 
-        document.getElementById("recordBtn").addEventListener("click", startRecording);
-        document.getElementById("stopRecordBtn").addEventListener("click", stopRecording);
-    </script>
+        // 🎤 开始录音
+        recordBtn.addEventListener("click", () => {
+            console.log("🎙 开始录音...");
+            startRecording();
+        });
+
+        // 🛑 停止录音
+        stopRecordBtn.addEventListener("click", () => {
+            console.log("🛑 停止录音...");
+            stopRecording();
+        });
+    });
+</script>
+
 
 
 </body>
