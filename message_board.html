@@ -2,9 +2,16 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sticky Notes App</title>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128/examples/js/loaders/GLTFLoader.js"></script> <!-- GLTF 加载器 -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/examples/js/loaders/GLTFLoader.js"></script>
+  <link rel="stylesheet" href="qqspace.css">
+
   <style>
-    body {
+    /* body {
       background: #f0f0f0;
       margin: 0;
       padding: 20px;
@@ -12,6 +19,9 @@
       position: relative;
       height: 100vh;
       overflow: hidden;
+    } */
+    body{
+      padding-top: 100px; /* This creates space for the fixed navbar */
     }
     
     #addNoteBtn {
@@ -68,6 +78,19 @@
   </style>
 </head>
 <body>
+  <!-- 🌟 导航栏 -->
+  <div class="navbar">
+    <a href="index.html">index</a>
+    <a href="message_board.html">message board</a>
+    <a href="dream.html">dream</a>
+    <a href="qq_space.html">qq space</a>
+    <a href="audrey_home.html">audrey's home</a>
+    <a href="george_home.html">george's home</a>
+    <a href="yewen_home.html">yewen's Home</a>
+</div>
+
+
+
   <button id="addNoteBtn">Add Sticky Note</button>
   
   <script>
