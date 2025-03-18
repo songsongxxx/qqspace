@@ -1,9 +1,9 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.7/firebase-app.js";
 import {
-    getFirestore, 
-    collection, 
-    addDoc, 
-    onSnapshot 
+    getFirestore,
+    collection,
+    addDoc,
+    onSnapshot
 } from "https://www.gstatic.com/firebasejs/9.6.7/firebase-firestore.js";
 
 
@@ -32,10 +32,79 @@ onSnapshot(collection(db, "dream_bubbles"), (snapshot) => {
         if (change.type === "added") {
             const data = change.doc.data();
             console.log("📌 Firestore 新增数据:", data);
+
+            if (!data.audioBase64) {
+                console.warn("⚠️ `audioBase64` 为空，无法生成音频泡泡！");
+            } else {
+                console.log("🎵 `audioBase64` 数据:", data.audioBase64.slice(0, 50) + "..."); // 打印前50字符
+            }
+
             createBubble(data.text, data.audioBase64);
         }
     });
 });
+
+
+async function bufferToBlob(audioBuffer) {
+    console.log("🔄 进入 `bufferToBlob()`，开始处理音频...");
+    let processedBlob = await bufferToWavBlob(audioBuffer);
+    return processedBlob;
+}
+
+function bufferToWavBlob(audioBuffer) {
+    return new Promise(resolve => {
+        console.log("📌 直接使用 JavaScript 处理 WAV，不使用 Worker");
+
+        // 获取音频数据
+        let numOfChannels = audioBuffer.numberOfChannels,
+            length = audioBuffer.length * numOfChannels * 2 + 44,
+            buffer = new ArrayBuffer(length),
+            view = new DataView(buffer),
+            channels = [];
+
+        let sampleRate = audioBuffer.sampleRate;
+
+        // 写入 WAV 头部
+        let writeString = function (view, offset, string) {
+            for (let i = 0; i < string.length; i++) {
+                view.setUint8(offset + i, string.charCodeAt(i));
+            }
+        };
+
+        writeString(view, 0, "RIFF");
+        view.setUint32(4, 32 + length, true);
+        writeString(view, 8, "WAVE");
+        writeString(view, 12, "fmt ");
+        view.setUint32(16, 16, true);
+        view.setUint16(20, 1, true);
+        view.setUint16(22, numOfChannels, true);
+        view.setUint32(24, sampleRate, true);
+        view.setUint32(28, sampleRate * 2 * numOfChannels, true);
+        view.setUint16(32, numOfChannels * 2, true);
+        view.setUint16(34, 16, true);
+        writeString(view, 36, "data");
+        view.setUint32(40, length - 44, true);
+
+        for (let i = 0; i < numOfChannels; i++) {
+            channels.push(audioBuffer.getChannelData(i));
+        }
+
+        let offset = 44;
+        for (let i = 0; i < audioBuffer.length; i++) {
+            for (let j = 0; j < numOfChannels; j++) {
+                let sample = Math.max(-1, Math.min(1, channels[j][i]));
+                view.setInt16(offset, sample < 0 ? sample * 0x8000 : sample * 0x7FFF, true);
+                offset += 2;
+            }
+        }
+
+        // 创建 WAV Blob
+        let blob = new Blob([view], { type: "audio/wav" });
+        console.log("✅ WAV 处理完成，大小:", blob.size);
+        resolve(blob);
+    });
+}
+
 
 
 // 🎤 **存入 Firestore**
@@ -50,7 +119,7 @@ async function saveBubbleToFirestore(text, audioBase64 = null) {
     try {
         const docRef = await addDoc(collection(db, "dream_bubbles"), {
             text: text,
-            audioBase64: audioBase64, 
+            audioBase64: audioBase64,
             timestamp: new Date()
         });
 
@@ -69,7 +138,7 @@ document.getElementById("bubbleBtn").addEventListener("click", async () => {
     }
 
     console.log("📌 用户输入:", text);
-    
+
     // 🔥 只存入 Firestore，不直接生成泡泡
     await saveBubbleToFirestore(text, null);
 });
@@ -109,7 +178,7 @@ export function createBubble(text, audioBase64 = null) {
     document.getElementById("bubbleContainer").appendChild(bubble);
 
     // ✅ 只调用一次漂浮动画
-   // moveBubble(bubble);
+    // moveBubble(bubble);
 
     // ✅ 60 秒后泡泡破裂
     //setTimeout(() => decayBubble(bubble, text, audioBase64), 60000);
@@ -120,16 +189,32 @@ export function createBubble(text, audioBase64 = null) {
 export function startRecording() {
     navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
         mediaRecorder = new MediaRecorder(stream);
-        audioChunks = [];
+        audioChunks = []; // ✅ 重新初始化，防止上次录音的数据残留
 
         mediaRecorder.ondataavailable = event => {
-            audioChunks.push(event.data);
+            if (event.data.size > 0) {
+                audioChunks.push(event.data);
+                console.log("🎙 录音数据已存入 audioChunks，大小:", event.data.size);
+            } else {
+                console.warn("⚠️ 录音数据为空！");
+            }
         };
 
         mediaRecorder.onstop = async () => {
             console.log("🛑 录音已停止，开始处理音频...");
 
+            if (audioChunks.length === 0) {
+                console.error("❌ 没有录音数据，audioChunks 为空！");
+                return;
+            }
+
             const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+            console.log("🎙 录音 Blob 生成，大小:", audioBlob.size);
+
+            if (audioBlob.size === 0) {
+                console.error("❌ 录音 Blob 为空，无法处理音频！");
+                return;
+            }
 
             // 🚀 让 Tone.js 处理音频
             processAudioWithTone(audioBlob);
@@ -147,6 +232,8 @@ export function stopRecording() {
     if (mediaRecorder && mediaRecorder.state === "recording") {
         console.log("🛑 停止录音...");
         mediaRecorder.stop(); // ✅ 确保触发 onstop 事件
+    } else {
+        console.error("❌ `mediaRecorder` 未启动或已停止，无法停止录音！");
     }
 }
 
@@ -168,6 +255,7 @@ export async function loadBubbles() {
 
 // 🎵 Tone.js 变声并播放
 async function processAudioWithTone(audioBlob) {
+
     console.log("🔄 进入 processAudioWithTone，开始处理音频...");
 
     if (!audioBlob || audioBlob.size === 0) {
@@ -177,98 +265,76 @@ async function processAudioWithTone(audioBlob) {
 
     await Tone.start();
 
-    try {
-        let reader = new FileReader();
-        reader.readAsArrayBuffer(audioBlob);
-        reader.onloadend = async function () {
-            console.log("📌 Audio Blob 读取完成，大小:", audioBlob.size);
+    let reader = new FileReader();
+    reader.readAsArrayBuffer(audioBlob);
+    reader.onloadend = async function () {
+        let arrayBuffer = reader.result;
+        let audioBuffer;
 
-            let arrayBuffer = reader.result;
-            let audioBuffer;
+        try {
+            audioBuffer = await Tone.context.decodeAudioData(arrayBuffer);
+            console.log("✅ Tone.js 成功解码音频，开始变声处理...");
+        } catch (error) {
+            console.error("❌ Tone.js 解码失败:", error);
+            return;
+        }
 
-            try {
-                audioBuffer = await Tone.context.decodeAudioData(arrayBuffer);
-                console.log("✅ Tone.js 成功解码音频，开始变声处理...");
-            } catch (error) {
-                console.error("❌ Tone.js 解码失败:", error);
-                return;
-            }
+        // **🚀 处理音频**
+        let player = new Tone.Player(audioBuffer).toDestination();
+        let pitchShift = new Tone.PitchShift(4);
+        let reverb = new Tone.Reverb(2);
+        player.connect(pitchShift);
+        pitchShift.connect(reverb);
+        reverb.toDestination();
 
-            let player = new Tone.Player(audioBuffer);
-            let pitchShift = new Tone.PitchShift(4);
-            let reverb = new Tone.Reverb(2);
+        player.start();
+        console.log("🎧 正在播放变声处理后的音频...");
 
-            player.connect(pitchShift);
-            pitchShift.connect(reverb);
-            reverb.toDestination();
-            player.start();
+        console.log("📢 调用 storeAudioInFirestore()...");
+        const processedAudioBlob = await bufferToBlob(audioBuffer);
 
-            console.log("🎧 正在播放变声处理后的音频...");
+        // **新增日志**
+        console.log("🎯 `bufferToBlob()` 生成的音频 Blob:", processedAudioBlob ? processedAudioBlob.size + " 字节" : "❌ 失败！");
 
-            // 🚀 **新添加日志，确保调用 `storeAudioInFirestore()`**
-            const processedAudioBlob = await bufferToBlob(audioBuffer);
-            console.log("🎯 变声处理完成，Blob 大小:", processedAudioBlob.size, "字节");
-            console.log("📢 调用 storeAudioInFirestore()...");
-            storeAudioInFirestore(processedAudioBlob);
-        };
-    } catch (error) {
-        console.error("❌ processAudioWithTone() 失败:", error);
-    }
+        if (!processedAudioBlob || processedAudioBlob.size === 0) {
+            console.error("❌ `bufferToBlob(audioBuffer)` 失败！不会存入 Firestore！");
+            return;
+        }
+
+        storeAudioInFirestore(processedAudioBlob);
+    };
 }
 
-// 转换 Tone.js 处理后的音频为 Base64
-async function bufferToBlob(audioBuffer) {
-    let audioCtx = new AudioContext();
-    let newBuffer = audioCtx.createBuffer(1, audioBuffer.length, audioBuffer.sampleRate);
-    newBuffer.copyToChannel(audioBuffer.getChannelData(0), 0);
-
-    let offlineCtx = new OfflineAudioContext(1, newBuffer.length, newBuffer.sampleRate);
-    let source = offlineCtx.createBufferSource();
-    source.buffer = newBuffer;
-    source.connect(offlineCtx.destination);
-    source.start();
-
-    let renderedBuffer = await offlineCtx.startRendering();
-    let wavBlob = await bufferToWavBlob(renderedBuffer);
-    return wavBlob;
-}
-
-function bufferToWavBlob(audioBuffer) {
-    return new Promise(resolve => {
-        let worker = new Worker("wav-encoder-worker.js");
-        worker.postMessage({ buffer: audioBuffer.getChannelData(0), sampleRate: audioBuffer.sampleRate });
-
-        worker.onmessage = e => {
-            let blob = new Blob([e.data], { type: "audio/wav" });
-            resolve(blob);
-        };
-    });
-}
 
 //存储 Base64 到 Firestore
 async function storeAudioInFirestore(audioBlob) {
     console.log("📢 进入 storeAudioInFirestore...");
-    
+
     if (!audioBlob || audioBlob.size === 0) {
         console.error("❌ 录音文件为空，无法存入 Firestore！");
         return;
     }
 
-    // 🚀 **转换为 Base64**
     let reader = new FileReader();
     reader.readAsDataURL(audioBlob);
+
     reader.onloadend = async function () {
         const base64Audio = reader.result;
-        console.log("✅ 变声录音转换为 Base64:", base64Audio.slice(0, 50) + "...");
+
+        if (!base64Audio) {
+            console.error("❌ Base64 转换失败，录音不会存入 Firestore！");
+            return;
+        }
 
         try {
+            console.log("🚀 尝试存入 Firestore...");
             const docRef = await addDoc(collection(db, "dream_bubbles"), {
                 text: "🎵 变声录音",
                 audioBase64: base64Audio,
                 timestamp: new Date()
             });
 
-            console.log("✅ 变声音频存入 Firestore，文档ID:", docRef.id);
+            console.log("✅ Firestore 存入成功，文档 ID:", docRef.id);
         } catch (error) {
             console.error("❌ Firestore 存储失败:", error);
         }
