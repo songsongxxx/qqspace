@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Sticky Notes App</title>
+  <style>
+    body {
+      background: #f0f0f0;
+      margin: 0;
+      padding: 20px;
+      font-family: Arial, sans-serif;
+      position: relative;
+      height: 100vh;
+      overflow: hidden;
+    }
+    
+    #addNoteBtn {
+      padding: 10px 20px;
+      font-size: 16px;
+      background: #007bff;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+      border-radius: 5px;
+      margin-bottom: 20px;
+    }
+
+    .sticky-note {
+      position: absolute;
+      width: 200px;
+      background: #fffa77; /* light yellow */
+      padding: 10px;
+      box-shadow: 2px 2px 10px rgba(0,0,0,0.3);
+      border-radius: 5px;
+      overflow: hidden;
+      user-select: none;
+    }
+
+    .sticky-note header {
+      cursor: move;
+      background: #f6d155;
+      padding: 5px;
+      font-weight: bold;
+      text-align: center;
+      border-bottom: 1px solid #e0e0e0;
+      position: relative;
+    }
+    
+    .sticky-note textarea {
+      width: 100%;
+      height: 120px;
+      border: none;
+      resize: none;
+      background: transparent;
+      outline: none;
+      font-size: 14px;
+      margin-top: 5px;
+    }
+
+    .sticky-note .close {
+      position: absolute;
+      top: 3px;
+      right: 5px;
+      cursor: pointer;
+      font-weight: bold;
+      color: #900;
+    }
+  </style>
+</head>
+<body>
+  <button id="addNoteBtn">Add Sticky Note</button>
+  
+  <script>
+    // Create a new sticky note element
+    function createStickyNote() {
+      // Create the note container
+      const note = document.createElement('div');
+      note.classList.add('sticky-note');
+      // Set an initial position
+      note.style.top = '100px';
+      note.style.left = '100px';
+      
+      // Create a header that will be used for dragging the note
+      const header = document.createElement('header');
+      header.textContent = 'Sticky Note';
+      note.appendChild(header);
+      
+      // Create a close button to remove the note
+      const closeBtn = document.createElement('span');
+      closeBtn.textContent = '×';
+      closeBtn.classList.add('close');
+      header.appendChild(closeBtn);
+      
+      // Create a textarea for writing on the note
+      const textArea = document.createElement('textarea');
+      textArea.placeholder = 'Write your note here...';
+      note.appendChild(textArea);
+      
+      // Append the note to the body
+      document.body.appendChild(note);
+      
+      // Variables for the drag offset
+      let offsetX, offsetY;
+      
+      // Add mousedown event to the header for drag start
+      header.addEventListener('mousedown', function(e) {
+        // Avoid starting drag when clicking the close button
+        if(e.target.classList.contains('close')) return;
+        offsetX = e.clientX - note.offsetLeft;
+        offsetY = e.clientY - note.offsetTop;
+        document.addEventListener('mousemove', mouseMove);
+        document.addEventListener('mouseup', mouseUp);
+      });
+      
+      // Function to handle dragging movement
+      function mouseMove(e) {
+        note.style.left = (e.clientX - offsetX) + 'px';
+        note.style.top = (e.clientY - offsetY) + 'px';
+      }
+      
+      // Remove event listeners when drag is complete
+      function mouseUp() {
+        document.removeEventListener('mousemove', mouseMove);
+        document.removeEventListener('mouseup', mouseUp);
+      }
+      
+      // Close button removes the note when clicked
+      closeBtn.addEventListener('click', function() {
+        document.body.removeChild(note);
+      });
+    }
+    
+    // Attach event listener to the "Add Sticky Note" button
+    document.getElementById('addNoteBtn').addEventListener('click', createStickyNote);
+  </script>
+</body>
+</html>
