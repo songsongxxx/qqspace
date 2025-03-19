@@ -94,16 +94,42 @@
   <button id="addNoteBtn">Add Sticky Note</button>
   
   <script>
-    // IMPORTANT: Update this URL to your deployed API endpoint.
-    // For local testing, you might use: 'http://localhost:3000/notes'
-    const API_URL = 'https://my-sticky-notes-app.onrender.com/api/notes';
+  <!-- (Optional) Include the Firebase client SDK if you need client-side Firestore or Auth.
+       If you only call your Express backend endpoints, you technically don't need this.
+       But if you plan to do user authentication or direct Firestore in the browser, keep it. -->
+  <script src="https://www.gstatic.com/firebasejs/9.8.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.8.1/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.8.1/firebase-firestore.js"></script>
+  
+  <script>
+    // ----------------------------------------------------------------------------
+    // (Optional) If you want client-side Firebase usage, initialize the SDK here:
+    // const firebaseConfig = {
+    //   apiKey: "YOUR_API_KEY",
+    //   authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+    //   projectId: "YOUR_PROJECT_ID",
+    //   storageBucket: "YOUR_PROJECT_ID.appspot.com",
+    //   messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+    //   appId: "YOUR_APP_ID"
+    // };
+    // firebase.initializeApp(firebaseConfig);
+    // ----------------------------------------------------------------------------
+
+    // IMPORTANT: If your new Firebase-based server (Express + firebase-admin) 
+    // exposes routes at "/notes", update API_URL below:
+    // Example for local dev:  const API_URL = "http://localhost:3000/notes";
+    // Example for production: 
+    const API_URL = "https://sticky-note-app-k9gg.onrender.com/notes";
+    // const API_URL = "/notes";
 
     // Save a note to the server (create or update).
     async function saveNote(noteData) {
       try {
-        if (noteData._id || noteData.id) {
+        // If the noteData has an ID, it's an update; otherwise it's a creation.
+        const noteId = noteData._id || noteData.id;
+
+        if (noteId) {
           // Update existing note.
-          const noteId = noteData._id || noteData.id;
           const response = await fetch(`${API_URL}/${noteId}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
@@ -119,6 +145,7 @@
             body: JSON.stringify(noteData)
           });
           if (!response.ok) throw new Error('Failed to create note');
+          // Server responds with the new note, including its generated ID.
           const savedNote = await response.json();
           return savedNote;
         }
@@ -133,12 +160,13 @@
       const note = document.createElement('div');
       note.classList.add('sticky-note');
 
-      // Use _id from Mongoose or fallback to id.
+      // Use either `_id` or `id` from the returned note object.
       const noteId = noteData._id || noteData.id;
       if (noteId) {
         note.setAttribute('data-id', noteId);
       }
 
+      // Keep any existing top/left positions, or default to 100px/100px.
       note.style.top = noteData.top || '100px';
       note.style.left = noteData.left || '100px';
 
@@ -147,7 +175,7 @@
       header.textContent = 'Sticky Note';
       note.appendChild(header);
 
-      // Create close button.
+      // Create close button (X).
       const closeBtn = document.createElement('span');
       closeBtn.textContent = '×';
       closeBtn.classList.add('close');
@@ -159,11 +187,14 @@
       textArea.value = noteData.content || '';
       note.appendChild(textArea);
 
+      // Add the note element to the page.
       document.body.appendChild(note);
 
+      // Variables for drag offset.
       let offsetX, offsetY;
 
       header.addEventListener('mousedown', function(e) {
+        // If user clicks the close button, do not drag.
         if (e.target.classList.contains('close')) return;
         offsetX = e.clientX - note.offsetLeft;
         offsetY = e.clientY - note.offsetTop;
@@ -171,11 +202,11 @@
         document.addEventListener('mouseup', mouseUp);
       });
 
-      // Restrict the note within the viewport while dragging.
       function mouseMove(e) {
         let newLeft = e.clientX - offsetX;
         let newTop = e.clientY - offsetY;
 
+        // Keep the note within the window.
         const maxLeft = window.innerWidth - note.offsetWidth;
         const maxTop = window.innerHeight - note.offsetHeight;
 
@@ -189,7 +220,10 @@
       async function mouseUp() {
         document.removeEventListener('mousemove', mouseMove);
         document.removeEventListener('mouseup', mouseUp);
+
+        // Once the user stops dragging, update the note's position on the server.
         const id = note.getAttribute('data-id');
+        if (!id) return; // This means it's a brand-new note that hasn't saved yet.
         const updatedData = {
           _id: id,
           top: note.style.top,
@@ -200,8 +234,11 @@
       }
 
       closeBtn.addEventListener('click', async function() {
-        const id = note.getAttribute('data-id');
+        // Delete from the DOM.
         document.body.removeChild(note);
+
+        // Also delete from the server if it has an ID.
+        const id = note.getAttribute('data-id');
         if (id) {
           try {
             const response = await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
@@ -213,19 +250,21 @@
       });
 
       textArea.addEventListener('input', async function() {
+        // Save whenever the note text changes.
+        // For production, you'd likely want to debounce this for performance.
         const id = note.getAttribute('data-id');
+        if (!id) return;
         const updatedData = {
           _id: id,
           top: note.style.top,
           left: note.style.left,
           content: textArea.value
         };
-        // For production, you might debounce this update.
         await saveNote(updatedData);
       });
     }
 
-    // Load all notes from the server.
+    // Load all notes from the server on page load.
     async function loadNotes() {
       try {
         const res = await fetch(API_URL);
@@ -237,22 +276,25 @@
       }
     }
 
-    // Add note button handler.
+    // Handle the "Add Sticky Note" button.
     document.getElementById('addNoteBtn').addEventListener('click', async function() {
+      // Create a default note object to save.
       const noteData = {
         top: '100px',
         left: '100px',
         content: ''
       };
+      // Save to server, get back the saved note (with ID).
       const savedNote = await saveNote(noteData);
       if (savedNote) {
+        // Create the sticky note DOM element.
         createStickyNote(savedNote);
       } else {
         console.error('Error creating note');
       }
     });
 
-    // Load notes on initial page load.
+    // Load existing notes immediately when page loads.
     loadNotes();
   </script>
 </body>
