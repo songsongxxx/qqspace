@@ -174,11 +174,32 @@ export function createBubble(text, audioBase64 = null) {
     bubble.style.left = `${x}px`;
     bubble.style.top = `${y}px`;
 
+    // 🎈 Generate unique keyframes for this bubble
+    const animationName = `float-${Math.random().toString(36).substring(2, 8)}`;
+    const keyframes = `
+    @keyframes ${animationName} {
+        0% { transform: translate(0, 0); }
+        25% { transform: translate(${Math.random() * 50 - 25}px, ${Math.random() * 50 - 25}px); }
+        50% { transform: translate(${Math.random() * 100 - 50}px, ${Math.random() * 100 - 50}px); }
+        75% { transform: translate(${Math.random() * 50 - 25}px, ${Math.random() * 50 - 25}px); }
+        100% { transform: translate(0, 0); }
+    }
+`;
+
+    // 🎈 Add the keyframes to a style element
+    let styleSheet = document.styleSheets[0];
+    if (!styleSheet) {
+        const style = document.createElement("style");
+        document.head.appendChild(style);
+        styleSheet = style.sheet;
+    }
+
     // 🎈 Assign random animation properties
     const duration = Math.random() * 5 + 3; // Random duration between 3-8 seconds
     const delay = Math.random() * 2; // Random delay between 0-2 seconds
     bubble.style.animation = `float ${duration}s infinite ease-in-out`;
     bubble.style.animationDelay = `${delay}s`;
+    
 
     // ✅ 只添加一次
     document.getElementById("bubbleContainer").appendChild(bubble);
