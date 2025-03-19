@@ -174,6 +174,12 @@ export function createBubble(text, audioBase64 = null) {
     bubble.style.left = `${x}px`;
     bubble.style.top = `${y}px`;
 
+    // 🎈 Assign random animation properties
+    const duration = Math.random() * 5 + 3; // Random duration between 3-8 seconds
+    const delay = Math.random() * 2; // Random delay between 0-2 seconds
+    bubble.style.animation = `float ${duration}s infinite ease-in-out`;
+    bubble.style.animationDelay = `${delay}s`;
+
     // ✅ 只添加一次
     document.getElementById("bubbleContainer").appendChild(bubble);
 
