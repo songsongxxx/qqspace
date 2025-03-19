@@ -196,3 +196,26 @@ button:hover {
     gap: 10px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 }
+
+@keyframes float {
+    0% {
+        transform: translate(0, 0);
+    }
+    25% {
+        transform: translate(-10px, -20px);
+    }
+    50% {
+        transform: translate(20px, 10px);
+    }
+    75% {
+        transform: translate(-15px, 15px);
+    }
+    100% {
+        transform: translate(0, 0);
+    }
+}
+
+.bubble {
+    position: absolute;
+    animation: float 5s infinite ease-in-out;
+}
