@@ -5,7 +5,8 @@ import {
     addDoc,
     onSnapshot,
     doc,
-    deleteDoc
+    deleteDoc,
+    getDocs // <-- this is important
 } from "https://www.gstatic.com/firebasejs/9.6.7/firebase-firestore.js";
 
 
@@ -281,11 +282,15 @@ export function stopRecording() {
 export async function loadBubbles() {
     console.log("🔄 正在加载 Firestore 数据...");
 
+    // Grab all docs in "dream_bubbles"
     const querySnapshot = await getDocs(collection(db, "dream_bubbles"));
-    querySnapshot.forEach(doc => {
-        const data = doc.data();
+    querySnapshot.forEach(docSnap => {
+        const data = docSnap.data();
+        const docId = docSnap.id; // <-- define docId here!
+        
+        console.log("📌 Firestore 数据:", data, "DocId:", docId);
 
-        console.log("📌 Firestore 数据:", data);
+        // Now call createBubble with the actual docId
         createBubble(docId, data.text, data.audioBase64);
     });
 
