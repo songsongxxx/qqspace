@@ -297,18 +297,20 @@ async function processAudioWithTone(audioBlob) {
     console.log("✅ Decoded user recording into an AudioBuffer.");
 
     // 2) Generate random effect parameters 
-    const randomPitch = Math.floor(Math.random() * 12) - 6;   // random from -6 to +5 semitones
-    const randomReverb = Math.random() * 3 + 1;              // random reverb time ~1–4 seconds
+    const randomPitch = Math.floor(Math.random() * 24) - 12;   // random from -6 to +5 semitones
+    const randomReverb = Math.random() * 5 + 3;              // random reverb time ~1–4 seconds
 
     // 3) Offline Render using Tone.Offline
     //    This ensures we get a fully-rendered AudioBuffer *with* the effect baked in.
+    const offlineDuration = originalBuffer.duration + 1; // Add 1 second
     const renderedBuffer = await Tone.Offline(async () => {
         // Create Player in offline context
         const player = new Tone.Player(originalBuffer);
 
         // Create a chain of random effects
         const pitchShift = new Tone.PitchShift(randomPitch);
-        const reverb = new Tone.Reverb(randomReverb);
+        const reverb = new Tone.Reverb({ decay: randomReverb });
+        await reverb.generate();
 
         // Connect them: Player -> PitchShift -> Reverb -> Destination
         player.connect(pitchShift);
@@ -317,7 +319,7 @@ async function processAudioWithTone(audioBlob) {
 
         // Start playback in the offline context
         player.start(0);
-    }, originalBuffer.duration);
+    }, offlineDuration);
 
     console.log("✅ Offline rendering complete. Duration:", renderedBuffer.duration);
 
@@ -332,6 +334,7 @@ async function processAudioWithTone(audioBlob) {
     // 5) Store the processed audio in Firestore, the same way you do now
     storeAudioInFirestore(processedAudioBlob);
 }
+
 
 
 //存储 Base64 到 Firestore
