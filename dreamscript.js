@@ -368,11 +368,8 @@ async function processAudioWithTone(audioBlob) {
         max: 8,
       });
       // Connect them to the addNode
-      pitchLFO1.connect(addNode.addend);
-      pitchLFO2.connect(addNode);
-      addNode.connect(pitchShift.pitch);
-      pitchLFO1.start();
-      pitchLFO2.start();
+      pitchLFO1.connect(pitchShift.pitch);
+      pitchLFO2.connect(pitchShift.pitch);
   
       // 2) LFO for Reverb.wet
       const reverbWetLFO = new Tone.LFO({
