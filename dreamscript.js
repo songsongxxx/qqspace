@@ -309,31 +309,49 @@ async function processAudioWithTone(audioBlob) {
     console.log("✅ Decoded user recording into an AudioBuffer.");
 
     // 2) Generate random effect parameters 
-    const randomPitch = Math.floor(Math.random() * 24) - 12;   // random from -6 to +5 semitones
-    const randomReverb = Math.random() * 5 + 3;              // random reverb time ~1–4 seconds
+    const randomPitch = Math.floor(Math.random() * 24) - 12;   // ±12 semitones
+    const randomReverbTime = Math.random() * 4 + 1;           // 1–5 seconds
+    const randomBitDepth = Math.floor(Math.random() * 4) + 2; // 2–5 bits
+    const randomDelayTime = 0.2 + Math.random() * 0.4;        // ~0.2–0.6
+    const randomChorusRate = 0.5 + Math.random() * 3;         // 0.5–3.5 Hz
 
-    // 3) Offline Render using Tone.Offline
-    //    This ensures we get a fully-rendered AudioBuffer *with* the effect baked in.
-    const offlineDuration = originalBuffer.duration + 1; // Add 1 second
-    const renderedBuffer = await Tone.Offline(async () => {
-        // Create Player in offline context
-        const player = new Tone.Player(originalBuffer);
+   // The offline duration is your buffer length + reverb tail, etc.
+const offlineDuration = originalBuffer.duration + 1;
+const renderedBuffer = await Tone.Offline(async () => {
+    // 1) Create a Player in offline context
+    const player = new Tone.Player(originalBuffer);
 
-        // Create a chain of random effects
-        const pitchShift = new Tone.PitchShift(randomPitch);
-        const reverb = new Tone.Reverb({ decay: randomReverb });
-        await reverb.generate();
+    // 2) Create your effect nodes
+    const pitchShift = new Tone.PitchShift(randomPitch);
+    const chorus = new Tone.Chorus({
+      frequency: randomChorusRate,  // how fast the mod oscillates
+      delayTime: 2.5,               // typical range: 2–8 ms
+      depth: 0.5                    // 0–1
+    }).start();
+    
+    const bitCrusher = new Tone.BitCrusher(randomBitDepth);
+    const feedbackDelay = new Tone.FeedbackDelay({
+      delayTime: randomDelayTime,
+      feedback: 0.4
+    });
+    const reverb = new Tone.Reverb({ decay: randomReverbTime });
+    
+    // If using reverb, always generate the impulse
+    await reverb.generate();
 
-        // Connect them: Player -> PitchShift -> Reverb -> Destination
-        player.connect(pitchShift);
-        pitchShift.connect(reverb);
-        reverb.toDestination();
+    // 3) Chain them: Player -> pitchShift -> chorus -> bitCrusher -> delay -> reverb -> Destination
+    player.connect(pitchShift);
+    pitchShift.connect(chorus);
+    chorus.connect(bitCrusher);
+    bitCrusher.connect(feedbackDelay);
+    feedbackDelay.connect(reverb);
+    reverb.toDestination();
 
-        // Start playback in the offline context
-        player.start(0);
-    }, offlineDuration);
+    // 4) Start playback in the offline context
+    player.start(0);
+}, offlineDuration);
 
-    console.log("✅ Offline rendering complete. Duration:", renderedBuffer.duration);
+console.log("✅ Offline rendering complete. Duration:", renderedBuffer.duration);
 
     // 4) Convert the rendered audio buffer into a Blob (WAV) 
     const processedAudioBlob = await bufferToBlob(renderedBuffer);
