@@ -282,54 +282,55 @@ export async function loadBubbles() {
 
 // 🎵 Tone.js 变声并播放
 async function processAudioWithTone(audioBlob) {
-
-    console.log("🔄 进入 processAudioWithTone，开始处理音频...");
+    console.log("🔄 Entering processAudioWithTone, decoding...");
 
     if (!audioBlob || audioBlob.size === 0) {
-        console.error("❌ 录音文件为空，无法处理！");
+        console.error("❌ No audio data found!");
         return;
     }
 
-    await Tone.start();
+    await Tone.start(); // Make sure Tone.js is started
 
-    let reader = new FileReader();
-    reader.readAsArrayBuffer(audioBlob);
-    reader.onloadend = async function () {
-        let arrayBuffer = reader.result;
-        let audioBuffer;
+    // 1) Decode into an AudioBuffer
+    let arrayBuffer = await audioBlob.arrayBuffer();
+    let originalBuffer = await Tone.context.decodeAudioData(arrayBuffer);
+    console.log("✅ Decoded user recording into an AudioBuffer.");
 
-        try {
-            audioBuffer = await Tone.context.decodeAudioData(arrayBuffer);
-            console.log("✅ Tone.js 成功解码音频，开始变声处理...");
-        } catch (error) {
-            console.error("❌ Tone.js 解码失败:", error);
-            return;
-        }
+    // 2) Generate random effect parameters 
+    const randomPitch = Math.floor(Math.random() * 12) - 6;   // random from -6 to +5 semitones
+    const randomReverb = Math.random() * 3 + 1;              // random reverb time ~1–4 seconds
 
-        // **🚀 处理音频**
-        let player = new Tone.Player(audioBuffer).toDestination();
-        let pitchShift = new Tone.PitchShift(4);
-        let reverb = new Tone.Reverb(2);
+    // 3) Offline Render using Tone.Offline
+    //    This ensures we get a fully-rendered AudioBuffer *with* the effect baked in.
+    const renderedBuffer = await Tone.Offline(async () => {
+        // Create Player in offline context
+        const player = new Tone.Player(originalBuffer);
+
+        // Create a chain of random effects
+        const pitchShift = new Tone.PitchShift(randomPitch);
+        const reverb = new Tone.Reverb(randomReverb);
+
+        // Connect them: Player -> PitchShift -> Reverb -> Destination
         player.connect(pitchShift);
         pitchShift.connect(reverb);
         reverb.toDestination();
 
-        player.start();
-        console.log("🎧 正在播放变声处理后的音频...");
+        // Start playback in the offline context
+        player.start(0);
+    }, originalBuffer.duration);
 
-        console.log("📢 调用 storeAudioInFirestore()...");
-        const processedAudioBlob = await bufferToBlob(audioBuffer);
+    console.log("✅ Offline rendering complete. Duration:", renderedBuffer.duration);
 
-        // **新增日志**
-        console.log("🎯 `bufferToBlob()` 生成的音频 Blob:", processedAudioBlob ? processedAudioBlob.size + " 字节" : "❌ 失败！");
+    // 4) Convert the rendered audio buffer into a Blob (WAV) 
+    const processedAudioBlob = await bufferToBlob(renderedBuffer);
+    if (!processedAudioBlob || processedAudioBlob.size === 0) {
+        console.error("❌ Offline rendering produced an empty blob!");
+        return;
+    }
+    console.log("✅ Got a processed WAV blob from offline render:", processedAudioBlob.size, "bytes");
 
-        if (!processedAudioBlob || processedAudioBlob.size === 0) {
-            console.error("❌ `bufferToBlob(audioBuffer)` 失败！不会存入 Firestore！");
-            return;
-        }
-
-        storeAudioInFirestore(processedAudioBlob);
-    };
+    // 5) Store the processed audio in Firestore, the same way you do now
+    storeAudioInFirestore(processedAudioBlob);
 }
 
 
