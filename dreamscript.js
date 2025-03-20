@@ -3,7 +3,9 @@ import {
     getFirestore,
     collection,
     addDoc,
-    onSnapshot
+    onSnapshot,
+    doc,
+    deleteDoc
 } from "https://www.gstatic.com/firebasejs/9.6.7/firebase-firestore.js";
 
 
@@ -29,21 +31,18 @@ let audioChunks = [];
 // **监听 Firestore，并生成泡泡（但不存入 Firestore）**
 onSnapshot(collection(db, "dream_bubbles"), (snapshot) => {
     snapshot.docChanges().forEach(change => {
-        if (change.type === "added") {
-            const data = change.doc.data();
-            console.log("📌 Firestore 新增数据:", data);
-
-            if (!data.audioBase64) {
-                console.warn("⚠️ `audioBase64` 为空，无法生成音频泡泡！");
-            } else {
-                console.log("🎵 `audioBase64` 数据:", data.audioBase64.slice(0, 50) + "..."); // 打印前50字符
-            }
-
-            createBubble(data.text, data.audioBase64);
-        }
+      if (change.type === "added") {
+        // retrieve doc id + data
+        const docId = change.doc.id;           // <--- doc ID from Firestore
+        const data = change.doc.data();
+  
+        console.log("📌 Firestore 新增数据:", data);
+  
+        createBubble(docId, data.text, data.audioBase64);
+      }
     });
-});
-
+  });
+  
 
 async function bufferToBlob(audioBuffer) {
     console.log("🔄 进入 `bufferToBlob()`，开始处理音频...");
@@ -145,28 +144,41 @@ document.getElementById("bubbleBtn").addEventListener("click", async () => {
 
 
 // 🎵 让 `dreamscript.js` 作为一个 ES6 模块
-export function createBubble(text, audioBase64 = null) {
+export function createBubble(docId, text, audioBase64 = null) {
     if (!text || typeof text !== "string" || text.trim() === "") {
         console.error("❌ createBubble() 失败：text 不能为空");
         return;
     }
 
-    console.log("🟢 生成泡泡，文本:", text);
+    console.log("🟢 生成泡泡，文本:", text, " docId:", docId);
 
     const bubble = document.createElement("div");
     bubble.classList.add("bubble");
-    bubble.textContent = text;
 
-    if (audioBase64) {
-        console.log("🎵 添加音频泡泡，URL:", audioBase64);
-        bubble.textContent = "";
+    // We'll store the docId in bubble.dataset for easy reference
+    bubble.dataset.docId = docId;
 
+    // If there's no audio, show text
+    if (!audioBase64) {
+        bubble.textContent = text;
+    } else {
+        // If there's audio, create an <audio> element
         const audioElement = document.createElement("audio");
         audioElement.src = audioBase64;
         audioElement.controls = true;
         audioElement.style.width = "120px";
         bubble.appendChild(audioElement);
     }
+
+    // (Optional) add a small "Delete" button or an "X" in the corner
+    const deleteBtn = document.createElement("button");
+    deleteBtn.textContent = "X";         // or an icon of your choice
+    deleteBtn.style.marginLeft = "5px";  // simple styling
+    deleteBtn.addEventListener("click", (event) => {
+        event.stopPropagation(); // so we don't trigger bubble clicks
+        deleteBubbleDoc(docId, bubble);
+    });
+    bubble.appendChild(deleteBtn);
 
     // 🎈 随机位置
     const x = Math.random() * (window.innerWidth - 100);
@@ -450,6 +462,20 @@ function randomScatter(element) {
         element.style.top = `${window.innerHeight - Math.random() * 100}px`;
     }, 100);
 }
+
+//helper function to delete bubbles
+async function deleteBubbleDoc(docId, bubbleElement) {
+    try {
+      console.log("🗑 Deleting doc ID:", docId);
+      await deleteDoc(doc(db, "dream_bubbles", docId));
+      console.log("✅ Successfully deleted doc:", docId);
+  
+      // Remove the bubble from the page
+      bubbleElement.remove();
+    } catch (error) {
+      console.error("❌ Failed to delete doc:", docId, error);
+    }
+  }
 
 // 🔄 页面加载完成
 window.onload = function () {
