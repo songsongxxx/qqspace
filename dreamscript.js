@@ -108,7 +108,7 @@ function bufferToWavBlob(audioBuffer) {
 
 
 // 🎤 **存入 Firestore**
-async function saveBubbleToFirestore(text, audioBase64 = null) {
+export async function saveBubbleToFirestore(text, audioBase64 = null) {
     if (!text || text.trim() === "") {
         console.error("❌ 不能存入空白文本！");
         return;
@@ -565,4 +565,3 @@ window.onload = function () {
     console.log("📌 页面加载完成，开始监听 Firestore 数据...");
     loadBubbles();
 };
-
