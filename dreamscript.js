@@ -286,7 +286,7 @@ export async function loadBubbles() {
         const data = doc.data();
 
         console.log("📌 Firestore 数据:", data);
-        createBubble(data.text, data.audioBase64);
+        createBubble(docId, data.text, data.audioBase64);
     });
 
     console.log("✅ 所有泡泡已加载完成");
@@ -295,75 +295,135 @@ export async function loadBubbles() {
 // 🎵 Tone.js 变声并播放
 async function processAudioWithTone(audioBlob) {
     console.log("🔄 Entering processAudioWithTone, decoding...");
-
+  
     if (!audioBlob || audioBlob.size === 0) {
-        console.error("❌ No audio data found!");
-        return;
+      console.error("❌ No audio data found!");
+      return;
     }
-
+  
     await Tone.start(); // Make sure Tone.js is started
-
+  
     // 1) Decode into an AudioBuffer
     let arrayBuffer = await audioBlob.arrayBuffer();
     let originalBuffer = await Tone.context.decodeAudioData(arrayBuffer);
     console.log("✅ Decoded user recording into an AudioBuffer.");
-
+  
     // 2) Generate random effect parameters 
-    const randomPitch = Math.floor(Math.random() * 24) - 12;   // ±12 semitones
-    const randomReverbTime = Math.random() * 4 + 1;           // 1–5 seconds
-    const randomBitDepth = Math.floor(Math.random() * 4) + 2; // 2–5 bits
-    const randomDelayTime = 0.2 + Math.random() * 0.4;        // ~0.2–0.6
-    const randomChorusRate = 0.5 + Math.random() * 3;         // 0.5–3.5 Hz
-
-   // The offline duration is your buffer length + reverb tail, etc.
-const offlineDuration = originalBuffer.duration + 1;
-const renderedBuffer = await Tone.Offline(async () => {
-    // 1) Create a Player in offline context
-    const player = new Tone.Player(originalBuffer);
-
-    // 2) Create your effect nodes
-    const pitchShift = new Tone.PitchShift(randomPitch);
-    const chorus = new Tone.Chorus({
-      frequency: randomChorusRate,  // how fast the mod oscillates
-      delayTime: 2.5,               // typical range: 2–8 ms
-      depth: 0.5                    // 0–1
-    }).start();
-    
-    const bitCrusher = new Tone.BitCrusher(randomBitDepth);
-    const feedbackDelay = new Tone.FeedbackDelay({
-      delayTime: randomDelayTime,
-      feedback: 0.4
-    });
-    const reverb = new Tone.Reverb({ decay: randomReverbTime });
-    
-    // If using reverb, always generate the impulse
-    await reverb.generate();
-
-    // 3) Chain them: Player -> pitchShift -> chorus -> bitCrusher -> delay -> reverb -> Destination
-    player.connect(pitchShift);
-    pitchShift.connect(chorus);
-    chorus.connect(bitCrusher);
-    bitCrusher.connect(feedbackDelay);
-    feedbackDelay.connect(reverb);
-    reverb.toDestination();
-
-    // 4) Start playback in the offline context
-    player.start(0);
-}, offlineDuration);
-
-console.log("✅ Offline rendering complete. Duration:", renderedBuffer.duration);
-
-    // 4) Convert the rendered audio buffer into a Blob (WAV) 
+    //    (Even bigger ranges than before)
+    const randomPitch = Math.floor(Math.random() * 48) - 24;   // ±24 semitones
+    const randomReverbTime = Math.random() * 8 + 2;           // 2–10 seconds reverb
+    const randomBitDepth = Math.floor(Math.random() * 6) + 2; // 2–7 bits
+    const randomDelayTime = 0.1 + Math.random() * 0.5;        // 0.1–0.6 seconds
+    const randomChorusRate = 0.5 + Math.random() * 5;         // 0.5–5 Hz
+  
+    // We'll also randomize some LFO frequencies:
+    const pitchLfoFreq = 0.1 + Math.random() * 0.4;           // 0.1–0.5 Hz
+    const pitchLfoFreq2 = 0.3 + Math.random() * 0.7;          // 0.3–1.0 Hz
+    const reverbWetLfoFreq = 0.05 + Math.random() * 0.25;     // 0.05–0.3 Hz
+    const chorusDepthLfoFreq = 0.2 + Math.random() * 0.5;     // 0.2–0.7 Hz
+    const delayFeedbackLfoFreq = 0.3 + Math.random() * 0.8;   // 0.3–1.1 Hz
+  
+    // 3) Offline Render
+    const offlineDuration = originalBuffer.duration + 2; // +2s so we get reverb tails
+    const renderedBuffer = await Tone.Offline(() => {
+      // A) Create the Player in offline context
+      const player = new Tone.Player(originalBuffer);
+  
+      // B) Create effect nodes
+      const pitchShift = new Tone.PitchShift(randomPitch);
+      const chorus = new Tone.Chorus({
+        frequency: randomChorusRate,
+        delayTime: 2.5,
+        depth: 0.5,
+      }).start();
+  
+      const bitCrusher = new Tone.BitCrusher(randomBitDepth);
+      const feedbackDelay = new Tone.FeedbackDelay({
+        delayTime: randomDelayTime,
+        feedback: 0.5,
+      });
+      const reverb = new Tone.Reverb({ decay: randomReverbTime });
+      // Must generate impulse if we set a custom decay
+      reverb.generate();
+  
+      // ──────────────────────────────────────────────
+      // C) CREATE MULTIPLE LFOs FOR EXTREME MODULATION
+  
+      // 1) Two LFOs for pitchShift.pitch
+      //    - They will sum if we route them both via an Add node
+      const addNode = new Tone.Add(); // Sums up the signals
+      const pitchLFO1 = new Tone.LFO({
+        frequency: pitchLfoFreq,
+        min: randomPitch - 12,
+        max: randomPitch + 12,
+      });
+      const pitchLFO2 = new Tone.LFO({
+        frequency: pitchLfoFreq2,
+        min: -8,
+        max: 8,
+      });
+      // Connect them to the addNode
+      pitchLFO1.connect(addNode.addend);
+      pitchLFO2.connect(addNode);
+      addNode.connect(pitchShift.pitch);
+      pitchLFO1.start();
+      pitchLFO2.start();
+  
+      // 2) LFO for Reverb.wet
+      const reverbWetLFO = new Tone.LFO({
+        frequency: reverbWetLfoFreq,
+        min: 0.0,
+        max: 1.0,
+      });
+      reverbWetLFO.connect(reverb.wet);
+      reverbWetLFO.start();
+  
+      // 3) LFO for Chorus.depth
+      const chorusDepthLFO = new Tone.LFO({
+        frequency: chorusDepthLfoFreq,
+        min: 0.0,
+        max: 1.0,
+      });
+      chorusDepthLFO.connect(chorus.depth);
+      chorusDepthLFO.start();
+  
+      // 4) LFO for FeedbackDelay.feedback
+      const delayFeedbackLFO = new Tone.LFO({
+        frequency: delayFeedbackLfoFreq,
+        min: 0.1,
+        max: 0.9,
+      });
+      delayFeedbackLFO.connect(feedbackDelay.feedback);
+      delayFeedbackLFO.start();
+  
+      // ──────────────────────────────────────────────
+      // D) Chain them: Player -> pitchShift -> chorus -> bitCrusher -> delay -> reverb -> Dest
+      player.connect(pitchShift);
+      pitchShift.connect(chorus);
+      chorus.connect(bitCrusher);
+      bitCrusher.connect(feedbackDelay);
+      feedbackDelay.connect(reverb);
+      reverb.toDestination();
+  
+      // E) Start playback in the offline context
+      player.start(0);
+      Tone.Transport.start();
+    }, offlineDuration);
+  
+    console.log("✅ Offline rendering complete. Duration:", renderedBuffer.duration);
+  
+    // 4) Convert renderedBuffer to WAV
     const processedAudioBlob = await bufferToBlob(renderedBuffer);
     if (!processedAudioBlob || processedAudioBlob.size === 0) {
-        console.error("❌ Offline rendering produced an empty blob!");
-        return;
+      console.error("❌ Offline rendering produced an empty blob!");
+      return;
     }
     console.log("✅ Got a processed WAV blob from offline render:", processedAudioBlob.size, "bytes");
-
-    // 5) Store the processed audio in Firestore, the same way you do now
+  
+    // 5) Store the processed audio in Firestore
     storeAudioInFirestore(processedAudioBlob);
-}
+  }
+  
 
 
 
@@ -500,3 +560,4 @@ window.onload = function () {
     console.log("📌 页面加载完成，开始监听 Firestore 数据...");
     loadBubbles();
 };
+
