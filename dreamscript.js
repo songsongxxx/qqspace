@@ -342,7 +342,8 @@ async function processAudioWithTone(audioBlob) {
         delayTime: 2.5,
         depth: 0.5,
       }).start();
-  
+      chorus.depth = Math.random();
+
       const bitCrusher = new Tone.BitCrusher(randomBitDepth);
       const feedbackDelay = new Tone.FeedbackDelay({
         delayTime: randomDelayTime,
@@ -363,15 +364,6 @@ async function processAudioWithTone(audioBlob) {
       });
       reverbWetLFO.connect(reverb.wet);
       reverbWetLFO.start();
-  
-      // 3) LFO for Chorus.depth
-      const chorusDepthLFO = new Tone.LFO({
-        frequency: chorusDepthLfoFreq,
-        min: 0.0,
-        max: 1.0,
-      });
-      chorusDepthLFO.connect(chorus.depth);
-      chorusDepthLFO.start();
   
       // 4) LFO for FeedbackDelay.feedback
       const delayFeedbackLFO = new Tone.LFO({
