@@ -536,5 +536,4 @@ async function deleteBubbleDoc(docId, bubbleElement) {
 // 🔄 页面加载完成
 window.onload = function () {
     console.log("📌 页面加载完成，开始监听 Firestore 数据...");
-    loadBubbles();
 };
