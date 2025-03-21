@@ -335,7 +335,8 @@ async function processAudioWithTone(audioBlob) {
       const player = new Tone.Player(originalBuffer);
   
       // B) Create effect nodes
-      const pitchShift = new Tone.PitchShift(randomPitch);
+      const pitchShift = new Tone.PitchShift(0);
+      pitchShift.pitch = randomPitch;
       const chorus = new Tone.Chorus({
         frequency: randomChorusRate,
         delayTime: 2.5,
@@ -353,23 +354,6 @@ async function processAudioWithTone(audioBlob) {
   
       // ──────────────────────────────────────────────
       // C) CREATE MULTIPLE LFOs FOR EXTREME MODULATION
-  
-      // 1) Two LFOs for pitchShift.pitch
-      //    - They will sum if we route them both via an Add node
-      const addNode = new Tone.Add(); // Sums up the signals
-      const pitchLFO1 = new Tone.LFO({
-        frequency: pitchLfoFreq,
-        min: randomPitch - 12,
-        max: randomPitch + 12,
-      });
-      const pitchLFO2 = new Tone.LFO({
-        frequency: pitchLfoFreq2,
-        min: -8,
-        max: 8,
-      });
-      // Connect them to the addNode
-      pitchLFO1.connect(pitchShift.pitch);
-      pitchLFO2.connect(pitchShift.pitch);
   
       // 2) LFO for Reverb.wet
       const reverbWetLFO = new Tone.LFO({
