@@ -4,17 +4,37 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>dream</title>
-  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="dreamstyle.css">
   
-  <!-- Three.js + Tone.js as before -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.128/examples/js/loaders/GLTFLoader.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/examples/js/loaders/GLTFLoader.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.min.js"></script>
+  <!-- Fonts -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap"
+    rel="stylesheet"
+  />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;700&display=swap"
+    rel="stylesheet"
+  />
+  
+  <!-- Your existing CSS -->
+  <link rel="stylesheet" href="dreamstyle.css" />
 
-  <!-- Supabase client for the browser -->
+  <!-- Three.js + GLTFLoader -->
+  <script
+    src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"
+  ></script>
+  <script
+    src="https://cdn.jsdelivr.net/npm/three@0.128/examples/js/loaders/GLTFLoader.js"
+  ></script>
+  <script
+    src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/examples/js/loaders/GLTFLoader.js"
+  ></script>
+
+  <!-- Tone.js -->
+  <script
+    src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.min.js"
+  ></script>
+
+  <!-- Supabase client for the browser (needed for uploading audio) -->
   <script type="module" src="https://esm.sh/@supabase/supabase-js" defer></script>
 
   <link rel="icon" href="data:,">
@@ -30,7 +50,7 @@
 
   <!-- 📝 交互控件 -->
   <div id="controls">
-    <input type="text" id="bubbleText" placeholder="输入泡泡内容">
+    <input type="text" id="bubbleText" placeholder="输入泡泡内容" />
     <button id="bubbleBtn">Generate Bubble</button>
     <button id="recordBtn">Start Recording</button>
     <button id="stopRecordBtn">Stop Recording</button>
@@ -40,14 +60,14 @@
   <div id="junkyard"></div> <!-- 底部的“电子垃圾” -->
 
   <script>
-    // ================================
-    //  Three.js scene initialization
-    // ================================
+    <!-- ================================
+         Three.js scene initialization
+    ================================ -->
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(
-      75, 
-      window.innerWidth / window.innerHeight, 
-      0.1, 
+      75,
+      window.innerWidth / window.innerHeight,
+      0.1,
       1000
     );
     const renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -56,6 +76,7 @@
 
     const ambientLight = new THREE.AmbientLight(0xffffff, 1);
     scene.add(ambientLight);
+
     const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
     directionalLight.position.set(5, 10, 7);
     scene.add(directionalLight);
@@ -63,54 +84,62 @@
     const loader = new THREE.GLTFLoader();
     let model;
 
-    loader.load('key.glb', function (gltf) {
-      model = gltf.scene;
+    loader.load(
+      "key.glb",
+      function (gltf) {
+        model = gltf.scene;
 
-      model.traverse((child) => {
-        if (child.isMesh) {
-          child.material.transparent = false;
-          child.material.opacity = 1;
-        }
-      });
+        model.traverse((child) => {
+          if (child.isMesh) {
+            child.material.transparent = false;
+            child.material.opacity = 1;
+          }
+        });
 
-      const box = new THREE.Box3().setFromObject(model);
-      const center = new THREE.Vector3();
-      box.getCenter(center);
-      model.position.sub(center);
+        const box = new THREE.Box3().setFromObject(model);
+        const center = new THREE.Vector3();
+        box.getCenter(center);
+        model.position.sub(center);
 
-      const pointLight = new THREE.PointLight(0xffffff, 10);
-      pointLight.position.set(0, 5, 0);
-      scene.add(pointLight);
+        const pointLight = new THREE.PointLight(0xffffff, 10);
+        pointLight.position.set(0, 5, 0);
+        scene.add(pointLight);
 
-      model.position.set(0, 0, 0);
-      model.scale.set(1, 1, 1);
+        model.position.set(0, 0, 0);
+        model.scale.set(1, 1, 1);
 
-      scene.add(model);
-      console.log("✅ Model Loaded:", model);
-      animate();
-    }, undefined, function (error) {
-      console.error("❌ GLB 加载失败:", error);
-    });
+        scene.add(model);
+        console.log("✅ Model Loaded:", model);
+        animate();
+      },
+      undefined,
+      function (error) {
+        console.error("❌ GLB 加载失败:", error);
+      }
+    );
 
     function animate() {
       requestAnimationFrame(animate);
       if (model) {
-        model.rotation.y += 0.01; 
+        model.rotation.y += 0.01; // Slowly rotate
       }
       renderer.render(scene, camera);
     }
 
-    window.addEventListener('resize', () => {
+    window.addEventListener("resize", () => {
       renderer.setSize(window.innerWidth, window.innerHeight);
       camera.aspect = window.innerWidth / window.innerHeight;
       camera.updateProjectionMatrix();
     });
   </script>
 
-  <!-- ===============================
-       ES module script for logic
-       (uses supabase, tone, etc.)
-  ================================ -->
+  <!-- 
+    ===============================
+      ES module for logic
+      - text => Firestore
+      - audio => supabase "recordings"
+    ===============================
+  -->
   <script type="module">
     import {
       startRecording,
@@ -131,7 +160,7 @@
         return;
       }
 
-      // Store text in Firestore only
+      // TEXT => Firestore
       bubbleBtn.addEventListener("click", async () => {
         const text = bubbleTextInput.value.trim();
         if (!text) {
@@ -139,10 +168,10 @@
           return;
         }
         console.log("📌 用户输入:", text);
-        await saveBubbleToFirestore(text, null);
+        await saveBubbleToFirestore(text, null); // storing only text
       });
 
-      // 🎤 Start & stop audio recording
+      // 🎤 Start / Stop Recording => which triggers offline Tone rendering => supabase
       recordBtn.addEventListener("click", () => {
         console.log("🎙 开始录音...");
         startRecording();
@@ -154,6 +183,5 @@
       });
     });
   </script>
-
 </body>
 </html>
