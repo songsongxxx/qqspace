@@ -36,15 +36,23 @@
         <button id="bubbleBtn">Generate Bubble</button>
         <button id="recordBtn">Start Recording</button>
         <button id="stopRecordBtn">Stop Recording</button>
+        <button id="testToneBtn">🔊 试听变声效果</button>
 
     </div>
 
     <div id="bubbleContainer"></div>
     <div id="junkyard"></div> <!-- 底部的“电子垃圾” -->
 
-
+    <!-- toneControls -->
+    <div id="toneControls">
+        <label>音调（Pitch）: <input type="range" id="pitchSlider" min="-24" max="24" value="0"></label><br>
+        <label>混响时间（Reverb）: <input type="range" id="reverbSlider" min="1" max="10" step="0.1" value="4"></label><br>
+        <label>失真位数（BitDepth）: <input type="range" id="bitSlider" min="2" max="8" value="4"></label><br>
+        <label>延迟时间（Delay）: <input type="range" id="delaySlider" min="0" max="1" step="0.05" value="0.3"></label><br>
+    </div>
 
     <script>
+        
         // 初始化 Three.js 场景
         const scene = new THREE.Scene();
         const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -113,52 +121,56 @@
 
     <!-- 🎵 加载 dreamscript.js 并正确绑定函数 -->
     <script type="module">
-    import {
-      createBubble,
-      startRecording,
-      stopRecording,
-      saveBubbleToFirestore // <-- add this
-    } from "./dreamscript.js";
+        import {
+            createBubble,
+            startRecording,
+            stopRecording,
+            saveBubbleToFirestore,
+            loadBubbles // ✅ 加上它
+        } from "./dreamscript.js";
 
-    document.addEventListener("DOMContentLoaded", () => {
-        console.log("✅ 页面加载完成，绑定事件");
+        document.addEventListener("DOMContentLoaded", () => {
+            console.log("✅ 页面加载完成，绑定事件");
 
-        const bubbleTextInput = document.getElementById("bubbleText");
-        const bubbleBtn = document.getElementById("bubbleBtn");
-        const recordBtn = document.getElementById("recordBtn");
-        const stopRecordBtn = document.getElementById("stopRecordBtn");
+            // ✅ 加上这句！
+            loadBubbles();
 
-        // 🔥 确保 HTML 元素存在
-        if (!bubbleTextInput || !bubbleBtn || !recordBtn || !stopRecordBtn) {
-            console.error("❌ 绑定事件失败，检查 HTML 是否包含正确的 ID！");
-            return;
-        }
+            const bubbleTextInput = document.getElementById("bubbleText");
+            const bubbleBtn = document.getElementById("bubbleBtn");
+            const recordBtn = document.getElementById("recordBtn");
+            const stopRecordBtn = document.getElementById("stopRecordBtn");
 
-        bubbleBtn.addEventListener("click", async () => {
-            const text = bubbleTextInput.value.trim();
-            if (!text) {
-                console.error("❌ 用户输入为空，不存入 Firestore");
+            // 🔥 确保 HTML 元素存在
+            if (!bubbleTextInput || !bubbleBtn || !recordBtn || !stopRecordBtn) {
+                console.error("❌ 绑定事件失败，检查 HTML 是否包含正确的 ID！");
                 return;
             }
-            console.log("📌 用户输入:", text);
 
-            // Now we can call saveBubbleToFirestore from here
-            await saveBubbleToFirestore(text, null);
-        });
+            bubbleBtn.addEventListener("click", async () => {
+                const text = bubbleTextInput.value.trim();
+                if (!text) {
+                    console.error("❌ 用户输入为空，不存入 Firestore");
+                    return;
+                }
+                console.log("📌 用户输入:", text);
 
-        // 🎤 开始录音
-        recordBtn.addEventListener("click", () => {
-            console.log("🎙 开始录音...");
-            startRecording();
-        });
+                // Now we can call saveBubbleToFirestore from here
+                await saveBubbleToFirestore(text, null);
+            });
 
-        // 🛑 停止录音
-        stopRecordBtn.addEventListener("click", () => {
-            console.log("🛑 停止录音...");
-            stopRecording();
+            // 🎤 开始录音
+            recordBtn.addEventListener("click", () => {
+                console.log("🎙 开始录音...");
+                startRecording();
+            });
+
+            // 🛑 停止录音
+            stopRecordBtn.addEventListener("click", () => {
+                console.log("🛑 停止录音...");
+                stopRecording();
+            });
         });
-    });
-</script>
+    </script>
 
 
 
