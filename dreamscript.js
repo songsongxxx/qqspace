@@ -27,23 +27,25 @@ const db = getFirestore(app);
 console.log("✅ Firebase 初始化完成");
 
 let mediaRecorder;
-let audioChunks = [];
+let recordingStream;
+let allChunks = [];
+let isRecording = false;
 
 // **监听 Firestore，并生成泡泡（但不存入 Firestore）**
 onSnapshot(collection(db, "dream_bubbles"), (snapshot) => {
     snapshot.docChanges().forEach(change => {
-      if (change.type === "added") {
-        // retrieve doc id + data
-        const docId = change.doc.id;           // <--- doc ID from Firestore
-        const data = change.doc.data();
-  
-        console.log("📌 Firestore 新增数据:", data);
-  
-        createBubble(docId, data.text, data.audioBase64);
-      }
+        if (change.type === "added") {
+            // retrieve doc id + data
+            const docId = change.doc.id;           // <--- doc ID from Firestore
+            const data = change.doc.data();
+
+            console.log("📌 Firestore 新增数据:", data);
+
+            createBubble(docId, data.text, data.audioBase64);
+        }
     });
-  });
-  
+});
+
 
 async function bufferToBlob(audioBuffer) {
     console.log("🔄 进入 `bufferToBlob()`，开始处理音频...");
@@ -212,7 +214,7 @@ export function createBubble(docId, text, audioBase64 = null) {
     const delay = Math.random() * 2; // Random delay between 0-2 seconds
     bubble.style.animation = `float ${duration}s infinite ease-in-out`;
     bubble.style.animationDelay = `${delay}s`;
-    
+
 
     // ✅ 只添加一次
     document.getElementById("bubbleContainer").appendChild(bubble);
@@ -225,56 +227,77 @@ export function createBubble(docId, text, audioBase64 = null) {
 
 }
 
+
 // 🎤 录音
 export function startRecording() {
     navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
+        recordingStream = stream;
+        allChunks = []; // 重置
         mediaRecorder = new MediaRecorder(stream);
-        audioChunks = []; // ✅ 重新初始化，防止上次录音的数据残留
+        isRecording = true;
 
-        mediaRecorder.ondataavailable = event => {
+        mediaRecorder.ondataavailable = (event) => {
             if (event.data.size > 0) {
-                audioChunks.push(event.data);
-                console.log("🎙 录音数据已存入 audioChunks，大小:", event.data.size);
-            } else {
-                console.warn("⚠️ 录音数据为空！");
+                allChunks.push(event.data);
+                console.log("📦 录音片段大小:", event.data.size);
             }
         };
 
         mediaRecorder.onstop = async () => {
-            console.log("🛑 录音已停止，开始处理音频...");
 
-            if (audioChunks.length === 0) {
-                console.error("❌ 没有录音数据，audioChunks 为空！");
+            console.log("🛑 录音结束，拼接音频...");
+            const fullBlob = new Blob(allChunks, { type: 'audio/webm' });
+
+            if (fullBlob.size === 0) {
+                console.error("❌ 拼接后音频为空");
                 return;
             }
+            const userText = document.getElementById("bubbleText")?.value.trim();
+            console.log("📤 用户输入文字：", userText);
+            // ✅ 现在才传入 fullBlob 和 userText
+            processAudioWithTone(fullBlob, userText);
 
-            const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
-            console.log("🎙 录音 Blob 生成，大小:", audioBlob.size);
-
-            if (audioBlob.size === 0) {
-                console.error("❌ 录音 Blob 为空，无法处理音频！");
-                return;
-            }
-
-            // 🚀 让 Tone.js 处理音频
-            processAudioWithTone(audioBlob);
         };
 
-        mediaRecorder.start();
-        console.log("🎙 开始录音...");
-    }).catch(error => console.error("❌ 录音失败:", error));
+        mediaRecorder.start(5000); // 每 5 秒自动触发 ondataavailable
+        console.log("🎙 开始录音，使用 chunk 模式");
+    }).catch(err => {
+        console.error("❌ 获取音频失败:", err);
+    });
 }
 
 
 
 // 🎤 停止录音
 export function stopRecording() {
-    if (mediaRecorder && mediaRecorder.state === "recording") {
-        console.log("🛑 停止录音...");
-        mediaRecorder.stop(); // ✅ 确保触发 onstop 事件
+    if (mediaRecorder && isRecording) {
+        isRecording = false;
+        mediaRecorder.stop();
+        recordingStream.getTracks().forEach(track => track.stop()); // 释放资源
+        console.log("🛑 停止录音并关闭麦克风");
     } else {
-        console.error("❌ `mediaRecorder` 未启动或已停止，无法停止录音！");
+        console.warn("⚠️ 没有正在进行的录音");
     }
+}
+
+// 🎤 让网页加载 Firestore 里的 Base64 音频
+export async function testToneEffect() {
+    await Tone.start(); // 确保 AudioContext 启动
+
+    // 创建合成器或基本声音源
+    const synth = new Tone.Synth().toDestination();
+
+    // 效果链条（和录音时一致）
+    const pitchShift = new Tone.PitchShift(parseFloat(document.getElementById("pitchSlider").value));
+    const bitCrusher = new Tone.BitCrusher(parseInt(document.getElementById("bitSlider").value));
+    const delay = new Tone.FeedbackDelay(parseFloat(document.getElementById("delaySlider").value));
+    const reverb = new Tone.Reverb({ decay: parseFloat(document.getElementById("reverbSlider").value) });
+
+    // 链接效果
+    synth.chain(pitchShift, bitCrusher, delay, reverb, Tone.Destination);
+
+    // 播放音符（你可以改成任意声音）
+    synth.triggerAttackRelease("C4", "1n");
 }
 
 
@@ -287,7 +310,7 @@ export async function loadBubbles() {
     querySnapshot.forEach(docSnap => {
         const data = docSnap.data();
         const docId = docSnap.id; // <-- define docId here!
-        
+
         console.log("📌 Firestore 数据:", data, "DocId:", docId);
 
         // Now call createBubble with the actual docId
@@ -298,115 +321,84 @@ export async function loadBubbles() {
 }
 
 // 🎵 Tone.js 变声并播放
-async function processAudioWithTone(audioBlob) {
+async function processAudioWithTone(audioBlob, text = ""){
+
     console.log("🔄 Entering processAudioWithTone, decoding...");
-  
+
     if (!audioBlob || audioBlob.size === 0) {
-      console.error("❌ No audio data found!");
-      return;
+        console.error("❌ No audio data found!");
+        return;
     }
-  
+
     await Tone.start(); // Make sure Tone.js is started
-  
+
     // 1) Decode into an AudioBuffer
     let arrayBuffer = await audioBlob.arrayBuffer();
     let originalBuffer = await Tone.context.decodeAudioData(arrayBuffer);
     console.log("✅ Decoded user recording into an AudioBuffer.");
-  
-    // 2) Generate random effect parameters 
-    //    (Even bigger ranges than before)
-    const randomPitch = Math.floor(Math.random() * 48) - 24;   // ±24 semitones
-    const randomReverbTime = Math.random() * 8 + 2;           // 2–10 seconds reverb
-    const randomBitDepth = Math.floor(Math.random() * 6) + 2; // 2–7 bits
-    const randomDelayTime = 0.1 + Math.random() * 0.5;        // 0.1–0.6 seconds
-    const randomChorusRate = 0.5 + Math.random() * 5;         // 0.5–5 Hz
-  
-    // We'll also randomize some LFO frequencies:
-    const pitchLfoFreq = 0.1 + Math.random() * 0.4;           // 0.1–0.5 Hz
-    const pitchLfoFreq2 = 0.3 + Math.random() * 0.7;          // 0.3–1.0 Hz
-    const reverbWetLfoFreq = 0.05 + Math.random() * 0.25;     // 0.05–0.3 Hz
-    const chorusDepthLfoFreq = 0.2 + Math.random() * 0.5;     // 0.2–0.7 Hz
-    const delayFeedbackLfoFreq = 0.3 + Math.random() * 0.8;   // 0.3–1.1 Hz
-  
-    // 3) Offline Render
-    const offlineDuration = originalBuffer.duration + 2; // +2s so we get reverb tails
-    const renderedBuffer = await Tone.Offline(() => {
-      // A) Create the Player in offline context
-      const player = new Tone.Player(originalBuffer);
-  
-      // B) Create effect nodes
-      const pitchShift = new Tone.PitchShift(0);
-      pitchShift.pitch = randomPitch;
-      const chorus = new Tone.Chorus({
-        frequency: randomChorusRate,
-        delayTime: 2.5,
-        depth: 0.5,
-      }).start();
-      chorus.depth = Math.random();
 
-      const bitCrusher = new Tone.BitCrusher(randomBitDepth);
-      const feedbackDelay = new Tone.FeedbackDelay({
-        delayTime: randomDelayTime,
-        feedback: 0.5,
-      });
-      const reverb = new Tone.Reverb({ decay: randomReverbTime });
-      // Must generate impulse if we set a custom decay
-      reverb.generate();
-  
-      // ──────────────────────────────────────────────
-      // C) CREATE MULTIPLE LFOs FOR EXTREME MODULATION
-  
-      // 2) LFO for Reverb.wet
-      const reverbWetLFO = new Tone.LFO({
-        frequency: reverbWetLfoFreq,
-        min: 0.0,
-        max: 1.0,
-      });
-      reverbWetLFO.connect(reverb.wet);
-      reverbWetLFO.start();
-  
-      // 4) LFO for FeedbackDelay.feedback
-      const delayFeedbackLFO = new Tone.LFO({
-        frequency: delayFeedbackLfoFreq,
-        min: 0.1,
-        max: 0.9,
-      });
-      delayFeedbackLFO.connect(feedbackDelay.feedback);
-      delayFeedbackLFO.start();
-  
-      // ──────────────────────────────────────────────
-      // D) Chain them: Player -> pitchShift -> chorus -> bitCrusher -> delay -> reverb -> Dest
-      player.connect(pitchShift);
-      pitchShift.connect(chorus);
-      chorus.connect(bitCrusher);
-      bitCrusher.connect(feedbackDelay);
-      feedbackDelay.connect(reverb);
-      reverb.toDestination();
-  
-      // E) Start playback in the offline context
-      player.start(0);
-      Tone.Transport.start();
+    const userPitch = parseFloat(document.getElementById("pitchSlider").value);
+    const userReverbTime = parseFloat(document.getElementById("reverbSlider").value);
+    const userBitDepth = parseInt(document.getElementById("bitSlider").value);
+    const userDelayTime = parseFloat(document.getElementById("delaySlider").value);
+
+    const offlineDuration = originalBuffer.duration + 2;
+    const renderedBuffer = await Tone.Offline(() => {
+        const player = new Tone.Player(originalBuffer);
+    
+        // ✅ 创建 pitchShift 变调器
+        const pitchShift = new Tone.PitchShift();
+        pitchShift.pitch = userPitch;
+    
+        const reverb = new Tone.Reverb({ decay: userReverbTime });
+        const bitCrusher = new Tone.BitCrusher(userBitDepth);
+        const feedbackDelay = new Tone.FeedbackDelay({ delayTime: userDelayTime });
+    
+        // LFO
+        const reverbWetLFO = new Tone.LFO({
+            frequency: 0.1,
+            min: 0.0,
+            max: 1.0,
+        });
+        reverbWetLFO.connect(reverb.wet).start();
+    
+        const delayFeedbackLFO = new Tone.LFO({
+            frequency: 0.2,
+            min: 0.1,
+            max: 0.9,
+        });
+        delayFeedbackLFO.connect(feedbackDelay.feedback).start();
+    
+        // ✅ 链接音频处理链条
+        player.connect(pitchShift);
+        pitchShift.connect(bitCrusher);
+        bitCrusher.connect(feedbackDelay);
+        feedbackDelay.connect(reverb);
+        reverb.toDestination();
+    
+        player.start(0);
+        Tone.Transport.start();
     }, offlineDuration);
-  
+
     console.log("✅ Offline rendering complete. Duration:", renderedBuffer.duration);
-  
+
     // 4) Convert renderedBuffer to WAV
     const processedAudioBlob = await bufferToBlob(renderedBuffer);
     if (!processedAudioBlob || processedAudioBlob.size === 0) {
-      console.error("❌ Offline rendering produced an empty blob!");
-      return;
+        console.error("❌ Offline rendering produced an empty blob!");
+        return;
     }
     console.log("✅ Got a processed WAV blob from offline render:", processedAudioBlob.size, "bytes");
-  
+
     // 5) Store the processed audio in Firestore
-    storeAudioInFirestore(processedAudioBlob);
-  }
-  
+    storeAudioInFirestore(processedAudioBlob, text);
+}
+
 
 
 
 //存储 Base64 到 Firestore
-async function storeAudioInFirestore(audioBlob) {
+async function storeAudioInFirestore(audioBlob, text = "") {
     console.log("📢 进入 storeAudioInFirestore...");
 
     if (!audioBlob || audioBlob.size === 0) {
@@ -428,7 +420,7 @@ async function storeAudioInFirestore(audioBlob) {
         try {
             console.log("🚀 尝试存入 Firestore...");
             const docRef = await addDoc(collection(db, "dream_bubbles"), {
-                text: "🎵 变声录音",
+                text: text || "🎵 变声录音",
                 audioBase64: base64Audio,
                 timestamp: new Date()
             });
@@ -441,97 +433,19 @@ async function storeAudioInFirestore(audioBlob) {
 }
 
 
-// 🎈 让泡泡飘动
-function moveBubble(bubble) {
-    let x = parseFloat(bubble.style.left);
-    let y = parseFloat(bubble.style.top);
-    let speedX = (Math.random() - 0.5) * 0.5; // 让泡泡左右移动
-    let speedY = (Math.random() - 0.5) * 0.5; // 让泡泡上下移动
-
-    function animate() {
-        x += speedX;
-        y += speedY;
-
-        if (x <= 0 || x + bubble.offsetWidth >= window.innerWidth) speedX *= -1;
-        if (y <= 0 || y + bubble.offsetHeight >= window.innerHeight) speedY *= -1;
-
-        bubble.style.left = `${x}px`;
-        bubble.style.top = `${y}px`;
-
-        requestAnimationFrame(animate);
-    }
-
-    animate();
-}
-
-// 🗑 泡泡破裂后碎片掉落
-function decayBubble(bubble, text, audioURL) {
-    bubble.remove();
-
-    if (text) {
-        const words = splitText(text);
-        words.forEach(word => {
-            let junk = document.createElement("div");
-            junk.classList.add("junk");
-            junk.textContent = word;
-            document.getElementById("junkyard").appendChild(junk);
-            randomScatter(junk);
-        });
-    }
-
-    if (audioURL) {
-        const audioElement = document.createElement("audio");
-        audioElement.src = audioURL;
-        audioElement.controls = true;
-        audioElement.style.width = "120px";
-
-        let junkAudio = document.createElement("div");
-        junkAudio.classList.add("junk");
-        junkAudio.appendChild(audioElement);
-
-        document.getElementById("junkyard").appendChild(junkAudio);
-        randomScatter(junkAudio);
-    }
-}
-
-// 🎇 让碎片散落
-function randomScatter(element) {
-    element.style.position = "absolute";
-
-    // 让碎片随机掉落到底部
-    const x = Math.random() * (window.innerWidth - 50);
-    const y = window.innerHeight - Math.random() * 50;
-
-    element.style.left = `${x}px`;
-    element.style.top = `${y}px`;
-
-    // 设置随机旋转角度
-    element.style.transform = `rotate(${Math.random() * 30 - 15}deg)`;
-
-    // 让碎片从上面慢慢掉落到底部
-    element.style.opacity = "0";
-    document.body.appendChild(element);
-
-    setTimeout(() => {
-        element.style.opacity = "1";
-        element.style.transition = "top 0.8s ease-in, opacity 0.8s ease-in";
-        element.style.top = `${window.innerHeight - Math.random() * 100}px`;
-    }, 100);
-}
-
 //helper function to delete bubbles
 async function deleteBubbleDoc(docId, bubbleElement) {
     try {
-      console.log("🗑 Deleting doc ID:", docId);
-      await deleteDoc(doc(db, "dream_bubbles", docId));
-      console.log("✅ Successfully deleted doc:", docId);
-  
-      // Remove the bubble from the page
-      bubbleElement.remove();
+        console.log("🗑 Deleting doc ID:", docId);
+        await deleteDoc(doc(db, "dream_bubbles", docId));
+        console.log("✅ Successfully deleted doc:", docId);
+
+        // Remove the bubble from the page
+        bubbleElement.remove();
     } catch (error) {
-      console.error("❌ Failed to delete doc:", docId, error);
+        console.error("❌ Failed to delete doc:", docId, error);
     }
-  }
+}
 
 // 🔄 页面加载完成
 window.onload = function () {
