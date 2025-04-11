@@ -1,20 +1,23 @@
 .navbar {
     position: fixed;
     top: 0;
-    left: 0;
     width: 100%;
     background-color: #fff;
-    border-bottom: 2px solid #444;
-    padding: 10px 20px;
-    z-index: 999;
-    display: flex;
-    gap: 20px;
+    border-bottom: 3px solid #888;
+    text-align: center;
+    z-index: 1000;
   }
   
-  
   .navbar a {
+
     text-decoration: none;
     color: #333;
-    font-size: 12px;
+  }
+  
+  .content-wrapper {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+
   }
   
