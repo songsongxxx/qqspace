@@ -16,13 +16,14 @@
 
         body {
             font-family: 'Press Start 2P', monospace;
-  background-color: #f5f5f5;
-  color: #333;
-  display: flex;
-  flex-direction: row;
-  height: 100vh;
+            background-color: #f5f5f5;
+            color: #333;
+            display: flex;
+            flex-direction: row;
+            height: 100vh;
 
-  padding-top: 60px; /* ✨ 增加这个，让内容避开导航栏 */
+            padding-top: 60px;
+            /* ✨ 增加这个，让内容避开导航栏 */
         }
 
         .poem-section {
@@ -106,40 +107,40 @@
 </head>
 
 <body>
-        <!-- 🌟 导航栏 -->
-        <div class="navbar">
-            <a href="index.html">index</a>
-            <a href="dream.html">dream</a>
-            <a href="qq_space.html">qq space</a>
-          </div>
-        
-          <div class="content-wrapper">
-            <div class="chat-sidebar">
-              <h2>Friends Online</h2>
-              <div id="friendList"></div>
-              <div class="add-button" onclick="openModal()">+ Add Friend</div>
-            </div>
-        
-            <div class="poem-section">
-              <h1>Daydream</h1>
-              <div class="typing-container" id="typewriter"></div><span class="cursor">|</span>
-            </div>
-
-    <div class="overlay" id="overlay"></div>
-    <div class="modal" id="modal">
-        <h3>Add a Friend</h3>
-        <input type="text" id="nameInput" placeholder="Name"><br>
-        <div class="modal-buttons">
-            <button onclick="addFriend()">Add</button>
-            <button onclick="closeModal()">Cancel</button>
-        </div>
+    <!-- 🌟 导航栏 -->
+    <div class="navbar">
+        <a href="index.html">index</a>
+        <a href="dream.html">dream</a>
+        <a href="qq_space.html">qq space</a>
     </div>
 
-    <script>
-        const SHEET_API_URL = 'https://script.google.com/macros/s/AKfycbxkDUFis5vO8xGIK9NtXptAFyIL1GGCz3j835qB03wNMJhI_I21X-ckPx6rKNe6UHs3Bw/exec';
+    <div class="content-wrapper">
+        <div class="chat-sidebar">
+            <h2>Friends Online</h2>
+            <div id="friendList"></div>
+            <div class="add-button" onclick="openModal()">+ Add Friend</div>
+        </div>
 
-        // 打字机效果
-        const text = `Daydream
+        <div class="poem-section">
+            <h1>Daydream</h1>
+            <div class="typing-container" id="typewriter"></div><span class="cursor">|</span>
+        </div>
+
+        <div class="overlay" id="overlay"></div>
+        <div class="modal" id="modal">
+            <h3>Add a Friend</h3>
+            <input type="text" id="nameInput" placeholder="Name"><br>
+            <div class="modal-buttons">
+                <button onclick="addFriend()">Add</button>
+                <button onclick="closeModal()">Cancel</button>
+            </div>
+        </div>
+
+        <script>
+            const SHEET_API_URL = 'https://script.google.com/macros/s/AKfycby-glYMFZnT_JQ1g3c-eo_E08u45Gdqe_W7BPpHxmf6ar4RqYkF2XerqxN9vtKb7OcgSA/exec';
+
+            // 打字机效果
+            const text = `Daydream
 
 Those "overly sentimental" moments,
 Those "insignificant" fragments of time.
@@ -159,61 +160,69 @@ Feel the immeasurable touches between myself and the surroundings.
 I am a wasteland,
 Piled high with daydreams.`;
 
-        let i = 0;
-        const speed = 40;
-        const typewriter = document.getElementById("typewriter");
+            let i = 0;
+            const speed = 40;
+            const typewriter = document.getElementById("typewriter");
 
-        function typeText() {
-            if (i < text.length) {
-                typewriter.textContent += text.charAt(i);
-                i++;
-                setTimeout(typeText, speed);
+            function typeText() {
+                if (i < text.length) {
+                    typewriter.textContent += text.charAt(i);
+                    i++;
+                    setTimeout(typeText, speed);
+                }
             }
-        }
-        typeText();
+            typeText();
 
-        // 弹窗控制
-        function openModal() {
-            console.log("🔍 openModal called");
-            document.getElementById('modal').style.display = 'block';
-            document.getElementById('overlay').style.display = 'block';
-        }
+            // 弹窗控制
+            function openModal() {
+                console.log("🔍 openModal called");
+                document.getElementById('modal').style.display = 'block';
+                document.getElementById('overlay').style.display = 'block';
+            }
 
-        function closeModal() {
-            document.getElementById('modal').style.display = 'none';
-            document.getElementById('overlay').style.display = 'none';
-        }
+            function closeModal() {
+                document.getElementById('modal').style.display = 'none';
+                document.getElementById('overlay').style.display = 'none';
+            }
 
-        // 添加好友
-        function addFriend() {
-            const name = document.getElementById('nameInput').value;
-            if (!name) return;
+            // 添加好友
+            function addFriend() {
+                const name = document.getElementById('nameInput').value;
+                if (!name) return;
 
-            fetch(SHEET_API_URL, {
-                method: 'POST',
-                body: JSON.stringify({ name }),
-                headers: { 'Content-Type': 'application/json' }
-            }).then(() => {
-                closeModal();
-                alert('Name submitted! Please refresh later to see it.');
-            }).catch(err => {
-                console.error("🚨 Submission failed", err);
-                alert("Error submitting friend.");
-            });
-        }
+                fetch(SHEET_API_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({ name }),
+                    headers: { 'Content-Type': 'application/json' }
+                })
+                    .then(() => {
+                        closeModal();
+                        alert('成功添加，请刷新看看！');
+                    })
+                    .catch(err => {
+                        console.error("🚨 Submission failed", err);
+                        alert("提交失败！");
+                    });
+            }
 
-        // 加载好友列表
-        fetch(SHEET_API_URL)
-            .then(res => res.json())
-            .then(data => {
-                const container = document.getElementById('friendList');
-                container.innerHTML = '';
-                data.forEach(friend => {
-                    const friendHTML = `<div class='friend'><span>${friend.name}</span></div>`;
-                    container.insertAdjacentHTML('beforeend', friendHTML);
-                });
-            })
-    </script>
+            function loadFriends() {
+                fetch(SHEET_API_URL)
+                    .then(res => res.json())
+                    .then(data => {
+                        const container = document.getElementById('friendList');
+                        container.innerHTML = '';
+                        data.forEach(friend => {
+                            const friendHTML = `<div class='friend'><span>${friend.name}</span></div>`;
+                            container.insertAdjacentHTML('beforeend', friendHTML);
+                        });
+                    })
+                    .catch(err => {
+                        console.error("🚨 Load failed", err);
+                    });
+            }
+
+            window.onload = loadFriends;
+        </script>
 </body>
 
 </html>
