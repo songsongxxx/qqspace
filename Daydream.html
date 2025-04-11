@@ -20,21 +20,21 @@
             color: #333;
             display: flex;
             flex-direction: row;
-            height: 100vh;
+            /*height: 100vh;*/
 
-            padding-top: 60px;
+            /*padding-top: 60px;
             /* ✨ 增加这个，让内容避开导航栏 */
         }
 
         .poem-section {
-            flex: 2;
+            flex: 4;
             padding: 40px;
             overflow-y: auto;
             background: #fff;
         }
 
         .typing-container {
-            font-size: 14px;
+            font-size: 12px;
             line-height: 1.8;
             white-space: pre-line;
         }
@@ -45,12 +45,12 @@
             border-right: 3px solid #888;
             display: flex;
             flex-direction: column;
-            padding: 20px;
+            padding: 40px;
         }
 
         .chat-sidebar h2 {
-            font-size: 16px;
-            margin-bottom: 20px;
+            font-size: 12px;
+            margin-bottom: 10px;
         }
 
         .friend {
@@ -124,14 +124,14 @@
 
         <div class="overlay" id="overlay"></div>
         <div class="modal" id="modal">
-            <h3>Add a Friend</h3>
+            <h1>Add a Friend</h1>
             <input type="text" id="nameInput" placeholder="Name"><br>
             <div class="modal-buttons">
                 <button onclick="addFriend()">Add</button>
                 <button onclick="closeModal()">Cancel</button>
             </div>
         </div>
-        
+
         <div class="poem-section">
             <h1>Daydream</h1>
             <div class="typing-container" id="typewriter"></div><span class="cursor">|</span>
