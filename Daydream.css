@@ -1,25 +1,20 @@
-/* 导航栏 */
 .navbar {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
-    backdrop-filter: blur(10px);
+    background-color: #fff;
+    border-bottom: 2px solid #444;
+    padding: 10px 20px;
+    z-index: 999;
     display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-wrap: wrap;
-    padding: 10px 0;
-    z-index: 100;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-    font-size: clamp(12px, 1.5vw, 18px);
-}
-
-.navbar a {
-    color: rgb(228, 226, 226);
+    gap: 20px;
+  }
+  
+  
+  .navbar a {
     text-decoration: none;
-    padding: clamp(6px, 1vw, 12px) clamp(8px, 1.5vw, 16px);
-    font-size: clamp(12px, 1.5vw, 18px);
-    font-weight: 500;
-    transition: 0.3s;
-}
+    color: #333;
+    font-size: 12px;
+  }
+  
