@@ -128,7 +128,26 @@
         const SHEET_API_URL = 'https://script.google.com/macros/s/AKfycbxkDUFis5vO8xGIK9NtXptAFyIL1GGCz3j835qB03wNMJhI_I21X-ckPx6rKNe6UHs3Bw/exec';
 
         // 打字机效果
-        const text = Daydream\n\nThose \"overly sentimental\" moments,\nThose \"insignificant\" fragments of time.\nI am an emotional trash bin,\nCollecting only the daydreams that are not allowed.\n\nIn an era of maximum output,\nMy fantasies have become noise,\nAnd my body, a miscalculation.\n\nI just want to—\nJust quietly—\nFeel my body,\nFeel the blurred waves inside me,\nFeel the immeasurable touches between myself and the surroundings.\n\nI am a wasteland,\nPiled high with daydreams.;
+        const text = `Daydream
+
+Those "overly sentimental" moments,
+Those "insignificant" fragments of time.
+I am an emotional trash bin,
+Collecting only the daydreams that are not allowed.
+
+In an era of maximum output,
+My fantasies have become noise,
+And my body, a miscalculation.
+
+I just want to—
+Just quietly—
+Feel my body,
+Feel the blurred waves inside me,
+Feel the immeasurable touches between myself and the surroundings.
+
+I am a wasteland,
+Piled high with daydreams.`;
+
         let i = 0;
         const speed = 40;
         const typewriter = document.getElementById("typewriter");
@@ -179,12 +198,10 @@
                 const container = document.getElementById('friendList');
                 container.innerHTML = '';
                 data.forEach(friend => {
-                    const friendHTML = <div class='friend'><span>${friend.name}</span></div>;
+                    const friendHTML = `<div class='friend'><span>${friend.name}</span></div>`;
                     container.insertAdjacentHTML('beforeend', friendHTML);
                 });
-            }).catch(err => {
-                console.error("🚨 Load failed", err);
-            });
+            })
     </script>
 </body>
 
