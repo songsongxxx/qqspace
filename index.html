@@ -38,8 +38,6 @@
             overflow: hidden;
             z-index: 200;
             /* 👈 这个是关键！比 typing-container 更高 */
-            pointer-events: none;
-            /* 保证泡泡不阻挡打字互动（可选） */
         }
 
         /* 泡泡设计 */
@@ -133,8 +131,6 @@
             text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.8);
             font-size: 20px;
             line-height: 1.6;
-            /*pointer-events: none;
-             防止挡住泡泡交互 */
         }
 
         @media (max-width: 768px) {
