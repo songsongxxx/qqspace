@@ -115,21 +115,27 @@
             background: rgba(0, 0, 0, 0.3);
             z-index: 99;
         }
+
+        .friend {
+    background-color: #fff;
+    border: 2px solid #444;
+    margin-bottom: 0.75rem;
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    box-shadow: 2px 2px 0 #888;
+    font-size: 0.9rem;
+}
+
+
     </style>
 
-
-    <form
-        action="https://docs.google.com/forms/d/e/1FAIpQLScJv8jr3-6HaN4TqZzEqgUAs2pTqsvI3Gr-Ub8U6iaqI7Bpqg/viewform?usp=dialog"
-        method="POST" target="hidden_iframe" onsubmit="submitted=true;">
-        <input type="text" name="entry.1234567890" placeholder="Your name">
-        <button type="submit">Submit</button>
-    </form>
-    <iframe name="hidden_iframe" style="display:none;"></iframe>
 
 
 </head>
 
 <body>
+
+
     <!-- 🌟 导航栏 -->
     <div class="navbar">
         <a href="index.html">index</a>
@@ -144,7 +150,8 @@
             <div class="add-button" onclick="openModal()">+ Add Friend</div>
         </div>
 
-
+        <div class='friend'><span>name</span></div>
+        <div id="friendList"></div>
         <div class="overlay" id="overlay"></div>
         <div class="modal" id="modal">
             <h1>Add a Friend</h1>
@@ -252,6 +259,8 @@ Piled high with daydreams.`;
             }
 
             window.onload = loadFriends;
+
+
         </script>
 </body>
 
