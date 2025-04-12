@@ -131,53 +131,47 @@
         } from "./dreamscript.js";
 
         document.addEventListener("DOMContentLoaded", () => {
-            console.log("✅ 页面加载完成，绑定事件");
+        console.log("✅ 页面加载完成，绑定事件");
 
-            loadBubbles();
+        loadBubbles(); // 只调用这句就够了！
 
-            const bubbleTextInput = document.getElementById("bubbleText");
-            const bubbleBtn = document.getElementById("bubbleBtn");
-            const recordBtn = document.getElementById("recordBtn");
-            const stopRecordBtn = document.getElementById("stopRecordBtn");
-            const testToneBtn = document.getElementById("testToneBtn");
+        const bubbleTextInput = document.getElementById("bubbleText");
+        const bubbleBtn = document.getElementById("bubbleBtn");
+        const recordBtn = document.getElementById("recordBtn");
+        const stopRecordBtn = document.getElementById("stopRecordBtn");
+        const testToneBtn = document.getElementById("testToneBtn");
 
-            if (!bubbleTextInput || !bubbleBtn || !recordBtn || !stopRecordBtn) {
-                console.error("❌ 绑定事件失败，检查 HTML 是否包含正确的 ID！");
+        if (!bubbleTextInput || !bubbleBtn || !recordBtn || !stopRecordBtn) {
+            console.error("❌ 绑定事件失败，检查 HTML 是否包含正确的 ID！");
+            return;
+        }
+
+        bubbleBtn.addEventListener("click", async () => {
+            const text = bubbleTextInput.value.trim();
+            if (!text) {
+                console.error("❌ 用户输入为空，不存入 Supabase");
                 return;
             }
+            console.log("📌 用户输入:", text);
 
-            bubbleBtn.addEventListener("click", async () => {
-                const text = bubbleTextInput.value.trim();
-                if (!text) {
-                    console.error("❌ 用户输入为空，不存入 Supabase");
-                    return;
-                }
-                console.log("📌 用户输入:", text);
+            await saveBubbleToSupabase(text, null);
+        });
 
-                await saveBubbleToSupabase(text, null);
-            });
+        recordBtn.addEventListener("click", () => {
+            console.log("🎙 开始录音...");
+            startRecording();
+        });
 
-            recordBtn.addEventListener("click", () => {
-                console.log("🎙 开始录音...");
-                startRecording();
-            });
+        stopRecordBtn.addEventListener("click", () => {
+            console.log("🛑 停止录音...");
+            stopRecording();
+        });
 
-            stopRecordBtn.addEventListener("click", () => {
-                console.log("🛑 停止录音...");
-                stopRecording();
-            });
-
-            testToneBtn.addEventListener("click", async () => {
-                console.log("🔊 试听 Tone 效果");
-                const synth = new Tone.Synth().toDestination();
-                synth.triggerAttackRelease("C4", "1n");
-            });
-
-            // 🛑 停止录音
-            stopRecordBtn.addEventListener("click", () => {
-                console.log("🛑 停止录音...");
-                stopRecording();
-            });
+        testToneBtn.addEventListener("click", async () => {
+            console.log("🔊 试听 Tone 效果");
+            const synth = new Tone.Synth().toDestination();
+            synth.triggerAttackRelease("C4", "1n");
+        });
         });
     </script>
 
