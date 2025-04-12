@@ -199,7 +199,7 @@ async function bufferToBlob(audioBuffer) {
 
 
 
-async function bufferToBlob(audioBuffer) {
+/*async function bufferToBlob(audioBuffer) {
     console.log("🔄 进入 `bufferToBlob()`，开始处理音频...");
     let processedBlob = await bufferToWavBlob(audioBuffer);
     return processedBlob;
@@ -602,4 +602,4 @@ async function deleteBubbleDoc(docId, bubbleElement) {
 // 🔄 页面加载完成
 window.onload = function () {
     console.log("📌 页面加载完成，开始监听 Firestore 数据...");
-};
+};*/
