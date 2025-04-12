@@ -150,7 +150,7 @@
         </div>
 
         <script>
-            const SHEET_API_URL = 'https://script.google.com/macros/s/AKfycbxxBuQG2mguasYocexvK1yeFOmciz_2qlFnHuTh3GTezNCMmLT2_cgfD47DoRe_pCWOMg/exec';
+            const SHEET_API_URL = 'https://script.google.com/macros/s/AKfycbydoNE36I9_EWIsHpyT6P2V4-GuTpChKx4qs5GEKX1SPTXAa2pcawGKsGdpvZYSwJSYeg/exec';
 
             // 打字机效果
             const text = `Daydream
@@ -204,10 +204,11 @@ Piled high with daydreams.`;
                 if (!name) return;
 
                 fetch(SHEET_API_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ name: "someone" })
-                })
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ name: "someone" })
+})
+
                     .then(() => {
                         closeModal();
                         alert('成功添加，请刷新看看！');
