@@ -53,7 +53,7 @@
     </div>
 
     <script>
-        
+
         // 初始化 Three.js 场景
         const scene = new THREE.Scene();
         const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -126,22 +126,21 @@
             createBubble,
             startRecording,
             stopRecording,
-            saveBubbleToFirestore,
-            loadBubbles // ✅ 加上它
+            saveBubbleToSupabase,
+            loadBubbles
         } from "./dreamscript.js";
 
         document.addEventListener("DOMContentLoaded", () => {
             console.log("✅ 页面加载完成，绑定事件");
 
-            // ✅ 加上这句！
             loadBubbles();
 
             const bubbleTextInput = document.getElementById("bubbleText");
             const bubbleBtn = document.getElementById("bubbleBtn");
             const recordBtn = document.getElementById("recordBtn");
             const stopRecordBtn = document.getElementById("stopRecordBtn");
+            const testToneBtn = document.getElementById("testToneBtn");
 
-            // 🔥 确保 HTML 元素存在
             if (!bubbleTextInput || !bubbleBtn || !recordBtn || !stopRecordBtn) {
                 console.error("❌ 绑定事件失败，检查 HTML 是否包含正确的 ID！");
                 return;
@@ -150,19 +149,28 @@
             bubbleBtn.addEventListener("click", async () => {
                 const text = bubbleTextInput.value.trim();
                 if (!text) {
-                    console.error("❌ 用户输入为空，不存入 Firestore");
+                    console.error("❌ 用户输入为空，不存入 Supabase");
                     return;
                 }
                 console.log("📌 用户输入:", text);
 
-                // Now we can call saveBubbleToFirestore from here
-                await saveBubbleToFirestore(text, null);
+                await saveBubbleToSupabase(text, null);
             });
 
-            // 🎤 开始录音
             recordBtn.addEventListener("click", () => {
                 console.log("🎙 开始录音...");
                 startRecording();
+            });
+
+            stopRecordBtn.addEventListener("click", () => {
+                console.log("🛑 停止录音...");
+                stopRecording();
+            });
+
+            testToneBtn.addEventListener("click", async () => {
+                console.log("🔊 试听 Tone 效果");
+                const synth = new Tone.Synth().toDestination();
+                synth.triggerAttackRelease("C4", "1n");
             });
 
             // 🛑 停止录音

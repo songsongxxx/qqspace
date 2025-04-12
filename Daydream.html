@@ -237,10 +237,10 @@ function loadFriends() {
         .then(data => {
             const container = document.getElementById('friendList');
             container.innerHTML = ''; // 清空旧列表
-            
+
             data.forEach(entry => {
   const friendBox = document.createElement('div');
-  friendBox.classList.add('friend');  // ✅ 应用你已有的样式
+  friendBox.classList.add('friend');  // ✨ 小框框样式
   friendBox.textContent = `${entry.name} - ${entry.timestamp}`;
   container.appendChild(friendBox);
 });

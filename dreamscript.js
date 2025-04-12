@@ -1,50 +1,202 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.7/firebase-app.js";
-import {
-    getFirestore,
-    collection,
-    addDoc,
-    onSnapshot,
-    doc,
-    deleteDoc,
-    getDocs // <-- this is important
-} from "https://www.gstatic.com/firebasejs/9.6.7/firebase-firestore.js";
+// dreamscript.js
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
 
 
-// 🔥 Firebase 配置
-const firebaseConfig = {
-    apiKey: "AIzaSyCa4PyEJPxS6Yavfc-f-SxlYvq_6yOUngQ",
-    authDomain: "dream-fde5e.firebaseapp.com",
-    projectId: "dream-fde5e",
-    storageBucket: "dream-fde5e.appspot.com",
-    messagingSenderId: "509764309119",
-    appId: "1:509764309119:web:20191ff663598d0eb1ef4a",
-    measurementId: "G-7VPXZGEQ00"
-};
+// 🪪 替换为你自己的 Supabase 项目地址和 Key
+const supabaseUrl = 'https://uytyxroguktgsymkkoke.supabase.co';
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV5dHl4cm9ndWt0Z3N5bWtrb2tlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDI2NDc2MDQsImV4cCI6MjA1ODIyMzYwNH0.Yn6-gOjT3ZRJvAaO-czhb0IME5JP5g2IEi97TbAA_BU';
+const supabase = createClient(supabaseUrl, supabaseKey);
 
-// 🚀 初始化 Firebase
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-console.log("✅ Firebase 初始化完成");
 
 let mediaRecorder;
-let recordingStream;
 let allChunks = [];
-let isRecording = false;
+let recordingStream;
+
+
+// 保存文字 + Base64音频到 Supabase
+export async function saveBubbleToSupabase(text, audioBase64 = null) {
+    if (!text || text.trim() === "") return;
+
+    const { data, error } = await supabase.from('dreams').insert([
+        { text: text, audio_url: audioBase64, created_at: new Date().toISOString() }
+    ]);
+
+    if (error) {
+        console.error("❌ 存储失败:", error.message);
+    } else {
+        console.log("✅ 已存入 Supabase:", data);
+    }
+}
+
+// 录音处理
+export function startRecording() {
+    navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
+        recordingStream = stream;
+        allChunks = [];
+        mediaRecorder = new MediaRecorder(stream);
+        mediaRecorder.ondataavailable = e => e.data.size > 0 && allChunks.push(e.data);
+        mediaRecorder.onstop = async () => {
+            const fullBlob = new Blob(allChunks, { type: 'audio/webm' });
+            if (fullBlob.size === 0) return;
+
+            const text = document.getElementById("bubbleText")?.value.trim() || "";
+            processAudioWithTone(fullBlob, text);
+        };
+        mediaRecorder.start();
+    });
+}
+
+export function stopRecording() {
+    if (mediaRecorder && recordingStream) {
+        mediaRecorder.stop();
+        recordingStream.getTracks().forEach(t => t.stop());
+    }
+}
+
+// Tone.js 变声处理 ➜ 转为 Base64 存储
+async function processAudioWithTone(audioBlob, text = "") {
+    await Tone.start();
+    const arrayBuffer = await audioBlob.arrayBuffer();
+    const originalBuffer = await Tone.context.decodeAudioData(arrayBuffer);
+
+    const pitch = parseFloat(document.getElementById("pitchSlider").value);
+    const reverbT = parseFloat(document.getElementById("reverbSlider").value);
+    const bit = parseInt(document.getElementById("bitSlider").value);
+    const delayT = parseFloat(document.getElementById("delaySlider").value);
+
+    const rendered = await Tone.Offline(() => {
+        const player = new Tone.Player(originalBuffer);
+        const chain = [
+            new Tone.PitchShift(pitch),
+            new Tone.BitCrusher(bit),
+            new Tone.FeedbackDelay(delayT),
+            new Tone.Reverb({ decay: reverbT }),
+        ];
+        player.chain(...chain, Tone.Destination);
+        player.start(0);
+    }, originalBuffer.duration + 1);
+
+    const processedBlob = await bufferToBlob(rendered);
+    const base64 = await blobToBase64(processedBlob);
+    await saveBubbleToSupabase(text || "🎵 变声录音", base64);
+}
+
+// 加载泡泡
+export async function loadBubbles() {
+    const container = document.getElementById("bubbleContainer");
+    const { data, error } = await supabase
+        .from("dreams")
+        .select("*")
+        .order("created_at", { ascending: false })
+        .limit(10);
+
+    if (error) {
+        console.error("❌ 读取失败:", error.message);
+        return;
+    }
+
+    data.forEach(entry => {
+        const bubble = createBubble(entry.id, entry.text, entry.audio_url);
+        container.appendChild(bubble);
+    });
+}
+
+// UI泡泡生成器
+export function createBubble(id, text, audioBase64 = null) {
+    const bubble = document.createElement("div");
+    bubble.classList.add("bubble");
+
+    if (!audioBase64) {
+        bubble.textContent = text;
+    } else {
+        const audio = document.createElement("audio");
+        audio.src = audioBase64;
+        audio.controls = true;
+        audio.style.width = "120px";
+        bubble.appendChild(audio);
+    }
+
+    const del = document.createElement("button");
+    del.textContent = "X";
+    del.onclick = () => deleteBubble(id, bubble);
+    bubble.appendChild(del);
+
+    bubble.style.left = `${Math.random() * (window.innerWidth - 120)}px`;
+    bubble.style.top = `${Math.random() * (window.innerHeight - 80)}px`;
+
+    return bubble;
+}
+
+// 删除泡泡
+async function deleteBubble(id, el) {
+    const { error } = await supabase.from("dreams").delete().eq("id", id);
+    if (error) console.error("❌ 删除失败:", error.message);
+    else el.remove();
+}
+
+// 小工具：blob 转 base64
+function blobToBase64(blob) {
+    return new Promise((res, rej) => {
+        const r = new FileReader();
+        r.onloadend = () => res(r.result);
+        r.onerror = rej;
+        r.readAsDataURL(blob);
+    });
+}
+
+// 小工具：音频缓冲区转 blob（WAV）
+async function bufferToBlob(audioBuffer) {
+    const numOfChannels = audioBuffer.numberOfChannels;
+    const length = audioBuffer.length * numOfChannels * 2 + 44;
+    const buffer = new ArrayBuffer(length);
+    const view = new DataView(buffer);
+    const channels = [];
+
+    const writeStr = (v, offset, str) => {
+        for (let i = 0; i < str.length; i++) v.setUint8(offset + i, str.charCodeAt(i));
+    };
+
+    writeStr(view, 0, "RIFF");
+    view.setUint32(4, length - 8, true);
+    writeStr(view, 8, "WAVE");
+    writeStr(view, 12, "fmt ");
+    view.setUint32(16, 16, true);
+    view.setUint16(20, 1, true);
+    view.setUint16(22, numOfChannels, true);
+    view.setUint32(24, audioBuffer.sampleRate, true);
+    view.setUint32(28, audioBuffer.sampleRate * 2 * numOfChannels, true);
+    view.setUint16(32, numOfChannels * 2, true);
+    view.setUint16(34, 16, true);
+    writeStr(view, 36, "data");
+    view.setUint32(40, length - 44, true);
+
+    for (let i = 0; i < numOfChannels; i++) {
+        channels.push(audioBuffer.getChannelData(i));
+    }
+
+    let offset = 44;
+    for (let i = 0; i < audioBuffer.length; i++) {
+        for (let j = 0; j < numOfChannels; j++) {
+            let sample = Math.max(-1, Math.min(1, channels[j][i]));
+            view.setInt16(offset, sample < 0 ? sample * 0x8000 : sample * 0x7FFF, true);
+            offset += 2;
+        }
+    }
+
+    return new Blob([view], { type: "audio/wav" });
+}
+
+
+
+
+
+
+
+// 🚀 初始化 Firebase
+
 
 // **监听 Firestore，并生成泡泡（但不存入 Firestore）**
-onSnapshot(collection(db, "dream_bubbles"), (snapshot) => {
-    snapshot.docChanges().forEach(change => {
-        if (change.type === "added") {
-            // retrieve doc id + data
-            const docId = change.doc.id;           // <--- doc ID from Firestore
-            const data = change.doc.data();
 
-            console.log("📌 Firestore 新增数据:", data);
-
-            createBubble(docId, data.text, data.audioBase64);
-        }
-    });
-});
 
 
 async function bufferToBlob(audioBuffer) {
