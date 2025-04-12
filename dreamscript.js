@@ -28,8 +28,10 @@ export async function saveBubbleToSupabase(text, audioBase64 = null) {
     } else {
         console.log("✅ 已存入 Supabase:", data);
         // ✅ 新增：立即生成泡泡
-        if (data && data[0]) {
-            createAndAppendBubble(data[0].text, data[0].audio_url);
+        if (!error) {
+            console.log("✅ 已存入 Supabase:", data);
+            const bubbleText = text || "🎵 变声录音";
+            createAndAppendBubble(bubbleText, audioBase64); // 直接用传入的数据生成泡泡
         }
     }
 }
@@ -106,7 +108,7 @@ async function processAudioWithTone(audioBlob, text = "") {
 }
 
 
-//数据库中实际存进去的是 text，没有 audio_url。
+// 创建泡泡的地方
 function createAndAppendBubble(text, audioBase64) {
     const bubble = createBubble(null, text, audioBase64);
     document.getElementById("bubbleContainer").appendChild(bubble);
@@ -122,23 +124,23 @@ export async function loadBubbles() {
         .order("created_at", { ascending: false })
         .limit(10);
 
-
     if (error) {
         console.error("❌ 读取失败:", error.message);
         return;
     }
 
+    console.log("📦 Supabase 返回数据:", data);
+
     data.forEach(entry => {
-        console.log("🧼 正在创建泡泡:", entry.text, entry.audio_url?.substring?.(0, 30));
+        console.log("🧼 正在创建泡泡:", entry.text, entry.audio_url);
+
+        if (!entry.audio_url && entry.text) {
+            console.warn("⚠️ 只发现了文字泡泡（无音频）");
+        }
+
         const bubble = createBubble(entry.id, entry.text, entry.audio_url);
-        console.log("🟢 createBubble 返回：", bubble);
         container.appendChild(bubble);
-    });
-
-    console.log("🌀 正在从 Supabase 加载泡泡...");
-
-    
-    
+    });   
 }
 
 export function createBubble(id, text, audioBase64 = null) {
@@ -154,7 +156,9 @@ export function createBubble(id, text, audioBase64 = null) {
     bubble.style.fontFamily = "'Press Start 2P', monospace";
 
     if (!audioBase64) {
-        bubble.textContent = text;
+        const textElem = document.createElement("div");
+        textElem.textContent = text;
+        bubble.appendChild(textElem);
     } else {
         const audio = document.createElement("audio");
         audio.src = audioBase64;
@@ -162,6 +166,7 @@ export function createBubble(id, text, audioBase64 = null) {
         audio.style.width = "120px";
         bubble.appendChild(audio);
     }
+    
 
     const del = document.createElement("button");
     del.textContent = "X";
