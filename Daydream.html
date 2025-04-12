@@ -229,7 +229,7 @@ Piled high with daydreams.`;
                     });
             }
 
-const SHEET_API_URL = 'https://script.google.com/macros/s/AKfycbxl3qTotPgWlhoGP5Fps4hwBxlHvd_GgXHoA-_TJP1QmuTqP8iPH91NYScaq4C4-vsPyA/exec';
+const SHEET_API_URL = 'https://script.google.com/macros/s/AKfycbzKhZSutWGWqwjVP_D5EtabQRuBEYXazyIg-DA_r1gJba_0qIpOfQs8RDas6XnqabBwkA/exec';
 
 function loadFriends() {
     fetch(SHEET_API_URL)
@@ -238,8 +238,11 @@ function loadFriends() {
             const container = document.getElementById('friendList');
             container.innerHTML = ''; // 清空旧列表
             data.forEach(friend => {
-                const friendHTML = `<div class='friend'><span>${friend.name}</span></div>`;
-                container.insertAdjacentHTML('beforeend', friendHTML);
+                data.forEach(friend => {
+    const friendHTML = `<div class='friend'><span>${friend.name} — ${friend.timestamp}</span></div>`;
+    container.insertAdjacentHTML('beforeend', friendHTML);
+});
+
             });
         })
         .catch(err => {
