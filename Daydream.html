@@ -116,15 +116,6 @@
             z-index: 99;
         }
 
-        .friend {
-    background-color: #fff;
-    border: 2px solid #444;
-    margin-bottom: 0.75rem;
-    padding: 0.75rem;
-    border-radius: 0.5rem;
-    box-shadow: 2px 2px 0 #888;
-    font-size: 0.9rem;
-}
 
 
     </style>
@@ -150,8 +141,6 @@
             <div class="add-button" onclick="openModal()">+ Add Friend</div>
         </div>
 
-        <div class='friend'><span>name</span></div>
-        <div id="friendList"></div>
 
         <div class="overlay" id="overlay"></div>
         <div class="modal" id="modal">
@@ -240,7 +229,7 @@ Piled high with daydreams.`;
                     });
             }
 
-const SHEET_API_URL = 'https://script.google.com/macros/s/AKfycbydoNE36I9_EWIsHpyT6P2V4-GuTpChKx4qs5GEKX1SPTXAa2pcawGKsGdpvZYSwJSYeg/exec';
+const SHEET_API_URL = 'https://script.google.com/macros/s/AKfycbxl3qTotPgWlhoGP5Fps4hwBxlHvd_GgXHoA-_TJP1QmuTqP8iPH91NYScaq4C4-vsPyA/exec';
 
 function loadFriends() {
     fetch(SHEET_API_URL)
