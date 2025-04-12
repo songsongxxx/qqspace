@@ -147,16 +147,16 @@
         }
 
         bubbleBtn.addEventListener("click", async () => {
-            const text = bubbleTextInput.value.trim();
-            if (!text) {
-                console.error("❌ 用户输入为空，不存入 Supabase");
-                return;
-            }
-            console.log("📌 用户输入:", text);
+    const text = bubbleTextInput.value.trim();
+    if (!text) {
+        console.error("❌ 用户输入为空，不存入 Supabase");
+        return;
+    }
+    console.log("📌 用户输入:", text);
 
-            await saveBubbleToSupabase(text, null);
-            loadBubbles(); // Refresh bubbles from Supabase
-        });
+    await saveBubbleToSupabase(text, null); // ⚡️ 自动添加当前泡泡，不要再load全部
+});
+
 
         recordBtn.addEventListener("click", () => {
             console.log("🎙 开始录音...");
