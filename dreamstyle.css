@@ -8,34 +8,47 @@ body {
     height: 100vh;
 }
 
-
+/* toneControls */
 #toneControls {
     position: fixed;
     top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 250px;
-    background: rgba(0, 0, 0, 0.65);
-    color: white;
+    left: 20px; /* 贴近左侧 */
+    transform: translateY(-50%);
+    width: 200px;
+    background: rgba(30, 30, 30, 0.75);
+    color: #fff;
     padding: 16px;
-    border-radius: 12px;
-    box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
-    z-index: 9999;
+    border-radius: 16px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(8px);
     font-family: 'Noto Sans SC', sans-serif;
     font-size: 12px;
-    backdrop-filter: blur(6px);
+    z-index: 9999;
+    border: 1px solid rgba(255, 255, 255, 0.15);
   }
   
   #toneControls label {
     display: block;
-    margin-bottom: 10px;
+    margin-bottom: 12px;
+    font-weight: bold;
+    color: #ddd;
   }
   
   #toneControls input[type="range"] {
     width: 100%;
-  }  
+    margin-top: 4px;
+    accent-color: #ff77cc; /* 甜美的指示色 */
+  }
   
-  .navbar, #controls, #toneControls {
+  #toneControls:hover {
+    background: rgba(40, 40, 40, 0.85);
+    transition: 0.3s;
+  }
+  
+  /* 保证浮层层级 */
+  .navbar,
+  #controls,
+  #toneControls {
     z-index: 1000;
     position: relative;
   }
