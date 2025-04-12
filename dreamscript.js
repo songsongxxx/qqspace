@@ -118,6 +118,8 @@ export async function loadBubbles() {
         const bubble = createBubble(entry.id, entry.text, entry.audio_url);
         container.appendChild(bubble);
     });
+
+    console.log("✅ 所有泡泡已加载完成");
 }
 
 // UI泡泡生成器
