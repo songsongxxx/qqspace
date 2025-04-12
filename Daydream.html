@@ -152,6 +152,7 @@
 
         <div class='friend'><span>name</span></div>
         <div id="friendList"></div>
+
         <div class="overlay" id="overlay"></div>
         <div class="modal" id="modal">
             <h1>Add a Friend</h1>
@@ -239,26 +240,27 @@ Piled high with daydreams.`;
                     });
             }
 
+const SHEET_API_URL = 'https://script.google.com/macros/s/AKfycbydoNE36I9_EWIsHpyT6P2V4-GuTpChKx4qs5GEKX1SPTXAa2pcawGKsGdpvZYSwJSYeg/exec';
 
-            const SHEET_API_URL = 'https://script.google.com/macros/s/AKfycbydoNE36I9_EWIsHpyT6P2V4-GuTpChKx4qs5GEKX1SPTXAa2pcawGKsGdpvZYSwJSYeg/exec';
+function loadFriends() {
+    fetch(SHEET_API_URL)
+        .then(res => res.json())
+        .then(data => {
+            const container = document.getElementById('friendList');
+            container.innerHTML = ''; // 清空旧列表
+            data.forEach(friend => {
+                const friendHTML = `<div class='friend'><span>${friend.name}</span></div>`;
+                container.insertAdjacentHTML('beforeend', friendHTML);
+            });
+        })
+        .catch(err => {
+            console.error("🚨 Load failed", err);
+        });
+}
 
-            function loadFriends() {
-                fetch(SHEET_API_URL)
-                    .then(res => res.json())
-                    .then(data => {
-                        const container = document.getElementById('friendList');
-                        container.innerHTML = '';
-                        data.forEach(friend => {
-                            const friendHTML = `<div class='friend'><span>${friend.name}</span></div>`;
-                            container.insertAdjacentHTML('beforeend', friendHTML);
-                        });
-                    })
-                    .catch(err => {
-                        console.error("🚨 Load failed", err);
-                    });
-            }
+// 让它在页面打开时自动执行
+window.onload = loadFriends;
 
-            window.onload = loadFriends;
 
 
         </script>
