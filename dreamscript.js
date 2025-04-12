@@ -17,16 +17,23 @@ let recordingStream;
 export async function saveBubbleToSupabase(text, audioBase64 = null) {
     console.log("📤 上传内容：", { text, hasAudio: !!audioBase64 });
 
-    const { data, error } = await supabase.from('dreams').insert([
-        { text: text, audio_url: audioBase64, created_at: new Date().toISOString() }
-    ]);
+    const { data, error } = await supabase
+        .from('dreams')
+        .insert([
+            { text: text, audio_url: audioBase64, created_at: new Date().toISOString() }
+        ], { returning: 'representation' }); // 返回插入的内容
 
     if (error) {
         console.error("❌ 存储失败:", error.message);
     } else {
         console.log("✅ 已存入 Supabase:", data);
+        // ✅ 新增：立即生成泡泡
+        if (data && data[0]) {
+            createAndAppendBubble(data[0].text, data[0].audio_url);
+        }
     }
 }
+
 
 
 // 录音处理
@@ -89,7 +96,13 @@ async function processAudioWithTone(audioBlob, text = "") {
 
     const processedBlob = await bufferToBlob(rendered);
     const base64 = await blobToBase64(processedBlob);
+
+    // 存入数据库
     await saveBubbleToSupabase(text || "🎵 变声录音", base64);
+    
+    // ✅ 立即在页面添加泡泡
+    createAndAppendBubble(text || "🎵 变声录音", base64);
+    
 }
 
 
@@ -109,21 +122,36 @@ export async function loadBubbles() {
         .order("created_at", { ascending: false })
         .limit(10);
 
+
     if (error) {
         console.error("❌ 读取失败:", error.message);
         return;
     }
 
     data.forEach(entry => {
+        console.log("🧼 正在创建泡泡:", entry.text, entry.audio_url?.substring?.(0, 30));
         const bubble = createBubble(entry.id, entry.text, entry.audio_url);
+        console.log("🟢 createBubble 返回：", bubble);
         container.appendChild(bubble);
     });
+
+    console.log("🌀 正在从 Supabase 加载泡泡...");
+
+    
+    
 }
 
-// UI泡泡生成器
 export function createBubble(id, text, audioBase64 = null) {
     const bubble = document.createElement("div");
     bubble.classList.add("bubble");
+
+    bubble.style.position = "absolute";
+    bubble.style.zIndex = "1000";
+    bubble.style.background = "rgba(255,255,255,0.85)";
+    bubble.style.border = "1px solid black";
+    bubble.style.borderRadius = "8px";
+    bubble.style.padding = "8px";
+    bubble.style.fontFamily = "'Press Start 2P', monospace";
 
     if (!audioBase64) {
         bubble.textContent = text;
@@ -137,14 +165,20 @@ export function createBubble(id, text, audioBase64 = null) {
 
     const del = document.createElement("button");
     del.textContent = "X";
+    del.style.marginLeft = "5px";
     del.onclick = () => deleteBubble(id, bubble);
     bubble.appendChild(del);
 
-    bubble.style.left = `${Math.random() * (window.innerWidth - 120)}px`;
+    bubble.style.left = `${Math.random() * (window.innerWidth - 140)}px`;
     bubble.style.top = `${Math.random() * (window.innerHeight - 80)}px`;
+
+    console.log("🧪 audioBase64 preview:", audioBase64?.substring?.(0, 30));
 
     return bubble;
 }
+
+
+
 
 // 删除泡泡
 async function deleteBubble(id, el) {
