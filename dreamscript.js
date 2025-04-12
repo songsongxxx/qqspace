@@ -13,9 +13,9 @@ let allChunks = [];
 let recordingStream;
 
 
-// 保存文字 + Base64音频到 Supabase
+// 保存文字 + Base64音频到 Supabase xx
 export async function saveBubbleToSupabase(text, audioBase64 = null) {
-    if (!text || text.trim() === "") return;
+    console.log("📤 上传内容：", { text, hasAudio: !!audioBase64 });
 
     const { data, error } = await supabase.from('dreams').insert([
         { text: text, audio_url: audioBase64, created_at: new Date().toISOString() }
@@ -27,6 +27,7 @@ export async function saveBubbleToSupabase(text, audioBase64 = null) {
         console.log("✅ 已存入 Supabase:", data);
     }
 }
+
 
 // 录音处理
 export function startRecording() {
@@ -53,7 +54,7 @@ export function stopRecording() {
     }
 }
 
-// Tone.js 变声处理 ➜ 转为 Base64 存储
+// Tone.js 变声处理 ➜ 转为 Base64 存储    xxx
 async function processAudioWithTone(audioBlob, text = "") {
     await Tone.start();
     const arrayBuffer = await audioBlob.arrayBuffer();
@@ -64,22 +65,40 @@ async function processAudioWithTone(audioBlob, text = "") {
     const bit = parseInt(document.getElementById("bitSlider").value);
     const delayT = parseFloat(document.getElementById("delaySlider").value);
 
-    const rendered = await Tone.Offline(() => {
-        const player = new Tone.Player(originalBuffer);
-        const chain = [
-            new Tone.PitchShift(pitch),
-            new Tone.BitCrusher(bit),
-            new Tone.FeedbackDelay(delayT),
-            new Tone.Reverb({ decay: reverbT }),
-        ];
-        player.chain(...chain, Tone.Destination);
+    const offlineDuration = originalBuffer.duration + 1;
+
+    const rendered = await Tone.Offline(({ transport }) => {
+        const player = new Tone.Player(originalBuffer).toDestination();
+
+        // 在离线上下文中创建新的音效节点
+        const pitchShift = new Tone.PitchShift({ pitch }).toDestination();
+        const bitCrusher = new Tone.BitCrusher(bit).toDestination();
+        const feedbackDelay = new Tone.FeedbackDelay(delayT).toDestination();
+        const reverb = new Tone.Reverb({ decay: reverbT }).toDestination();
+
+        // 链接音频处理链条（使用新上下文的节点）
+        player.connect(pitchShift);
+        pitchShift.connect(bitCrusher);
+        bitCrusher.connect(feedbackDelay);
+        feedbackDelay.connect(reverb);
+        reverb.toDestination();
+
         player.start(0);
-    }, originalBuffer.duration + 1);
+        transport.start();
+    }, offlineDuration);
 
     const processedBlob = await bufferToBlob(rendered);
     const base64 = await blobToBase64(processedBlob);
     await saveBubbleToSupabase(text || "🎵 变声录音", base64);
 }
+
+
+//数据库中实际存进去的是 text，没有 audio_url。
+function createAndAppendBubble(text, audioBase64) {
+    const bubble = createBubble(null, text, audioBase64);
+    document.getElementById("bubbleContainer").appendChild(bubble);
+}
+
 
 // 加载泡泡
 export async function loadBubbles() {
@@ -134,13 +153,16 @@ async function deleteBubble(id, el) {
     else el.remove();
 }
 
-// 小工具：blob 转 base64
+// 小工具：blob 转 base64 xxx
 function blobToBase64(blob) {
-    return new Promise((res, rej) => {
-        const r = new FileReader();
-        r.onloadend = () => res(r.result);
-        r.onerror = rej;
-        r.readAsDataURL(blob);
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+            if (reader.result) resolve(reader.result);
+            else reject("⚠️ FileReader 读取失败");
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(blob);
     });
 }
 
