@@ -132,7 +132,7 @@ export async function loadBubbles() {
     console.log("📦 Supabase 返回数据:", data);
 
     data.forEach(entry => {
-        console.log("🧼 正在创建泡泡:", entry.text, entry.audio_url);
+        console.log("🧼 正在创建泡泡:", entry.id, entry.text, entry.audio_url);
 
         if (!entry.audio_url && entry.text) {
             console.warn("⚠️ 只发现了文字泡泡（无音频）");
@@ -183,10 +183,13 @@ export function createBubble(id, text, audioBase64 = null) {
 }
 
 
-
-
 // Updated function to delete a bubble from both the page and Supabase
 async function deleteBubble(id, bubbleElement) {
+    if (!id) {
+        console.error("❌ Invalid ID, cannot delete bubble!");
+        return; // Exit the function if ID is invalid
+    }
+
     try {
         console.log("🗑 Deleting doc ID:", id);
 
