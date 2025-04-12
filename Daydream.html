@@ -116,6 +116,17 @@
             z-index: 99;
         }
     </style>
+
+
+    <form
+        action="https://docs.google.com/forms/d/e/1FAIpQLScJv8jr3-6HaN4TqZzEqgUAs2pTqsvI3Gr-Ub8U6iaqI7Bpqg/viewform?usp=dialog"
+        method="POST" target="hidden_iframe" onsubmit="submitted=true;">
+        <input type="text" name="entry.1234567890" placeholder="Your name">
+        <button type="submit">Submit</button>
+    </form>
+    <iframe name="hidden_iframe" style="display:none;"></iframe>
+
+
 </head>
 
 <body>
@@ -150,8 +161,6 @@
         </div>
 
         <script>
-            const SHEET_API_URL = 'https://script.google.com/macros/s/AKfycbydoNE36I9_EWIsHpyT6P2V4-GuTpChKx4qs5GEKX1SPTXAa2pcawGKsGdpvZYSwJSYeg/exec';
-
             // 打字机效果
             const text = `Daydream
 
@@ -198,26 +207,33 @@ Piled high with daydreams.`;
                 document.getElementById('overlay').style.display = 'none';
             }
 
-            // 添加好友
+
+
+
             function addFriend() {
                 const name = document.getElementById('nameInput').value;
                 if (!name) return;
 
-                fetch(SHEET_API_URL, {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({ name: "someone" })
-})
+                const formData = new FormData();
+                formData.append('entry.1552334168', name);
 
+                fetch('https://docs.google.com/forms/d/e/1FAIpQLScJv8jr3-6HaN4TqZzEqgUAs2pTqsvI3Gr-Ub8U6iaqI7Bpqg/formResponse', {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    body: formData
+                })
                     .then(() => {
                         closeModal();
-                        alert('成功添加，请刷新看看！');
+                        alert('已提交到表单！');
                     })
-                    .catch(err => {
-                        console.error("🚨 Submission failed", err);
+                    .catch((err) => {
+                        console.error("🚨 提交失败", err);
                         alert("提交失败！");
                     });
             }
+
+
+            const SHEET_API_URL = 'https://script.google.com/macros/s/AKfycbydoNE36I9_EWIsHpyT6P2V4-GuTpChKx4qs5GEKX1SPTXAa2pcawGKsGdpvZYSwJSYeg/exec';
 
             function loadFriends() {
                 fetch(SHEET_API_URL)
