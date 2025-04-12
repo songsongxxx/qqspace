@@ -185,12 +185,30 @@ export function createBubble(id, text, audioBase64 = null) {
 
 
 
-// 删除泡泡
-async function deleteBubble(id, el) {
-    const { error } = await supabase.from("dreams").delete().eq("id", id);
-    if (error) console.error("❌ 删除失败:", error.message);
-    else el.remove();
+// Updated function to delete a bubble from both the page and Supabase
+async function deleteBubble(id, bubbleElement) {
+    try {
+        console.log("🗑 Deleting doc ID:", id);
+
+        // Delete the bubble from Supabase
+        const { error } = await supabase
+            .from('dreams') // Your Supabase table name
+            .delete()
+            .eq('id', id); // Use the correct field to match the record ID
+
+        if (error) {
+            console.error("❌ Failed to delete from Supabase:", error.message);
+            return; // If the deletion fails, do not remove the bubble from the page
+        }
+
+        // If deletion from Supabase was successful, remove the bubble from the page
+        bubbleElement.remove();
+        console.log("✅ Successfully deleted bubble from Supabase and removed from page.");
+    } catch (error) {
+        console.error("❌ Failed to delete bubble:", error);
+    }
 }
+
 
 // 小工具：blob 转 base64 xxx
 function blobToBase64(blob) {
