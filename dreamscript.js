@@ -12,52 +12,61 @@ let mediaRecorder;
 let allChunks = [];
 let recordingStream;
 
- // 开始实时试音变声
- let mic, pitchShift, bitCrusher, delay, reverb;
- let isTesting = false;
- 
- document.getElementById("testToneBtn").addEventListener("click", async () => {
-     if (!isTesting) {
-         await Tone.start();
-         mic = new Tone.UserMedia();
- 
-         // 从 UI 获取数值
-         const pitch = parseFloat(document.getElementById("pitchSlider").value);
-         const reverbT = parseFloat(document.getElementById("reverbSlider").value);
-         const bit = parseInt(document.getElementById("bitSlider").value);
-         const delayT = parseFloat(document.getElementById("delaySlider").value);
- 
-         // 实时音效链
-         pitchShift = new Tone.PitchShift({ pitch });
-         bitCrusher = new Tone.BitCrusher(bit);
-         delay = new Tone.FeedbackDelay(delayT);
-         reverb = new Tone.Reverb({ decay: reverbT });
- 
-         // 连接音效链
-         mic.connect(pitchShift);
-         pitchShift.connect(bitCrusher);
-         bitCrusher.connect(delay);
-         delay.connect(reverb);
-         reverb.toDestination();
- 
-         await mic.open();
-         console.log("🎧 开始实时试音");
-         isTesting = true;
-         document.getElementById("testToneBtn").textContent = "stop";
-     } else {
-         // 停止试音
-         mic.close();
-         mic.disconnect();
-         pitchShift.disconnect();
-         bitCrusher.disconnect();
-         delay.disconnect();
-         reverb.disconnect();
-         isTesting = false;
-         console.log("🛑 已关闭试音");
-         document.getElementById("testToneBtn").textContent = "testing sounds";
-     }
- });
- 
+// 开始实时试音变声
+let mic, pitchShift, bitCrusher, delay, reverb;
+let isTesting = false;
+
+// volumeVal
+const volumeVal = parseFloat(document.getElementById("volumeSlider").value);
+const gain = new Tone.Gain(volumeVal); // 音量控制节点
+
+document.getElementById("testToneBtn").addEventListener("click", async () => {
+    if (!isTesting) {
+        await Tone.start();
+        mic = new Tone.UserMedia();
+
+        // 从 UI 获取数值
+        const pitch = parseFloat(document.getElementById("pitchSlider").value);
+        const reverbT = parseFloat(document.getElementById("reverbSlider").value);
+        const bit = parseInt(document.getElementById("bitSlider").value);
+        const delayT = parseFloat(document.getElementById("delaySlider").value);
+
+        // 实时音效链
+        pitchShift = new Tone.PitchShift({ pitch });
+        bitCrusher = new Tone.BitCrusher(bit);
+        delay = new Tone.FeedbackDelay(delayT);
+        reverb = new Tone.Reverb({ decay: reverbT });
+
+        // 连接音效链
+        mic.connect(pitchShift);
+        pitchShift.connect(bitCrusher);
+        bitCrusher.connect(delay);
+        delay.connect(reverb);
+        reverb.toDestination();
+        reverb.connect(gain);
+        gain.toDestination();
+
+        await mic.open();
+        console.log("🎧 开始实时试音");
+        isTesting = true;
+        document.getElementById("testToneBtn").textContent = "stop";
+    } else {
+        // 停止试音
+        mic.close();
+        mic.disconnect();
+        pitchShift.disconnect();
+        bitCrusher.disconnect();
+        delay.disconnect();
+        reverb.disconnect();
+        isTesting = false;
+        console.log("🛑 已关闭试音");
+        document.getElementById("testToneBtn").textContent = "testing sounds";
+
+
+
+    }
+});
+
 
 
 // 保存文字 + Base64音频到 Supabase xx
@@ -148,10 +157,10 @@ async function processAudioWithTone(audioBlob, text = "") {
 
     // 存入数据库
     await saveBubbleToSupabase(text || "🎵 变声录音", base64);
-    
+
     // ✅ 立即在页面添加泡泡
     createAndAppendBubble(text || "🎵 变声录音", base64);
-    
+
 }
 
 
@@ -187,7 +196,7 @@ export async function loadBubbles() {
 
         const bubble = createBubble(entry.id, entry.text, entry.audio_url);
         container.appendChild(bubble);
-    });   
+    });
 }
 
 export function createBubble(id, text, audioBase64 = null) {
@@ -211,35 +220,37 @@ export function createBubble(id, text, audioBase64 = null) {
         playButton.textContent = "▶️ Play";
         playButton.onclick = async () => {
             await Tone.start();
-    
+
             const response = await fetch(audioBase64);
             const arrayBuffer = await response.arrayBuffer();
             const buffer = await Tone.context.decodeAudioData(arrayBuffer);
-    
+
             const pitch = parseFloat(document.getElementById("pitchSlider").value);
             const reverbT = parseFloat(document.getElementById("reverbSlider").value);
             const bit = parseInt(document.getElementById("bitSlider").value);
             const delayT = parseFloat(document.getElementById("delaySlider").value);
-    
+
             const player = new Tone.Player(buffer).toDestination();
             const pitchShift = new Tone.PitchShift({ pitch }).toDestination();
             const bitCrusher = new Tone.BitCrusher(bit).toDestination();
             const feedbackDelay = new Tone.FeedbackDelay(delayT).toDestination();
             const reverb = new Tone.Reverb({ decay: reverbT }).toDestination();
-    
+
             player.connect(pitchShift);
             pitchShift.connect(bitCrusher);
             bitCrusher.connect(feedbackDelay);
             feedbackDelay.connect(reverb);
             reverb.toDestination();
-    
+            reverb.connect(gain);
+            gain.toDestination();
+
             player.start();
         };
-    
+
         bubble.appendChild(playButton);
     }
-    
-    
+
+
 
     const del = document.createElement("button");
     del.textContent = "X";
