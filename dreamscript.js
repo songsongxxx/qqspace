@@ -12,6 +12,48 @@ let mediaRecorder;
 let allChunks = [];
 let recordingStream;
 
+ // 开始实时试音变声
+let mic, pitchShift, bitCrusher, delay, reverb;
+let isTesting = false;
+
+
+document.getElementById("testToneBtn").addEventListener("click", async () => {
+    if (!isTesting) {
+        // 第一次点击：开启试音
+        await Tone.start();
+        mic = new Tone.UserMedia();
+
+        pitchShift = new Tone.PitchShift({
+            pitch: parseFloat(document.getElementById("pitchSlider").value)
+        }).toDestination();
+        bitCrusher = new Tone.BitCrusher(parseInt(document.getElementById("bitSlider").value)).toDestination();
+        delay = new Tone.FeedbackDelay(parseFloat(document.getElementById("delaySlider").value)).toDestination();
+        reverb = new Tone.Reverb({ decay: parseFloat(document.getElementById("reverbSlider").value) }).toDestination();
+
+        mic.connect(pitchShift);
+        pitchShift.connect(bitCrusher);
+        bitCrusher.connect(delay);
+        delay.connect(reverb);
+        reverb.toDestination();
+
+        await mic.open();
+        console.log("🎧 开始试音");
+        isTesting = true;
+        document.getElementById("testToneBtn").textContent = "🛑 停止试音";
+    } else {
+        // 第二次点击：关闭试音
+        mic.close();
+        mic.disconnect();
+        pitchShift.disconnect();
+        bitCrusher.disconnect();
+        delay.disconnect();
+        reverb.disconnect();
+        isTesting = false;
+        console.log("🛑 已关闭试音");
+        document.getElementById("testToneBtn").textContent = "🔊 试听变声效果";
+    }
+});
+
 
 // 保存文字 + Base64音频到 Supabase xx
 export async function saveBubbleToSupabase(text, audioBase64 = null) {
@@ -267,6 +309,7 @@ async function bufferToBlob(audioBuffer) {
 
     return new Blob([view], { type: "audio/wav" });
 }
+
 
 
 
