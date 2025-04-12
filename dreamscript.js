@@ -43,7 +43,7 @@ let recordingStream;
          await mic.open();
          console.log("🎧 开始实时试音");
          isTesting = true;
-         document.getElementById("testToneBtn").textContent = "🛑 停止试音";
+         document.getElementById("testToneBtn").textContent = "stop";
      } else {
          // 停止试音
          mic.close();
@@ -54,7 +54,7 @@ let recordingStream;
          reverb.disconnect();
          isTesting = false;
          console.log("🛑 已关闭试音");
-         document.getElementById("testToneBtn").textContent = "🔊 试听变声效果";
+         document.getElementById("testToneBtn").textContent = "testing sounds";
      }
  });
  
