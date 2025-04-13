@@ -1,0 +1,139 @@
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    font-family: 'Press Start 2P', monospace;
+    background: linear-gradient(to bottom, #dcdcdc, #f6f6f6);
+  }
+  
+  .chat-wrapper {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    width: 100%;
+    background: #bfbfbf;
+    border: 2px solid #3f3f3f;
+    box-shadow: inset 0 0 10px #888;
+    box-sizing: border-box;
+  }
+  
+  .chat-header {
+    background: linear-gradient(to right, #cfcfcf, #e3e3e3);
+    color: #2d2d2d;
+    font-weight: bold;
+    padding: 0.8rem 1rem;
+    font-size: clamp(16px, 2.5vw, 18px);
+    display: flex;
+    align-items: center;
+    border-bottom: 2px solid #555;
+    box-shadow: inset 0 -1px 0 #eee;
+  }
+  
+  .chat-main {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+    padding: 1rem;
+    background: #f8f8f8;
+    border-top: 1px solid #a4a5a7;
+    border-bottom: 1px solid #a4a5a7;
+  }
+  
+  .chat-avatar {
+    width: 100px;
+    text-align: center;
+    font-size: 0.75rem;
+    color: #444;
+    background: #d0d0d0;
+    border: 1px solid #a0a0a0;
+    border-radius: 8px;
+    padding: 0.5rem;
+    box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
+  }
+  
+  .chat-avatar img {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    border: 2px solid #666;
+    margin-bottom: 0.5rem;
+  }
+  
+  .chat-messages {
+    flex: 1;
+    background: #ffffff;
+    border: 1px solid #999;
+    margin-left: 1rem;
+    padding: 1rem;
+    overflow-y: auto;
+    box-shadow: inset 0 0 4px #c0c0c0;
+  }
+  
+  .chat-footer {
+    padding: 0.8rem 1rem;
+    background: linear-gradient(to bottom, #e0e0e0, #f2f2f2);
+    border-top: 2px solid #bbb;
+    display: flex;
+    flex-direction: column;
+    box-shadow: inset 0 2px 4px #fff;
+  }
+  
+  .toolbar {
+    display: flex;
+    gap: 0.5rem;
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+    color: #333;
+  }
+  
+  .input-area {
+    display: flex;
+    gap: 0.5rem;
+  }
+  
+  .input-area input {
+    flex: 1;
+    padding: 0.6rem;
+    border: 2px inset #aaa;
+    background: #f9f9f9;
+    font-size: clamp(14px, 2vw, 16px);
+    box-shadow: inset 1px 1px 3px #ddd;
+    font-family: 'Press Start 2P', monospace;
+  }
+  
+  .input-area button {
+    background: linear-gradient(to bottom, #f0f0f0, #dcdcdc);
+    color: #111;
+    border: 2px outset #aaa;
+    border-radius: 4px;
+    padding: 0.6rem 1.2rem;
+    font-size: clamp(14px, 2vw, 16px);
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 1px 1px 2px #bbb;
+  }
+  
+  .bubble {
+    max-width: 75%;
+    padding: 0.6rem 0.9rem;
+    border-radius: 12px;
+    margin-bottom: 0.5rem;
+    font-size: 0.85rem;
+    background: #eaeaea;
+    border: 1px solid #aaa;
+    font-family: 'Press Start 2P', monospace;
+  }
+  
+  .bubble.user {
+    align-self: flex-end;
+    background: #5e5e5e;
+    color: #fff;
+    border: 1px solid #444;
+  }
+  
+  .bubble.bot {
+    align-self: flex-start;
+    background: #c0c0c0;
+    border: 1px solid #999;
+  }
+  

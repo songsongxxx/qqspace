@@ -20,7 +20,7 @@ I am a wasteland,
 Piled high with daydreams.`;
 
 let i = 0;
-const speed = 40;
+const speed = 30;
 const typewriter = document.getElementById("typewriter");
 
 function typeText() {
@@ -87,37 +87,46 @@ function loadFriends() {
                 const timestamp = entry.timestamp?.trim();
                 //const dateObj = new Date(timestamp);
 
-                console.log("timestamp 原始值：", timestamp);
-
                 // 跳过名字为空或全是空格的情况
                 if (!name || name.replace(/\s/g, '') === '') return;
 
                 const friendBox = document.createElement('div');
                 friendBox.classList.add('friend');
-                
+
+
+                // link
+                const link = document.createElement('a');
+                link.href = `daydreamchat.html?name=${encodeURIComponent(name)}`;  // 安全处理
+                link.style.textDecoration = "none";
+                link.style.color = "inherit";
+
                 const nameEl = document.createElement('div');
+                nameEl.className = "friend-name"; // ✨ 加类名
                 nameEl.textContent = name;
-                nameEl.style.fontSize = "1rem";
-                
+
                 const timeEl = document.createElement('div');
+                timeEl.className = 'friend-timestamp'; // 🌟加上样式类
                 timeEl.textContent = timestamp;
-                timeEl.style.fontSize = "0.8rem";
-                timeEl.style.marginTop = "0.3rem";
-                
-                friendBox.appendChild(nameEl);
-                if (timestamp) friendBox.appendChild(timeEl);
+
+                link.appendChild(nameEl);
+                if (timestamp) link.appendChild(timeEl);
+
+                friendBox.appendChild(link);
                 container.appendChild(friendBox);
-                
+
             });
         })
-        
+
         .catch(error => {
             console.error("加载失败:", error);
         });
 }
+
 
 // 页面载入后自动执行
 window.onload = function () {
     typeText();
     loadFriends();
 };
+
+

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dream Chat</title>
+  <link rel="stylesheet" href="daydreamchat.css" />
+</head>
+<body>
+  <div class="chat-wrapper">
+    <div class="chat-header" id="chatTitle"> Dream Chat</div>
+    <div class="chat-main">
+      <div class="chat-avatar">
+        <img src="songxin.png" alt="头像" />
+        <div>songxin.xin</div>
+      </div>
+      <div class="chat-messages" id="chatBox"></div>
+    </div>
+    <div class="chat-footer">
+      <div class="toolbar">🐁🐁🐁🐁🐁  🐁</div>
+      <div class="input-area">
+        <input id="userInput" placeholder="..." />
+        <button onclick="sendMessage()">send</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="daydreamchat.js"></script>
+</body>
+</html>
