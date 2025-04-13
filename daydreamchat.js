@@ -73,8 +73,8 @@ function showEmojiOptions() {
     const container = document.getElementById("emojiOptions");
 
     const btnData = [
-        { emoji: "🖍️", text: "draw", action: openDrawingBoard },
-        { emoji: "📜", text: "write", action: () => alert("📜 Ready to write!") }
+        { emoji: "◎", text: "draw", action: openDrawingBoard },
+        { emoji: "◉", text: "write", action: () => alert("📜 Ready to write!") }
     ];
 
     btnData.forEach(({ emoji, text, action }) => {
