@@ -46,6 +46,8 @@
             <div class="chat-messages" id="chatBox">
             </div>
 
+            <!-- ✨ 生成按钮的地方 -->
+            <div class="emoji-options-container" id="emojiOptions"></div>
 
         </div>
         <div class="chat-footer">
@@ -56,6 +58,28 @@
             </div>
         </div>
     </div>
+
+    <button onclick="openDrawingBoard()">🖍️ Open Draw</button>
+
+    <div id="drawingModal" class="modal hidden">
+        <div id="pixelCanvas"></div>
+
+        <div class="color-palette">
+          <button class="color-swatch" style="background:rgb(100, 181, 228)" data-color="#ff0000"></button>
+          <button class="color-swatch" style="background:green" data-color="#00ff00"></button>
+          <button class="color-swatch" style="background:rgb(100, 163, 83)" data-color="#0000ff"></button>
+          <button class="color-swatch" style="background:rgb(174, 113, 149)" data-color="#ffff00"></button>
+          <button class="color-swatch" style="background:black" data-color="#000000"></button>
+          <button class="color-swatch" style="background:white" data-color="#ffffff"></button>
+        </div>
+      
+        <div class="tools">
+          <button onclick="clearPixelCanvas()">Clear</button>
+          <button onclick="finishDrawing()">Done</button>
+
+        </div>
+    </div>
+
 
     <script src="daydreamchat.js"></script>
 </body>
