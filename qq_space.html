@@ -8,6 +8,14 @@
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="qqspace.css">
 
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128/examples/js/loaders/GLTFLoader.js"></script> <!-- GLTF 加载器 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/examples/js/loaders/GLTFLoader.js"></script>
+
+    <!-- ✅ 引入 DRACOLoader -->
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/DRACOLoader.js"></script>
+
 </head>
 
 <body>
@@ -23,16 +31,17 @@
     </div>-->
 
 
-    <!-- <img id="crosshair" src="crosshair.png" alt="crosshair">--> 
+    <!-- <img id="crosshair" src="crosshair.png" alt="crosshair">-->
 
-        <!-- 🌟 控制面板 -->
-        <div id="controls">
-            <span>qq space</span>
-        </div>
-        <!-- 3D 渲染 -->
-        <script type="module" src="qqspace.js" defer></script>
+    <!-- 🌟 控制面板 -->
+    <div id="controls">
+        <span>qq space</span>
+    </div>
+    <!-- 3D 渲染 -->
+    <script type="module" src="./qqspace.js"></script>
 
 
-    </body>
-    
-    </html>
+
+</body>
+
+</html>
