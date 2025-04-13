@@ -60,9 +60,11 @@ html, body {
   }
   
   .chat-messages {
+    display: flex;
+    flex-direction: column;
     flex: 1;
-    background: #ffffff;
-    border: 1px solid #999;
+    /*background: #ffffff;
+    border: 1px solid #999;*/
     margin-left: 1rem;
     padding: 1rem;
     overflow-y: auto;
@@ -115,25 +117,95 @@ html, body {
   
   .bubble {
     max-width: 75%;
-    padding: 0.6rem 0.9rem;
-    border-radius: 12px;
-    margin-bottom: 0.5rem;
-    font-size: 0.85rem;
-    background: #eaeaea;
-    border: 1px solid #aaa;
+    padding: 0.6rem 1rem;
+    border-radius: 16px;
+    margin: 0.4rem 0;
     font-family: 'Press Start 2P', monospace;
+    font-size: 0.8rem;
+    white-space: pre-line;
+    line-height: 1.4;
+    word-break: break-word;
   }
   
   .bubble.user {
     align-self: flex-end;
-    background: #5e5e5e;
-    color: #fff;
-    border: 1px solid #444;
+    background: #fff;
+    border: 1px solid #ccc;
   }
   
   .bubble.bot {
     align-self: flex-start;
-    background: #c0c0c0;
-    border: 1px solid #999;
+    background: #5e5e5e;
+    color: #fff;
+    border: 1px solid #aaa;
   }
+  
+  /* 👈 个人简介 */
+  .avatar-text .zh {
+    display: none;
+    color: #222;
+    text-align: left;
+    line-height: 1; /* 👈 更紧凑 */
+    margin-bottom: 0.2rem; /* 👈 更小间距 */
+  }
+  
+  .avatar-text:hover .en {
+    display: none;
+    text-align: left;
+    line-height: 1; /* 👈 更紧凑 */
+    margin-bottom: 0.2rem; /* 👈 更小间距 */
+  }
+  
+  .avatar-text:hover .zh {
+    display: inline;
+    text-align: left;
+    line-height: 1; /* 👈 更紧凑 */
+    margin-bottom: 0.2rem; /* 👈 更小间距 */
+  }
+  
+  .avatar-text .line {
+    line-height: 1; /* 👈 更紧凑 */
+    margin-bottom: 0.2rem; /* 👈 更小间距 */
+    text-align: left;
+    font-size: 0.5rem;
+    margin-bottom: 0.3rem;
+    line-height: 1.6;
+    font-family: 'Press Start 2P', monospace;
+  }
+  
+
+  /* 👈 写字 */
+.terminal-bubble-container {
+    max-width: 90%;
+    margin: 2rem auto;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.4rem;
+  }
+  
+  .terminal-bubble {
+    
+    background: #5a5a5a;
+    color: #fff;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 0.7rem;
+    padding: 0.8rem 1.2rem;
+    border-radius: 1rem;
+    border: 1px solid #333;
+    box-shadow: inset 0 0 3px #444;
+    white-space: pre-line;
+    opacity: 0;
+    transform: translateY(-30px);
+    animation: fadeInUp 0.5s ease forwards;
+  }
+  
+  @keyframes fadeInUp {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+
   
