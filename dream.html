@@ -50,7 +50,13 @@
         <label>混响时间（Reverb）: <input type="range" id="reverbSlider" min="1" max="10" step="0.1" value="4"></label><br>
         <label>失真位数（BitDepth）: <input type="range" id="bitSlider" min="2" max="8" value="4"></label><br>
         <label>延迟时间（Delay）: <input type="range" id="delaySlider" min="0" max="1" step="0.05" value="0.3"></label><br>
+        <label>音量（Volume）:
+            <input type="range" id="volumeSlider" min="0" max="1" step="0.01" value="0.8">
+          </label><br>
+          
     </div>
+
+    
 
     <script>
 
@@ -147,16 +153,16 @@
         }
 
         bubbleBtn.addEventListener("click", async () => {
-            const text = bubbleTextInput.value.trim();
-            if (!text) {
-                console.error("❌ 用户输入为空，不存入 Supabase");
-                return;
-            }
-            console.log("📌 用户输入:", text);
+    const text = bubbleTextInput.value.trim();
+    if (!text) {
+        console.error("❌ 用户输入为空，不存入 Supabase");
+        return;
+    }
+    console.log("📌 用户输入:", text);
 
-            await saveBubbleToSupabase(text, null);
-            loadBubbles(); // Refresh bubbles from Supabase
-        });
+    await saveBubbleToSupabase(text, null); // ⚡️ 自动添加当前泡泡，不要再load全部
+});
+
 
         recordBtn.addEventListener("click", () => {
             console.log("🎙 开始录音...");

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dream Chat</title>
+    <link rel="stylesheet" href="daydreamchat.css" />
+</head>
+
+<body>
+    <div class="chat-wrapper">
+        <div class="chat-header" id="chatTitle"> Dream Chat</div>
+        <div class="chat-main">
+            <div class="chat-avatar">
+                <img src="songxin.png" alt="头像" />
+                <div>songxin.xin</div><br>
+                <div>
+                    <div class="avatar-text">
+                        <div class="line"><span class="en">song xin learns and thinks in motion:</span><span
+                                class="zh">songxin在流动中学习思考：</span></div>
+                        <div class="line"><span class="en">How to resist the mainstream through a drifting
+                                stance,</span><span class="zh">如何以游散之姿，去抵抗主流，</span></div>
+                        <div class="line"><span class="en">to resist the meticulously constructed fiction.</span><span
+                                class="zh">去抵抗那被精心构建的叙述。</span></div>
+                        <div class="line"><span class="en">And the ability to construct fiction—</span><span
+                                class="zh">而构造叙事的能力——</span></div>
+                        <div class="line"><span class="en">is also the ability to daydream.</span><span
+                                class="zh">也就是我们白日梦的能力，</span></div>
+                        <div class="line"><span class="en">Daydreaming is not merely an act of personal
+                                escape,</span><span class="zh">白日梦不仅是个人的逃逸，</span></div>
+                        <div class="line"><span class="en">but a thread through which shared imagination is
+                                woven.</span><span class="zh">更是共同编织想象的线索，</span></div>
+                        <div class="line"><span class="en">It is a form of distributed perception,</span><span
+                                class="zh">是在系统性控制与同质化现实之间，</span></div>
+                        <div class="line"><span class="en">still flowing between systems of control and homogenized
+                                realities.</span><span class="zh">仍持续流动的一种分布式感知形式。</span></div>
+                        <div class="line"><span class="en">Within this current of perception, we echo one
+                                another,</span><span class="zh">我们在这片感知的电流中互为回响，</span></div>
+                        <div class="line"><span class="en">co-constructing a re-writing of reality through
+                                imagination.</span><span class="zh">构成一种基于想象的、对现实的重写机制。</span></div>
+                    </div>
+                </div>
+            </div>
+            <div class="terminal-bubble-container" id="introBubble"></div>
+            <div class="chat-messages" id="chatBox">
+            </div>
+
+            <!-- ✨ 生成按钮的地方 -->
+            <div class="emoji-options-container" id="emojiOptions"></div>
+
+        </div>
+        <div class="chat-footer">
+            <div class="toolbar">🐁🐁🐁🐁🐁 🐁</div>
+            <div class="input-area">
+                <input id="userInput" placeholder="..." />
+                <button onclick="sendMessage()">send</button>
+            </div>
+        </div>
+    </div>
+
+    <button onclick="openDrawingBoard()">🖍️ Open Draw</button>
+
+    <div id="drawingModal" class="modal hidden">
+        <div id="pixelCanvas"></div>
+
+        <div class="color-palette">
+          <button class="color-swatch" style="background:rgb(100, 181, 228)" data-color="rgb(100, 181, 228)"></button>
+          <button class="color-swatch" style="background:green" data-color="green"></button>
+          <button class="color-swatch" style="background:rgb(100, 163, 83)" data-color="rgb(100, 163, 83)"></button>
+          <button class="color-swatch" style="background:rgb(174, 113, 149)" data-color="rgb(174, 113, 149)"></button>
+          <button class="color-swatch" style="background:black" data-color="black"></button>
+          <button class="color-swatch" style="background:white" data-color="white"></button>
+        </div>
+      
+        <div class="tools">
+          <button onclick="clearPixelCanvas()">Clear</button>
+          <button onclick="finishDrawing()">Done</button>
+
+        </div>
+    </div>
+
+
+    <script src="daydreamchat.js"></script>
+</body>
+
+</html>

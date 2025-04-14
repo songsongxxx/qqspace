@@ -1,17 +1,94 @@
 // qqspace.js
 // ✅ 使用 ES module CDN
-import * as THREE from 'https://cdn.skypack.dev/three@0.128.0';
-import { FBXLoader } from 'https://cdn.skypack.dev/three@0.128.0/examples/jsm/loaders/FBXLoader.js';
-import { OrbitControls } from 'https://cdn.skypack.dev/three@0.128.0/examples/jsm/controls/OrbitControls.js';
+//import * as THREE from 'https://cdn.skypack.dev/three@0.128.0';
+//import { FBXLoader } from 'https://cdn.skypack.dev/three@0.128.0/examples/jsm/loaders/FBXLoader.js';
+//import { OrbitControls } from 'https://cdn.skypack.dev/three@0.128.0/examples/jsm/controls/OrbitControls.js';
+
+// ✅ 使用 UNPKG 的 ES 模块 CDN（不能混用其他 CDN）
+
 
 let mixer;
 
 const controlsElement = document.querySelector('#controls');
-
-// 不再动态设置 top，只确保 z-index 足够
 controlsElement.style.zIndex = 10;
 
+// 初始化 Three.js 场景
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setSize(window.innerWidth, window.innerHeight);
+document.body.appendChild(renderer.domElement);
 
+// 🌞 添加光照（GLTF 需要光照）
+const ambientLight = new THREE.AmbientLight(0xffffff, 1); // 环境光
+scene.add(ambientLight);
+const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+directionalLight.position.set(5, 10, 7);
+scene.add(directionalLight);
+
+
+// 🎯 加载 GLB 模型
+let model; // 在加载之前定义一个全局变量
+
+// ✅ 设置 Draco 解码器
+const dracoLoader = new THREE.DRACOLoader();
+dracoLoader.setDecoderPath('https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/libs/draco/');
+
+// ✅ 设置 GLTF 加载器
+const loader = new THREE.GLTFLoader();
+loader.setDRACOLoader(dracoLoader);
+
+
+loader.load('hurtmice.glb', function (gltf) {
+    model = gltf.scene;
+
+    model.traverse((child) => {
+        if (child.isMesh) {
+            child.material.transparent = false;
+            child.material.opacity = 1;
+        }
+    });
+
+    const box = new THREE.Box3().setFromObject(model);
+    const center = new THREE.Vector3();
+    box.getCenter(center);
+    model.position.sub(center);
+
+    const pointLight = new THREE.PointLight(0xffffff, 10);
+    pointLight.position.set(0, 5, 0);
+    scene.add(pointLight);
+
+    model.position.set(0, 0, 0);
+    model.scale.set(0.07, 0.07, 0.07);
+
+    scene.add(model);
+    console.log("✅ Model Loaded:", model);
+    animate();
+}, undefined, function (error) {
+    console.error("❌ GLB 加载失败:", error);
+});
+
+function animate() {
+    requestAnimationFrame(animate);
+
+    // 如果模型已加载，将其旋转
+    if (model) {
+        model.rotation.y += 0.01; // 每帧绕 Y 轴旋转 0.01 弧度
+    }
+
+    renderer.render(scene, camera);
+}
+
+// 🔄 监听窗口大小调整
+window.addEventListener('resize', () => {
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+});
+
+
+
+/*// vfx
 // 初始化 Three.js 场景
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -146,4 +223,4 @@ window.addEventListener('resize', () => {
     renderer.setSize(window.innerWidth, window.innerHeight);
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
-});
+});*/
