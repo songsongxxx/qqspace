@@ -33,6 +33,79 @@ const scenes = [
     }
 ];
 
+
+// button Scene setup
+const container = document.getElementById('glb-button-container');
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(50, container.clientWidth / container.clientHeight, 0.1, 100);
+camera.position.z = 2;
+
+const renderer = new THREE.WebGLRenderer({ alpha: true });
+renderer.setClearColor(0x000000, 0); // 第二个参数是透明度（0 = 完全透明）
+renderer.setSize(container.clientWidth, container.clientHeight);
+container.appendChild(renderer.domElement);
+
+// Light
+const light = new THREE.AmbientLight(0xffffff, 1.2);
+scene.add(light);
+
+// Load .glb button
+const loader = new THREE.GLTFLoader();
+let buttonMesh;
+
+loader.load('/dreamimages/furbyanimation.glb', (gltf) => {
+  buttonMesh = gltf.scene;
+  // ✅ 缩放到合适大小
+  buttonMesh.scale.set(0.003, 0.003, 0.003);
+
+  // ✅ 位置居中
+  buttonMesh.position.set(0, 0, 0);
+
+  // ✅ 如果模型自身有偏移，可试试居中几何体（可选）
+  buttonMesh.traverse(function (child) {
+    if (child.isMesh) {
+      child.geometry.center();  // 居中子网格几何体
+    }
+  });
+
+  scene.add(buttonMesh);
+}, undefined, (error) => {
+  console.error(error);
+});
+
+// Hover / click
+const raycaster = new THREE.Raycaster();
+const mouse = new THREE.Vector2();
+
+function onClick(event) {
+  const bounds = renderer.domElement.getBoundingClientRect();
+  mouse.x = ((event.clientX - bounds.left) / bounds.width) * 2 - 1;
+  mouse.y = -((event.clientY - bounds.top) / bounds.height) * 2 + 1;
+  raycaster.setFromCamera(mouse, camera);
+
+  const intersects = raycaster.intersectObjects(scene.children, true);
+  if (intersects.length > 0) {
+    const nextBtn = document.getElementById("next-button");
+    if (!nextBtn.disabled) {
+      nextScene(); // 调用原有逻辑
+    }
+  }
+}
+
+renderer.domElement.addEventListener('click', onClick);
+
+// Animate
+function animate() {
+  requestAnimationFrame(animate);
+  if (buttonMesh) {
+    buttonMesh.rotation.y += 0.01;
+  }
+  renderer.render(scene, camera);
+}
+animate();
+
+
+
 function nextScene() {
     if (currentScene < scenes.length - 1) {
         currentScene++;
