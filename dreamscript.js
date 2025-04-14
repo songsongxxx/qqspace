@@ -187,14 +187,14 @@ export function createBubble(id, text, audioBase64 = null) {
 async function deleteBubble(id, bubbleElement) {
     if (!id) {
         console.error("❌ Invalid ID, cannot delete bubble!");
-        return; // Exit the function if ID is invalid
+        return; // Exit if ID is invalid
     }
 
     try {
         console.log("🗑 Deleting doc ID:", id);
 
         // Delete the bubble from Supabase
-        const { error } = await supabase
+        const { data, error } = await supabase
             .from('dreams') // Your Supabase table name
             .delete()
             .eq('id', id); // Use the correct field to match the record ID
@@ -204,13 +204,16 @@ async function deleteBubble(id, bubbleElement) {
             return; // If the deletion fails, do not remove the bubble from the page
         }
 
+        console.log("✅ Successfully deleted from Supabase:", data); // Log the result from Supabase
+
         // If deletion from Supabase was successful, remove the bubble from the page
         bubbleElement.remove();
-        console.log("✅ Successfully deleted bubble from Supabase and removed from page.");
+        console.log("✅ Successfully removed bubble from the page.");
     } catch (error) {
         console.error("❌ Failed to delete bubble:", error);
     }
 }
+
 
 
 // 小工具：blob 转 base64 xxx
