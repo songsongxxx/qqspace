@@ -1,4 +1,7 @@
 let currentScene = 0;
+let mixer;
+let buttonUnlocked = false; // 模型按钮是否可点
+
 
 const scenes = [
     {
@@ -68,9 +71,18 @@ loader.load('/dreamimages/furbyanimation.glb', (gltf) => {
     }
   });
 
-  scene.add(buttonMesh);
-}, undefined, (error) => {
-  console.error(error);
+  scene.add(buttonMesh);// ✅ 初始化动画播放器
+  if (gltf.animations && gltf.animations.length > 0) {
+    mixer = new THREE.AnimationMixer(buttonMesh);
+
+    gltf.animations.forEach((clip) => {
+      mixer.clipAction(clip).play();
+    });
+
+    console.log("🎥 播放动画", gltf.animations);
+  } else {
+    console.warn("🚫 模型中没有动画");
+  }
 });
 
 // Hover / click
@@ -97,6 +109,10 @@ renderer.domElement.addEventListener('click', onClick);
 // Animate
 function animate() {
   requestAnimationFrame(animate);
+
+    // 加上这一句，驱动动画播放
+    if (mixer) mixer.update(0.016); // 或用 deltaTime 更平滑
+
   if (buttonMesh) {
     buttonMesh.rotation.y += 0.01;
   }
@@ -141,21 +157,37 @@ function updateStory() {
     }, 1000);
     
 
-     // 启动倒计时，激活按钮
-     let remaining = scene.delay;
-     const countdown = setInterval(() => {
-       remaining--;
-       if (remaining <= 0) {
-         clearInterval(countdown);
-         button.disabled = false;
-         button.classList.add("active");
-         button.textContent = "继续故事 ➤";
-       } else {
-         button.textContent = `请等待 ${remaining} 秒...`;
-       }
-     }, 1000);
+// 启动倒计时，激活按钮
+let remaining = scene.delay;
+const countdown = setInterval(() => {
+  remaining--;
+  if (remaining <= 0) {
+    clearInterval(countdown);
+    buttonUnlocked = true; // ✅ 模型现在可点击了！
+
+    button.classList.add("active");
+    button.textContent = "继续故事 ➤";
+  } else {
+    button.textContent = `请等待 ${remaining} 秒...`;
+  }
+}, 1000);
 
 }
+
+
+function onClick(event) {
+  const bounds = renderer.domElement.getBoundingClientRect();
+  mouse.x = ((event.clientX - bounds.left) / bounds.width) * 2 - 1;
+  mouse.y = -((event.clientY - bounds.top) / bounds.height) * 2 + 1;
+  raycaster.setFromCamera(mouse, camera);
+
+  const intersects = raycaster.intersectObjects(scene.children, true);
+  if (intersects.length > 0 && buttonUnlocked) {
+    nextScene(); // ✅ 只有在模型被允许点击时才继续
+    buttonUnlocked = false; // ✅ 马上锁回去，避免连点
+  }
+}
+
 
 document.getElementById("next-button").addEventListener("click", () => {
     if (document.getElementById("next-button").disabled) return;
