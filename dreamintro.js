@@ -1,7 +1,7 @@
 let currentScene = 0;
 let mixer;
 let buttonUnlocked = false; // 模型按钮是否可点
-
+let redirectReady = false; // ✅ 是否准备跳转 dream.html
 
 const scenes = [
     {
