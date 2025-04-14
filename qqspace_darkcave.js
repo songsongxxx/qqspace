@@ -7,15 +7,15 @@
 // ✅ 使用 UNPKG 的 ES 模块 CDN（不能混用其他 CDN）
 
 
-
-
 let mixer;
-
 let smallMixer;
-
+// 🎯 加载 GLB 模型
+let model; // 在加载之前定义一个全局变量
 
 const controlsElement = document.querySelector('#controls');
 controlsElement.style.zIndex = 10;
+
+
 
 // 初始化 Three.js 场景
 const scene = new THREE.Scene();
@@ -23,17 +23,18 @@ const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerH
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
+renderer.physicallyCorrectLights = true;
+renderer.outputEncoding = THREE.sRGBEncoding;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.2;
+
 
 // 🌞 添加光照（GLTF 需要光照）
-const ambientLight = new THREE.AmbientLight(0xffffff, 1); // 环境光
-scene.add(ambientLight);
-const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
-directionalLight.position.set(5, 10, 7);
-scene.add(directionalLight);
-
-
-// 🎯 加载 GLB 模型
-let model; // 在加载之前定义一个全局变量
+//const ambientLight = new THREE.AmbientLight(0xffffff, 1); // 环境光
+//scene.add(ambientLight);
+//const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+//directionalLight.position.set(5, 10, 7);
+//scene.add(directionalLight);
 
 // ✅ 设置 Draco 解码器
 const dracoLoader = new THREE.DRACOLoader();
@@ -42,6 +43,51 @@ dracoLoader.setDecoderPath('https://cdn.jsdelivr.net/npm/three@0.128.0/examples/
 // ✅ 设置 GLTF 加载器
 const loader = new THREE.GLTFLoader();
 loader.setDRACOLoader(dracoLoader);
+
+// 初始化 OrbitControls
+// 可选：启用控制功能
+/*const controls = new THREE.OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;     // 平滑阻尼（惯性）
+controls.dampingFactor = 0.05;
+
+controls.enableZoom = true;        // 启用滚轮缩放
+controls.enablePan = true;         // 启用右键拖动
+controls.enableRotate = true;      // 启用旋转
+
+controls.minDistance = 1;          // 相机最小距离
+controls.maxDistance = 100;        // 相机最大距离*/
+
+// ✅ 改用 PointerLockControls
+const controls = new THREE.PointerLockControls(camera, document.body);
+scene.add(controls.getObject());
+
+// 点击屏幕激活控制（锁定鼠标）
+document.body.addEventListener('click', () => {
+    controls.lock();
+  });
+
+// 🔄 添加键盘控制移动（WASD）
+const velocity = new THREE.Vector3();
+const direction = new THREE.Vector3();
+const move = { forward: false, backward: false, left: false, right: false };
+
+document.addEventListener('keydown', function (event) {
+    switch (event.code) {
+        case 'KeyW': move.forward = true; break;
+        case 'KeyS': move.backward = true; break;
+        case 'KeyA': move.left = true; break;
+        case 'KeyD': move.right = true; break;
+    }
+});
+document.addEventListener('keyup', function (event) {
+    switch (event.code) {
+        case 'KeyW': move.forward = false; break;
+        case 'KeyS': move.backward = false; break;
+        case 'KeyA': move.left = false; break;
+        case 'KeyD': move.right = false; break;
+    }
+});
+
 
 // ✅ 坐标
 const axesHelper = new THREE.AxesHelper(100);
@@ -71,6 +117,11 @@ loader.load('hurtmice.glb', function (gltf) {
     model.scale.set(0.3, 0.3, 0.3);
     scene.add(model);
 
+    mixer = new THREE.AnimationMixer(model);
+    gltf.animations.forEach((clip) => {
+        mixer.clipAction(clip).play();
+    });
+
     // ✅ 添加一个小模型副本（放在摄像机前方）
     /*const smallModel = model.clone();
     smallModel.scale.set(0.02, 0.02, 0.02);
@@ -83,7 +134,7 @@ loader.load('hurtmice.glb', function (gltf) {
     gltf.animations.forEach((clip) => {
       smallMixer.clipAction(clip).play();
     });*/
-    
+
 
 
     console.log("✅ Model Loaded:", model);
@@ -98,9 +149,20 @@ function animate() {
     requestAnimationFrame(animate);
 
     // 如果模型已加载，将其旋转
-    if (model) {
-        model.rotation.y += 0.01; // 每帧绕 Y 轴旋转 0.01 弧度
-    }
+    // if (model) {
+       //  model.rotation.y += 0.01; // 每帧绕 Y 轴旋转 0.01 弧度
+    // }
+
+    // 添加键盘控制移动（WASD）
+    direction.set(0, 0, 0);
+    if (keysPressed["KeyW"]) direction.z -= 1;
+    if (keysPressed["KeyS"]) direction.z += 1;
+    if (keysPressed["KeyA"]) direction.x -= 1;
+    if (keysPressed["KeyD"]) direction.x += 1;
+    direction.normalize();
+    direction.applyEuler(camera.rotation);
+    velocity.copy(direction).multiplyScalar(moveSpeed);
+    controls.getObject().position.add(velocity);
 
     if (mixer) mixer.update(0.016);        // 原模型的动画
     if (smallMixer) smallMixer.update(0.016); // ✅ 小模型的动画
@@ -113,12 +175,14 @@ window.addEventListener('resize', () => {
     renderer.setSize(window.innerWidth, window.innerHeight);
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
+
+    controls.update(); // OrbitControls
+
 });
 
 document.querySelector('#controls').addEventListener('click', () => {
     window.location.href = 'qq_space_darkcave.html';
 });
-
 
 
 
