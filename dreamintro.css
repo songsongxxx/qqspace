@@ -1,6 +1,6 @@
 body {
     font-family: Arial, sans-serif;
-    background-color: #2b2d37;
+    background-color: #f1f1f1;
     text-align: center;
     margin: 0;
     padding: 0;
@@ -26,7 +26,7 @@ body {
 }
 
 #story-text {
-    color: white;
+    color: rgb(3, 3, 3);
     font-size: 20px;
     background-color: rgba(0, 0, 0, 0.5);
     padding: 15px;
@@ -35,7 +35,7 @@ body {
     bottom: 50px;
     left: 50%;
     transform: translateX(-50%);
-    opacity: 0;  /* Initially hidden */
+    opacity: 1;  /* Initially hidden */
     transition: opacity 1s ease-in-out;  /* Transition effect for text */
 }
 
