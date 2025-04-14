@@ -15,7 +15,9 @@ body {
 
 #story-container {
     position: relative;
-}
+    min-height: 500px;
+  }
+  
 
 #scene-image {
     width: 100%;
