@@ -6,33 +6,42 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>QQ Space - 3D World</title>
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="qqspace.css">
+    <link rel="stylesheet" href="qqspace_darkcave.css">
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128/examples/js/loaders/GLTFLoader.js"></script> <!-- GLTF 加载器 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/examples/js/loaders/GLTFLoader.js"></script>
+
+    <!-- ✅ 引入 DRACOLoader -->
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/DRACOLoader.js"></script>
 
 </head>
 
 <body>
     <div id="loading">loading...</div>
 
-    <!-- 🌟 导航栏 -->
+    <!-- 🌟 导航栏 
     <div class="navbar">
         <a href="index.html">index</a>
         <a href="dream.html">dream</a>
         <a href="qq_space.html">qq space</a>
         <a href="Daydream.html">daydream chat</a> 
 
+    </div>-->
+
+
+    <!-- <img id="crosshair" src="crosshair.png" alt="crosshair">-->
+
+    <!-- 🌟 控制面板 -->
+    <div id="controls">
+        <span>Dark Cave</span>
     </div>
+    <!-- 3D 渲染 -->
+    <script type="module" src="./qqspace_darkcave.js"></script>
 
 
-    <!-- <img id="crosshair" src="crosshair.png" alt="crosshair">--> 
 
-        <!-- 🌟 控制面板 -->
-        <div id="controls">
-            <span>qq space</span>
-        </div>
-        <!-- 3D 渲染 -->
-        <script type="module" src="qqspace.js" defer></script>
+</body>
 
-
-    </body>
-    
-    </html>
+</html>
