@@ -3,12 +3,12 @@ let currentScene = 0;
 const scenes = [
     {
         text: "(sigil)",
-        image: "https://raw.githubusercontent.com/username/repository-name/main/images/start.jpg",  // GitHub URL for image
+        image: "https://raw.githubusercontent.com/songsongxxx/qqspace/main/dreamimages/sigil.png",  // GitHub URL for image
         delay: 3 // 秒（测试用）
     },
     {
         text: "By day the village is translucent, shifting gently in the light. Reality appears only at night. Days feel thin, like diluted memories, humming softly at the edges. When darkness falls, dreams settle into homes, streets, and skin.",
-        image: "https://raw.githubusercontent.com/username/repository-name/main/images/forest.jpg",  // GitHub URL for image
+        image: "https://raw.githubusercontent.com/songsongxxx/qqspace/main/dreamimages/9.png",  // GitHub URL for image
         delay: 5 // 秒
     },
     {
@@ -18,7 +18,7 @@ const scenes = [
     },
     {
         text: "'Somna Spores,' neural spores shed quietly from villagers’ bodies, float briefly through the air, seeking hosts whose minds match their rhythm.",
-        image: "https://raw.githubusercontent.com/username/repository-name/main/images/new_world.jpg",  // GitHub URL for image
+        image: "https://raw.githubusercontent.com/songsongxxx/qqspace/main/dreamimages/somna_spores.png",  // GitHub URL for image
         delay: 5 // 秒
     },
     {
