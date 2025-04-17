@@ -116,11 +116,6 @@ document.querySelector('#controls').addEventListener('click', () => {
   window.location.href = 'qq_space_darkcave.html';
 });
 
-const loadingDiv = document.getElementById('loading');
-loadingDiv.style.opacity = 0;
-setTimeout(() => {
-  loadingDiv.style.display = 'none';
-}, 500);
 
 
 /*// vfx
