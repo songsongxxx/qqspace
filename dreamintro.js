@@ -123,11 +123,26 @@ animate();
 
 
 function nextScene() {
-    if (currentScene < scenes.length - 1) {
-        currentScene++;
-        updateStory();
-    }
+  if (currentScene < scenes.length - 1) {
+    currentScene++;
+    updateStory();
+  } else {
+    // ✅ 最后一幕：跳转
+    const button = document.getElementById("next-button");
+    button.textContent = "The dream fades away";
+    button.disabled = true;
+    button.classList.remove("active");
+
+    // ✅ 加一个淡出效果
+    document.body.style.transition = "opacity 1s ease";
+    document.body.style.opacity = 0;
+
+    setTimeout(() => {
+      window.location.href = "dream.html";
+    }, 1000);
+  }
 }
+
 
 function updateStory() {
     const scene = scenes[currentScene];
@@ -175,20 +190,6 @@ const countdown = setInterval(() => {
 }
 
 
-function onClick(event) {
-  const bounds = renderer.domElement.getBoundingClientRect();
-  mouse.x = ((event.clientX - bounds.left) / bounds.width) * 2 - 1;
-  mouse.y = -((event.clientY - bounds.top) / bounds.height) * 2 + 1;
-  raycaster.setFromCamera(mouse, camera);
-
-  const intersects = raycaster.intersectObjects(scene.children, true);
-  if (intersects.length > 0 && buttonUnlocked) {
-    nextScene(); // ✅ 只有在模型被允许点击时才继续
-    buttonUnlocked = false; // ✅ 马上锁回去，避免连点
-  }
-}
-
-
 document.getElementById("next-button").addEventListener("click", () => {
     if (document.getElementById("next-button").disabled) return;
 
@@ -199,8 +200,32 @@ document.getElementById("next-button").addEventListener("click", () => {
       document.getElementById("next-button").textContent = "The dream fades away";
       document.getElementById("next-button").disabled = true;
       document.getElementById("next-button").classList.remove("active");
+
+       // ✅ 加一个柔和的淡出 + 页面跳转
+    setTimeout(() => {
+      document.body.style.transition = "opacity 1s ease";
+      document.body.style.opacity = 0;
+
+      setTimeout(() => {
+        window.location.href = "dream.html";
+      }, 1000); // 1秒后跳转
+    }, 1000); // 再延迟1秒
+
     }
   });
+
+  function onClick(event) {
+    const bounds = renderer.domElement.getBoundingClientRect();
+    mouse.x = ((event.clientX - bounds.left) / bounds.width) * 2 - 1;
+    mouse.y = -((event.clientY - bounds.top) / bounds.height) * 2 + 1;
+    raycaster.setFromCamera(mouse, camera);
+  
+    const intersects = raycaster.intersectObjects(scene.children, true);
+    if (intersects.length > 0 && buttonUnlocked) {
+      nextScene(); // ✅ 只有在模型被允许点击时才继续
+      buttonUnlocked = false; // ✅ 马上锁回去，避免连点
+    }
+  }
 
 // Initialize the story
 window.onload = () => {
