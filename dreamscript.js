@@ -217,7 +217,12 @@ export async function loadBubbles() {
         const bubble = createBubble(entry.id, entry.text, entry.audio_url);
         container.appendChild(bubble);
 
-        animateBubble(bubble); // ✅ 让旧泡泡也动起来
+    // 🚀 等待两帧，确保 DOM 渲染完再动画
+    requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+            animateBubble(bubble);
+        });
+    });
 
     });
 }
@@ -382,6 +387,7 @@ function animateBubble(bubble) {
         const maxX = window.innerWidth - rect.width;
         const maxY = window.innerHeight - rect.height;
 
+        
         let x = bubble.offsetLeft + dx;
         let y = bubble.offsetTop + dy;
 
