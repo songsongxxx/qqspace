@@ -65,6 +65,7 @@ document.getElementById("testToneBtn").addEventListener("click", async () => {
         console.log("🎧 开始实时试音");
         isTesting = true;
         document.getElementById("testToneBtn").textContent = "stop";
+        
     } else {
         // 停止试音
         mic.close();
@@ -175,8 +176,7 @@ async function processAudioWithTone(audioBlob, text = "") {
 
     // ✅ 立即在页面添加泡泡
     // ❌ 不需要再次 createAndAppendBubble，这一步 Supabase 会处理
-    //createAndAppendBubble(text || "🎵 变声录音", base64);
-
+    // createAndAppendBubble(text || "🎵 变声录音", base64);
 
 }
 

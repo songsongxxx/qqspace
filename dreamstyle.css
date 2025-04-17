@@ -2,7 +2,7 @@
 body {
     font-family: 'Press Start 2P', 'Comic Sans MS', 'Verdana', sans-serif;
     text-align: center;
-    background-color: #f0f8ff;
+    background-color: #fefefe;
     overflow: hidden;
     margin: 0;
     height: 100vh;
@@ -83,7 +83,6 @@ margin-bottom: 14px;
 }
 
 
-
 #toneControls:hover {
     background: rgba(40, 40, 40, 0.85);
     transition: 0.3s;
@@ -137,30 +136,6 @@ margin-bottom: 14px;
     background: rgba(255, 255, 255, 0.3);
 }
 
-/* 泡泡容器 */
-#bubbleContainer {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    pointer-events: none;
-}
-
-/* 底部垃圾堆 */
-#junkyard {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100vw;
-    height: 100px;
-    background: rgba(0, 0, 0, 0.1);
-    display: flex;
-    flex-wrap: wrap;
-    align-items: flex-end;
-    overflow: hidden;
-    padding: 5px;
-}
 
 /* 泡泡样式 */
 .bubble {
@@ -195,16 +170,6 @@ margin-bottom: 14px;
     color: rgb(160, 159, 179);
 }
 
-/* 废弃垃圾碎片 */
-.junk {
-    background: rgba(100, 100, 100, 0.5);
-    color: rgba(255, 255, 255, 0.6);
-    font-size: 10px;
-    padding: 2px 5px;
-    border-radius: 3px;
-    margin: 2px;
-    transform: rotate(10deg);
-}
 
 /* 适配移动端 */
 @media (max-width: 768px) {
@@ -319,3 +284,84 @@ margin-bottom: 14px;
     position: absolute;
     animation: float 5s infinite ease-in-out;
 }
+
+
+/* tonecontrol在中心 */
+@media (max-width: 400px) {
+    #toneControls {
+      position: absolute;
+      top: 60%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0.45); /* 缩放到更紧凑尺寸 */
+      width: auto;
+      padding: 6px 10px;
+      border-radius: 34px;
+      font-size: 6px;
+      box-shadow:
+        0 3px 8px rgba(0, 0, 0, 0.1),
+        inset 0 0 4px rgba(255, 255, 255, 0.3);
+    }
+  
+    #toneControls label {
+      font-size: 7px;
+      margin-bottom: 4px;
+    }
+  
+    #toneControls input[type="range"] {
+      height: 0.001px; /* 更细的粉色条 */
+      margin: 1px 0 2px 0;
+    }
+  
+    #toneControls input[type="range"]::-webkit-slider-thumb {
+      width: 10px;
+      height: 10px;
+      box-shadow:
+        0 0 3px #ff8bd8,
+        0 0 6px #fff inset;
+    }
+  }
+  
+  body {
+    touch-action: manipulation;
+  }
+  
+  
+  
+/* tonecontrol上面那个在中心 */
+  @media (max-width: 400px) {
+    #controls {
+      position: absolute;
+      top: 20%;
+      left: 50%;
+      transform: translateX(-50%);
+      flex-direction: column;
+      gap: 6px;
+      padding: 10px 12px;
+      width: 85%;
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+  
+    #controls input,
+    #controls button {
+      font-size: 10px;
+      padding: 6px 8px;
+      border-radius: 12px;
+      width: 100%;
+      box-shadow: none;
+      background: rgba(255, 255, 255, 0.3);
+    }
+  
+    #controls button:hover {
+      background: rgba(255, 255, 255, 0.4);
+      transform: scale(1.02);
+    }
+  
+    #bubbleText::placeholder {
+      font-size: 9px;
+      color: #aaa;
+    }
+  }
+  
