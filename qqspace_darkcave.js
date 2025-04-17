@@ -16,7 +16,6 @@ const controlsElement = document.querySelector('#controls');
 controlsElement.style.zIndex = 10;
 
 
-
 // 初始化 Three.js 场景
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -46,7 +45,7 @@ loader.setDRACOLoader(dracoLoader);
 
 // 初始化 OrbitControls
 // 可选：启用控制功能
-/*const controls = new THREE.OrbitControls(camera, renderer.domElement);
+const controls = new THREE.OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;     // 平滑阻尼（惯性）
 controls.dampingFactor = 0.05;
 
@@ -55,19 +54,19 @@ controls.enablePan = true;         // 启用右键拖动
 controls.enableRotate = true;      // 启用旋转
 
 controls.minDistance = 1;          // 相机最小距离
-controls.maxDistance = 100;        // 相机最大距离*/
+controls.maxDistance = 100;        // 相机最大距离
 
 // ✅ 改用 PointerLockControls
-const controls = new THREE.PointerLockControls(camera, document.body);
+/*const controls = new THREE.PointerLockControls(camera, document.body);
 scene.add(controls.getObject());
 
 // 点击屏幕激活控制（锁定鼠标）
 document.body.addEventListener('click', () => {
     controls.lock();
-  });
+  });*/
 
 // 🔄 添加键盘控制移动（WASD）
-const velocity = new THREE.Vector3();
+/*const velocity = new THREE.Vector3();
 const direction = new THREE.Vector3();
 const move = { forward: false, backward: false, left: false, right: false };
 
@@ -86,12 +85,27 @@ document.addEventListener('keyup', function (event) {
         case 'KeyA': move.left = false; break;
         case 'KeyD': move.right = false; break;
     }
-});
+});*/
 
 
 // ✅ 坐标
-const axesHelper = new THREE.AxesHelper(100);
-scene.add(axesHelper);
+// ✨ 自定义红色坐标轴
+const axisLength = 100;
+const redMaterial = new THREE.LineBasicMaterial({ color: 0xff0000 });
+
+function createRedAxis(start, end) {
+    const points = [start, end];
+    const geometry = new THREE.BufferGeometry().setFromPoints(points);
+    return new THREE.Line(geometry, redMaterial);
+}
+
+// X轴线
+scene.add(createRedAxis(new THREE.Vector3(0, 0, 0), new THREE.Vector3(axisLength, 0, 0)));
+// Y轴线
+scene.add(createRedAxis(new THREE.Vector3(0, 0, 0), new THREE.Vector3(0, axisLength, 0)));
+// Z轴线
+scene.add(createRedAxis(new THREE.Vector3(0, 0, 0), new THREE.Vector3(0, 0, axisLength)));
+
 
 
 loader.load('hurtmice.glb', function (gltf) {
@@ -113,8 +127,8 @@ loader.load('hurtmice.glb', function (gltf) {
     pointLight.position.set(0, 5, 0);
     scene.add(pointLight);
 
-    model.position.set(0, 0, -10);
-    model.scale.set(0.3, 0.3, 0.3);
+    model.position.set(0, 0, 0);
+    model.scale.set(0.03, 0.03, 0.03);
     scene.add(model);
 
     mixer = new THREE.AnimationMixer(model);
@@ -135,7 +149,8 @@ loader.load('hurtmice.glb', function (gltf) {
       smallMixer.clipAction(clip).play();
     });*/
 
-
+    // ✅ 隐藏 loading 界面
+    document.getElementById('loading').style.display = 'none';
 
     console.log("✅ Model Loaded:", model);
     animate();
@@ -154,7 +169,7 @@ function animate() {
     // }
 
     // 添加键盘控制移动（WASD）
-    direction.set(0, 0, 0);
+  /*  direction.set(0, 0, 0);
     if (keysPressed["KeyW"]) direction.z -= 1;
     if (keysPressed["KeyS"]) direction.z += 1;
     if (keysPressed["KeyA"]) direction.x -= 1;
@@ -162,7 +177,8 @@ function animate() {
     direction.normalize();
     direction.applyEuler(camera.rotation);
     velocity.copy(direction).multiplyScalar(moveSpeed);
-    controls.getObject().position.add(velocity);
+    controls.getObject().position.add(velocity); */
+    controls.update();
 
     if (mixer) mixer.update(0.016);        // 原模型的动画
     if (smallMixer) smallMixer.update(0.016); // ✅ 小模型的动画

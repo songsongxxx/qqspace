@@ -6,13 +6,8 @@
 
 // ✅ 使用 UNPKG 的 ES 模块 CDN（不能混用其他 CDN）
 
-
-
-
 let mixer;
-
 let smallMixer;
-
 
 const controlsElement = document.querySelector('#controls');
 controlsElement.style.zIndex = 10;
@@ -68,7 +63,7 @@ loader.load('hurtmice.glb', function (gltf) {
     scene.add(pointLight);
 
     model.position.set(0, 0, 0);
-    model.scale.set(0.1, 0.1, 0.1);
+    model.scale.set(1, 1, 1);
     scene.add(model);
 
     // ✅ 添加一个小模型副本（放在摄像机前方）
@@ -85,6 +80,8 @@ loader.load('hurtmice.glb', function (gltf) {
     });*/
     
 
+    // ✅ 隐藏 loading 界面
+    document.getElementById('loading').style.display = 'none';
 
     console.log("✅ Model Loaded:", model);
     animate();
@@ -99,11 +96,11 @@ function animate() {
 
     // 如果模型已加载，将其旋转
     if (model) {
-        model.rotation.y += 0.01; // 每帧绕 Y 轴旋转 0.01 弧度
+        model.rotation.y += 0.02; // 每帧绕 Y 轴旋转 0.01 弧度
     }
 
-    if (mixer) mixer.update(0.016);        // 原模型的动画
-    if (smallMixer) smallMixer.update(0.016); // ✅ 小模型的动画
+   //  if (mixer) mixer.update(0.016);        // 原模型的动画
+   //  if (smallMixer) smallMixer.update(0.016); // ✅ 小模型的动画
 
     renderer.render(scene, camera);
 }
@@ -115,6 +112,15 @@ window.addEventListener('resize', () => {
     camera.updateProjectionMatrix();
 });
 
+document.querySelector('#controls').addEventListener('click', () => {
+  window.location.href = 'qq_space_darkcave.html';
+});
+
+const loadingDiv = document.getElementById('loading');
+loadingDiv.style.opacity = 0;
+setTimeout(() => {
+  loadingDiv.style.display = 'none';
+}, 500);
 
 
 /*// vfx

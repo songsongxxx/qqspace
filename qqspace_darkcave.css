@@ -9,12 +9,14 @@ body {
 }
 
 #loading {
+    color: #ff0000;
     position: fixed;
     top: 50%;
     left: 50%;
     font-family: 'Press Start 2P';
     transform: translate(-50%, -50%);
     z-index: 999;
+    font-size: 6px;
   }
 
   
