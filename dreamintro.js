@@ -143,7 +143,7 @@ function updateStory() {
 
     button.disabled = true;
       button.classList.remove("active");
-      button.textContent = `请等待 ${scene.delay} 秒...`;
+      button.textContent = `Waiting ${scene.delay} seconds...`;
 
     // Wait for fade-out to finish before changing content
     setTimeout(() => {
@@ -166,9 +166,9 @@ const countdown = setInterval(() => {
     buttonUnlocked = true; // ✅ 模型现在可点击了！
 
     button.classList.add("active");
-    button.textContent = "继续故事 ➤";
+    button.textContent = "Continue the story ➤";
   } else {
-    button.textContent = `请等待 ${remaining} 秒...`;
+    button.textContent = `Waiting ${remaining} seconds...`;
   }
 }, 1000);
 
@@ -196,7 +196,7 @@ document.getElementById("next-button").addEventListener("click", () => {
       currentScene++;
       updateStory();
     } else {
-      document.getElementById("next-button").textContent = "故事已结束";
+      document.getElementById("next-button").textContent = "The dream fades away";
       document.getElementById("next-button").disabled = true;
       document.getElementById("next-button").classList.remove("active");
     }
