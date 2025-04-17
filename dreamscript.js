@@ -15,18 +15,31 @@ let recordingStream;
 // 开始实时试音变声
 let mic, pitchShift, bitCrusher, delay, reverb;
 let isTesting = false;
+let gain;  // Declare globally
+let isToneStarted = false;
 
 // volumeVal
 
 document.getElementById("testToneBtn").addEventListener("click", async () => {
     const volumeSlider = document.getElementById("volumeSlider");
     const volumeVal = volumeSlider ? parseFloat(volumeSlider.value) : 1; // 默认音量 1
-    const gain = new Tone.Gain(volumeVal);
+
+    // Only create the gain node if it's not already created
+    if (!gain) {
+        gain = new Tone.Gain(volumeVal);
+    } else {
+        gain.gain.value = volumeVal;  // Update gain value if the gain node already exists
+    }
+
 
     if (!isTesting) {
-        await Tone.start();
+        if (!isToneStarted) {
+            await Tone.start(); // Ensure Tone.js context is started only once
+            isToneStarted = true;
+        }
         mic = new Tone.UserMedia();
 
+        
         // 从 UI 获取数值
         const pitch = parseFloat(document.getElementById("pitchSlider").value);
         const reverbT = parseFloat(document.getElementById("reverbSlider").value);
