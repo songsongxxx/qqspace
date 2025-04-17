@@ -62,7 +62,7 @@ document.getElementById("testToneBtn").addEventListener("click", async () => {
         gain.toDestination();
 
         await mic.open();
-        console.log("🎧 开始实时试音");
+        console.log("sound test");
         isTesting = true;
         document.getElementById("testToneBtn").textContent = "stop";
         
@@ -185,6 +185,9 @@ async function processAudioWithTone(audioBlob, text = "") {
 function createAndAppendBubble(text, audioBase64) {
     const bubble = createBubble(null, text, audioBase64);
     document.getElementById("bubbleContainer").appendChild(bubble);
+
+
+    animateBubble(bubble); // ✅ 让泡泡动起来
 }
 
 
@@ -213,6 +216,9 @@ export async function loadBubbles() {
 
         const bubble = createBubble(entry.id, entry.text, entry.audio_url);
         container.appendChild(bubble);
+
+        animateBubble(bubble); // ✅ 让旧泡泡也动起来
+
     });
 }
 
@@ -364,4 +370,31 @@ async function bufferToBlob(audioBuffer) {
     }
 
     return new Blob([view], { type: "audio/wav" });
+}
+
+// ✅ 让泡泡动起来
+function animateBubble(bubble) {
+    let dx = (Math.random() * 2 - 1) * 1.2; // 水平速度
+    let dy = (Math.random() * 2 - 1) * 1.2; // 垂直速度
+
+    function move() {
+        const rect = bubble.getBoundingClientRect();
+        const maxX = window.innerWidth - rect.width;
+        const maxY = window.innerHeight - rect.height;
+
+        let x = bubble.offsetLeft + dx;
+        let y = bubble.offsetTop + dy;
+
+        // 📦 边界反弹（仅网页四边）
+        if (x < 0 || x > maxX) dx = -dx;
+        if (y < 0 || y > maxY) dy = -dy;
+
+        // 🫧 更新位置
+        bubble.style.left = `${Math.max(0, Math.min(x, maxX))}px`;
+        bubble.style.top = `${Math.max(0, Math.min(y, maxY))}px`;
+
+        requestAnimationFrame(move);
+    }
+
+    requestAnimationFrame(move);
 }

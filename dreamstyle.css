@@ -258,7 +258,8 @@ margin-bottom: 14px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 }
 
-@keyframes float {
+/*泡泡小运动*/
+/*@keyframes float {
     0% {
         transform: translate(0, 0);
     }
@@ -283,7 +284,7 @@ margin-bottom: 14px;
 .bubble {
     position: absolute;
     animation: float 5s infinite ease-in-out;
-}
+}*/
 
 
 /* tonecontrol在中心 */
