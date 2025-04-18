@@ -194,6 +194,9 @@ function createAndAppendBubble(text, audioBase64) {
 // 加载泡泡
 export async function loadBubbles() {
     const container = document.getElementById("bubbleContainer");
+
+    container.innerHTML = ""; // 清空旧的泡泡
+    // 然后再加载新的泡泡
     const { data, error } = await supabase
         .from("dreams")
         .select("*")
@@ -239,6 +242,7 @@ export function createBubble(id, text, audioBase64 = null) {
     bubble.style.padding = "8px";
     bubble.style.fontFamily = "'Press Start 2P', monospace";
 
+    
     if (!audioBase64) {
         const textElem = document.createElement("div");
         textElem.textContent = text;

@@ -97,46 +97,6 @@ margin-bottom: 14px;
 }
 
 
-/* 控制面板 */
-#controls {
-    position: fixed;
-    top: 40%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2), inset 0 0 8px rgba(255, 255, 255, 0.1);
-    border-radius: 30px;
-    padding: 20px 30px;
-    backdrop-filter: blur(12px);
-    font-family: 'Noto Sans SC', sans-serif;
-    z-index: 10;
-    display: flex;
-    gap: 16px;
-    align-items: center;
-    justify-content: center;
-    flex-wrap: wrap;
-}
-
-#controls input,
-#controls button {
-    font-family: 'Noto Sans SC', sans-serif;
-    border-radius: 16px;
-    padding: 10px 16px;
-    background: rgba(255, 255, 255, 0.2);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    color: rgb(90, 90, 90);
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-    backdrop-filter: blur(8px);
-    transition: all 0.2s ease;
-}
-
-#controls button:hover {
-    transform: scale(1.05);
-    background: rgba(255, 255, 255, 0.3);
-}
-
-
 /* 泡泡样式 */
 .bubble {
     position: absolute;
@@ -250,22 +210,6 @@ margin-bottom: 14px;
     transition: 0.3s;
 }
 
-/* 🌟 控制面板 #controls（现在在导航栏下方） */
-#controls {
-    position: absolute;
-    top: 120px;
-    /* 让它位于导航栏下方 */
-    left: 50%;
-    transform: translateX(-50%);
-    background: rgba(255, 255, 255, 0.2);
-    backdrop-filter: blur(10px);
-    padding: clamp(10px, 2vw, 20px);
-    border-radius: 15px;
-    display: flex;
-    gap: 10px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-}
-
 /* tonecontrol在中心 */
 @media (max-width: 400px) {
     #toneControls {
@@ -306,28 +250,50 @@ margin-bottom: 14px;
   }
   
   
-  
+  /* 🌟 控制面板 #controls（现在在导航栏下方） */
+#controls {
+  position: fixed;
+  /* 让它位于导航栏下方 */
+  top: 25%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  padding: clamp(10px, 2vw, 20px);
+  border-radius: 15px;
+  display: flex;
+  gap: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
 /* tonecontrol上面那个在中心 */
   @media (max-width: 400px) {
     #controls {
       position: absolute;
-      top: 20%;
+      top: 50%; /* 垂直居中 */
       left: 50%;
-      transform: translateX(-50%);
-      flex-direction: column;
+      transform: translate(-50%, -50%);
+
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
       gap: 6px;
       padding: 10px 12px;
-      width: 85%;
       border-radius: 18px;
       background: rgba(255, 255, 255, 0.15);
       backdrop-filter: blur(10px);
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+
+      width: 90%;
+    max-width: 300px;
     }
   
     #controls input,
     #controls button {
       font-size: 10px;
-      padding: 6px 8px;
+      padding: 3px 8px;
+      height: 30px; /* ✨ 强制限制高度 */
       border-radius: 12px;
       width: 100%;
       box-shadow: none;
@@ -344,6 +310,49 @@ margin-bottom: 14px;
       color: #aaa;
     }
   }
+
+
+/* 🌈 统一按钮和输入框的梦幻泡泡风格 */
+
+#controls input[type="text"],
+#controls button {
+  font-size: 13px;
+  height: 44px;
+  line-height: 1.2;
+  padding: 10px 18px;
+  border-radius: 28px;
+  width: 100%;
+  box-sizing: border-box;
+  background: rgba(255, 255, 255, 0.5);
+  border: 1px solid rgba(255, 200, 255, 0.3);
+  box-shadow:
+    inset 0 0 6px rgba(255, 255, 255, 0.3),
+    0 4px 8px rgba(220, 220, 220, 0.2);
+  color: #444;
+  font-family: 'Noto Sans SC', sans-serif;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(6px);
+  text-align: center;
+}
+
+/* 🫧 统一 placeholder 样式 */
+#controls input::placeholder {
+  color: #bbb;
+  font-size: 13px;
+  font-style: italic;
+  text-align: center;
+}
+
+/* ✨ hover 效果一致 */
+#controls button:hover {
+  transform: scale(1.02);
+  background: rgba(255, 255, 255, 0.6);
+  box-shadow:
+    0 0 0 2px rgba(255, 160, 220, 0.2),
+    0 6px 14px rgba(255, 200, 240, 0.2);
+}
+
+  
   
   /* 颜文字框 */
   .play-btn .emoji-gray {
@@ -391,3 +400,51 @@ margin-bottom: 14px;
       transform: scale(1.1);
     }
   }
+
+
+  /* 🌈 统一按钮和输入框的梦幻泡泡风格 */
+#controls input[type="text"],
+#controls button {
+  font-size: 13px;
+  padding: 14px 20px;
+  height: 48px;
+  border-radius: 30px;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.5);
+  border: 1px solid rgba(255, 200, 255, 0.3);
+  box-shadow:
+    inset 0 0 8px rgba(255, 255, 255, 0.4),
+    0 4px 12px rgba(200, 200, 200, 0.2);
+  color: #444;
+  font-family: 'Noto Sans SC', sans-serif;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(8px);
+  cursor: pointer;
+}
+
+/* 🩷 鼠标悬停时放大一点 */
+#controls button:hover {
+  background: rgba(255, 255, 255, 0.6);
+  transform: scale(1.02);
+  box-shadow:
+    0 0 0 2px rgba(255, 160, 220, 0.2),
+    0 6px 16px rgba(255, 200, 240, 0.2);
+}
+
+/* 🩵 输入框聚焦时更亮一些 */
+#controls input[type="text"]:focus {
+  outline: none;
+  background: rgba(255, 255, 255, 0.7);
+  border-color: #ffc4ee;
+  box-shadow:
+    0 0 0 3px rgba(255, 160, 220, 0.3),
+    0 6px 20px rgba(255, 200, 240, 0.3);
+}
+
+/* ☁️ placeholder 更温柔 */
+#controls input::placeholder {
+  color: #aaa;
+  font-size: 12px;
+  font-style: italic;
+  opacity: 0.7;
+}
