@@ -1,6 +1,15 @@
 /* 全局样式 */
+
+@font-face {
+  font-family: 'PencilPete';
+  src: url('PencilPete TRIAL/PencilPeteFONT.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+}
+
+
 body {
-    font-family: 'Press Start 2P', 'Comic Sans MS', 'Verdana', sans-serif;
+    font-family: 'PencilPete', sans-serif;
     text-align: center;
     background-color: #fefefe;
     overflow: hidden;
@@ -23,7 +32,7 @@ body {
         0 8px 20px rgba(0, 0, 0, 0.1),
         inset 0 0 12px rgba(255, 255, 255, 0.6),
         0 0 30px rgba(255, 255, 255, 0.5);
-    font-family: 'Press Start 2P', cursive;
+    font-family: 'PencilPete', sans-serif;
     font-size: 10px;
     color: #333;
     z-index: 10;
@@ -329,7 +338,7 @@ margin-bottom: 14px;
     inset 0 0 6px rgba(255, 255, 255, 0.3),
     0 4px 8px rgba(220, 220, 220, 0.2);
   color: #444;
-  font-family: 'Noto Sans SC', sans-serif;
+  font-family: 'PencilPete', sans-serif;
   transition: all 0.3s ease;
   backdrop-filter: blur(6px);
   text-align: center;
@@ -369,7 +378,7 @@ margin-bottom: 14px;
     color: #444;
     font-size: 12px;
     font-weight: bold;
-    font-family: 'Press Start 2P', monospace;
+    font-family: 'PencilPete', sans-serif;
     box-shadow:
       2px 2px 0 #aaa,
       inset 0 0 6px rgba(255, 255, 255, 0.6);
@@ -416,7 +425,7 @@ margin-bottom: 14px;
     inset 0 0 8px rgba(255, 255, 255, 0.4),
     0 4px 12px rgba(200, 200, 200, 0.2);
   color: #444;
-  font-family: 'Noto Sans SC', sans-serif;
+  font-family: 'PencilPete', sans-serif;
   transition: all 0.3s ease;
   backdrop-filter: blur(8px);
   cursor: pointer;
@@ -447,4 +456,11 @@ margin-bottom: 14px;
   font-size: 12px;
   font-style: italic;
   opacity: 0.7;
+}
+
+
+/* play */
+.play-btn {
+  font-family: 'PencilPete', sans-serif;
+  font-size: 12px; /* 可调整 */
 }

@@ -240,9 +240,9 @@ export function createBubble(id, text, audioBase64 = null) {
     bubble.style.border = "1px solid black";
     bubble.style.borderRadius = "8px";
     bubble.style.padding = "8px";
-    bubble.style.fontFamily = "'Press Start 2P', monospace";
+    bubble.style.fontFamily = "'PencilPete', sans-serif";
 
-    
+
     if (!audioBase64) {
         const textElem = document.createElement("div");
         textElem.textContent = text;

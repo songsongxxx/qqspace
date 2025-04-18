@@ -1,5 +1,12 @@
+@font-face {
+  font-family: 'PencilPete';
+  src: url('PencilPete TRIAL/PencilPeteFONT.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+}
+
 body {
-    font-family: 'Kalam', sans-serif;
+    font-family: 'PencilPete', sans-serif;
     background-color: #f1f1f1;
     text-align: center;
     margin: 0;
@@ -49,7 +56,7 @@ body {
   
 /* 对话文字风格 */
 #story-text {
-    font-family: 'Kalam', cursive; /* 更有手写感 */
+    font-family: 'PencilPete', sans-serif; /* 更有手写感 */
     font-size: 1rem;
     background: rgba(255, 255, 255, 0.3); /* 轻透背景 */
     border: 1px dashed #999; /* ✅ 保留 */
@@ -103,7 +110,7 @@ button {
     box-shadow: none;     /* 去掉阴影 */
     padding: 0.6rem 1.2rem;
     margin-top: 1rem;
-    font-family: 'Kalam', monospace;
+    font-family: 'PencilPete', sans-serif;
     font-size: 1rem;
     color: #333;
     cursor: pointer;
