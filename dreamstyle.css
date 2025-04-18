@@ -140,13 +140,14 @@ margin-bottom: 14px;
 /* 泡泡样式 */
 .bubble {
     position: absolute;
-    background-color: #a4e5ff;
-    color: rgb(79, 75, 138);
+    background-color: #f0fbff;
+    color: rgb(27, 27, 27);
     padding: 10px 15px;
     border-radius: 50%;
     text-align: center;
-    font-size: clamp(6px, 1.5vw, 14px);
+    font-size: clamp(1px, 1.5vw, 10px);
     display: flex;
+    border-radius: 30px; /* 稍微圆润一些更柔和 */
     align-items: center;
     justify-content: center;
     box-shadow: 4px 4px 0px #383838;
@@ -154,10 +155,12 @@ margin-bottom: 14px;
     cursor: pointer;
     pointer-events: auto;
 
+    word-break: break-word;
+    overflow-wrap: break-word;
+
     max-width: 180px; /* 限制最大宽度 */
     word-wrap: break-word; /* 允许单词内换行 */
     white-space: normal; /* 正常换行 */
-    text-align: left; /* 可选：文字靠左对齐，看起来更自然 */
 }
 
 /* 图片泡泡 */
@@ -263,35 +266,6 @@ margin-bottom: 14px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 }
 
-/*泡泡小运动*/
-/*@keyframes float {
-    0% {
-        transform: translate(0, 0);
-    }
-
-    25% {
-        transform: translate(-10px, -20px);
-    }
-
-    50% {
-        transform: translate(20px, 10px);
-    }
-
-    75% {
-        transform: translate(-15px, 15px);
-    }
-
-    100% {
-        transform: translate(0, 0);
-    }
-}
-
-.bubble {
-    position: absolute;
-    animation: float 5s infinite ease-in-out;
-}*/
-
-
 /* tonecontrol在中心 */
 @media (max-width: 400px) {
     #toneControls {
@@ -371,3 +345,49 @@ margin-bottom: 14px;
     }
   }
   
+  /* 颜文字框 */
+  .play-btn .emoji-gray {
+    color: #999999; /* 或者 gray, #aaa, rgba(0,0,0,0.5) 等 */
+}
+
+ /* delete button */
+.delete-btn {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: none;
+    background: radial-gradient(circle, #ffd6eb, #ffecf4);
+    color: #444;
+    font-size: 12px;
+    font-weight: bold;
+    font-family: 'Press Start 2P', monospace;
+    box-shadow:
+      2px 2px 0 #aaa,
+      inset 0 0 6px rgba(255, 255, 255, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    animation: bubbleBreath 2.8s ease-in-out infinite;
+    transition: transform 0.2s ease;
+    margin-left: 6px;
+    z-index: 1;
+  }
+  
+  .delete-btn:hover {
+    transform: scale(1.2);
+    background: radial-gradient(circle, #ffc8e6, #ffddec);
+    box-shadow:
+      3px 3px 0 #666,
+      inset 0 0 8px rgba(255, 255, 255, 0.9);
+  }
+  
+  /* 🌬️ 呼吸动画 */
+  @keyframes bubbleBreath {
+    0%, 100% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.1);
+    }
+  }

@@ -217,12 +217,12 @@ export async function loadBubbles() {
         const bubble = createBubble(entry.id, entry.text, entry.audio_url);
         container.appendChild(bubble);
 
-    // 🚀 等待两帧，确保 DOM 渲染完再动画
+  // ⏳ 延后再启动动画，确保泡泡成功渲染后再动
+  setTimeout(() => {
     requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-            animateBubble(bubble);
-        });
+      animateBubble(bubble);
     });
+  }, 20);
 
     });
 }
@@ -245,7 +245,8 @@ export function createBubble(id, text, audioBase64 = null) {
         bubble.appendChild(textElem);
     } else {
         const playButton = document.createElement("button");
-        playButton.textContent = "▶️ Play";
+        playButton.innerHTML = `<span class="emoji-gray">(*・3・)ノ⌒☆</span> PLAY`;
+        playButton.classList.add("play-btn");
         playButton.onclick = async () => {
             await Tone.start();
 
@@ -278,8 +279,9 @@ export function createBubble(id, text, audioBase64 = null) {
 
 
     const del = document.createElement("button");
-    del.textContent = "X";
+    del.textContent = "✕";
     del.style.marginLeft = "5px";
+    del.classList.add("delete-btn"); // ✅ 添加 class
     del.onclick = () => deleteBubble(id, bubble);
     bubble.appendChild(del);
 
