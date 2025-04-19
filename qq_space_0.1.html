@@ -2,129 +2,158 @@
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>0.01</title>
-  <link rel="stylesheet" href="qq_space_0.1.css">
-  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet" />
-  <style>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>0.01</title>
+    <link rel="stylesheet" href="qq_space_0.1.css">
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet" />
+    <style>
 
-  </style>
+    </style>
 </head>
 
 <body>
-  <div class="chat-sidebar">
-    <h2>stories</h2>
-    <div id="friendList"></div>
-  </div>
-
-  <div id="storyModal" class="story-modal hidden">
-    <div class="story-content"></div>
-    <button onclick="closeModal()">Close</button>
-  </div>
-
-  
-  <div class="poem-section">
-    <h1>A guide for sculpting what cannot be named</h1>
-    <div class="typing-container">
-      <p>This is a world of <input id="b1" />.<br />
-        Not because its creatures are invisible, but because <input id="b2" /> is never fixed—<br />
-        it slides, softens, and turns within the folds of time.<br />
-        Their bodies feel like sensations, or the memory of a form that may have once existed.<br />
-        In the corner of a room, in the gaps between forgotten dust, something begins to stir.<br />
-        A <input id="b3" /> that cannot be remembered is slowly forming.<br />
-        You begin from what you believe is familiar: perhaps a structure made of <input id="b4" />,<br />
-        it may <input id="b5" />, or it may also <input id="b6" />.<br />
-        Its surface resembles <input id="b7" />, and within time it continues to <input id="b8" />.<br />
-        But soon, it will move beyond your understanding—<br />
-        it might split into another version of itself,<br />
-        or collapse into endless folds,<br />
-        or emit an echo from within, though no sound can be heard.<br />
-        It does not exist in order to survive, but to <input id="b9" />.
-      </p>
-      <button class="submit-button" onclick="submitPoem()">Submit</button>
-
+    <div class="chat-sidebar">
+        <h2>(́순◞౪◟순‵)</h2>
+        <div class="sidebar-inner">
+            <div id="friendList"></div>
+        </div>
     </div>
-  </div>
 
-  <script>
-
-    function submitPoem() {
-
-    console.log("🚀 准备发送数据！");
-
-    const formData = new FormData();
-    formData.append('entry.1337640561', document.getElementById('b1').value);
-    formData.append('entry.92386776', document.getElementById('b2').value);
-    formData.append('entry.1122794289', document.getElementById('b3').value);
-    formData.append('entry.895074014', document.getElementById('b4').value);
-    formData.append('entry.1429670293', document.getElementById('b5').value);
-    formData.append('entry.597940394', document.getElementById('b6').value);
-    formData.append('entry.1337463375', document.getElementById('b7').value);
-    formData.append('entry.824810926', document.getElementById('b8').value);
-    formData.append('entry.1131995474', document.getElementById('b9').value);
-
-    fetch('https://docs.google.com/forms/d/e/1FAIpQLSd6Ah71JE9D-0SWYAhTBVEjUQTeMklL69DVlxNfDmF16UiE1A/formResponse', 
+    <div id="storyModal" class="story-modal hidden">
+        <div class="story-content"></div>
+        <button onclick="closeModal()">Close</button>
+    </div>
 
 
-    {
-      method: 'POST',
-      mode: 'no-cors',
-      body: formData
-    }).then(() => {
-      alert("✅ 提交成功！");
-    }).catch(err => {
-      console.error("❌ 提交失败", err);
-    });
-  }
+    <div class="poem-section">
+        <h1>A guide for sculpting what cannot be named</h1>
+        <div class="typing-container">
+            <p>Entity_qq_space#:<input id="b1" /> <br /><br />
+                This is a world of <input id="b2" />.<br />
+                not because they are invisible,<br />
+                but because the intention of contour is never fixed—<br />
+                it slips, softens, and spins within the folds of time.<br /><br />
+
+                Their bodies feel like sensations,<br />
+                or the memory of a form that may have once existed.<br />
+                In the corner of a room,<br />
+                in the gaps between forgotten dust,<br />
+                something begins to stir.<br /><br />
+
+                A <input id="b3" /> that cannot be remembered is slowly forming.<br />
+                You begin from what you believe is familiar: perhaps a structure made of <input id="b4" />,<br />
+                it may <input id="b5" />, or it may also <input id="b6" />.<br /><br />
+
+                Its surface resembles <input id="b7" />, <br />
+                and within time it continues to <input id="b8" />.<br /><br />
+
+                But soon, it will move beyond your understanding—<br />
+                it might split into another version of itself,<br />
+                or collapse into endless folds,<br />
+                or emit an echo from within, though no sound can be heard.<br /><br />
+
+                It does not exist in order to survive,<br />
+                but to <input id="b9" />.<br />
+            </p>
+            <button class="submit-button" onclick="submitPoem()">Submit</button>
+        </div>
+    </div>
+
+    <script>
+
+        function submitPoem() {
+
+            console.log("🚀 准备发送数据！");
+
+            const formData = new FormData();
+            formData.append('entry.1337640561', document.getElementById('b1').value);
+            formData.append('entry.92386776', document.getElementById('b2').value);
+            formData.append('entry.1122794289', document.getElementById('b3').value);
+            formData.append('entry.895074014', document.getElementById('b4').value);
+            formData.append('entry.1429670293', document.getElementById('b5').value);
+            formData.append('entry.597940394', document.getElementById('b6').value);
+            formData.append('entry.1337463375', document.getElementById('b7').value);
+            formData.append('entry.824810926', document.getElementById('b8').value);
+            formData.append('entry.1131995474', document.getElementById('b9').value);
+
+            fetch('https://docs.google.com/forms/d/e/1FAIpQLSd6Ah71JE9D-0SWYAhTBVEjUQTeMklL69DVlxNfDmF16UiE1A/formResponse',
 
 
-  const SHEET_API_URL = 'https://script.google.com/macros/s/AKfycbzpQ8vTe8IBofsIog4TLZThhzReBvyb5SxZTqeYJSwUJW9jRo-AOUR4SZZxMWEggiud/exec'; // 用你刚刚部署的链接
+                {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    body: formData
+                }).then(() => {
+                    alert("✅ 提交成功！");
+                }).catch(err => {
+                    console.error("❌ 提交失败", err);
+                });
+        }
 
-function loadFriends() {
-  fetch(SHEET_API_URL)
-    .then(res => res.json())
-    .then(data => {
-      const container = document.getElementById('friendList');
-      container.innerHTML = '';
-      data.forEach((entry, index) => {
-          const poem = `This is a world of ${entry.b1}...`; // 简短 preview
 
-          const fullPoem = `This is a world of ${entry.b1}.
-Not because its creatures are invisible, but because ${entry.b2} is never fixed—
-it slides, softens, and turns within the folds of time.
-Their bodies feel like sensations, or the memory of a form that may have once existed.
-In the corner of a room, in the gaps between forgotten dust, something begins to stir.
+        const SHEET_API_URL = 'https://script.google.com/macros/s/AKfycbzpQ8vTe8IBofsIog4TLZThhzReBvyb5SxZTqeYJSwUJW9jRo-AOUR4SZZxMWEggiud/exec'; // 用你刚刚部署的链接
+
+        function loadFriends() {
+            fetch(SHEET_API_URL)
+                .then(res => res.json())
+                .then(data => {
+                    const container = document.getElementById('friendList');
+                    container.innerHTML = '';
+                    data.forEach((entry, index) => {
+                        const poem = `This is a world of ${entry.b1}...`; // 简短 preview
+
+                        const fullPoem = `Entity_qq_space#:${entry.b1} 
+                        
+This is a world of ${entry.b2}.
+not because they are invisible,
+but because the intention of contour is never fixed—
+it slips, softens, and spins within the folds of time.
+
+Their bodies feel like sensations,
+or the memory of a form that may have once existed.
+In the corner of a room,
+in the gaps between forgotten dust,
+something begins to stir.
+
 A ${entry.b3} that cannot be remembered is slowly forming.
-You begin from what you believe is familiar: perhaps a structure made of ${entry.b4},
+
+You begin from what you believe is familiar:
+perhaps a structure made of ${entry.b4},
 it may ${entry.b5}, or it may also ${entry.b6}.
-Its surface resembles ${entry.b7}, and within time it continues to ${entry.b8}.
+
+Its surface resembles ${entry.b7}, 
+and within time it continues to ${entry.b8}.
+
 But soon, it will move beyond your understanding—
 it might split into another version of itself,
 or collapse into endless folds,
 or emit an echo from within, though no sound can be heard.
-It does not exist in order to survive, but to ${entry.b9}.`;
 
-          const div = document.createElement('div');
-          div.className = 'friend';
-          div.textContent = 'Story ' + (index + 1);
-          div.onclick = () => openModal(fullPoem);
-          container.appendChild(div);
-        });
-      })
-      .catch(err => console.error("加载失败", err));
-  }
+It does not exist in order to survive,
+but to ${entry.b9}.`;
 
-   function openModal(text) {
-    document.querySelector('.story-modal .story-content').textContent = text;
-    document.getElementById('storyModal').classList.remove('hidden');
-  }
+                        const div = document.createElement('div');
+                        div.className = 'friend';
+                        div.textContent = '(:◎)≡' + (index + 1);
+                        div.onclick = () => openModal(fullPoem);
+                        container.appendChild(div);
+                    });
+                })
+                .catch(err => console.error("加载失败", err));
+        }
 
-  function closeModal() {
-    document.getElementById('storyModal').classList.add('hidden');
-  }
+        function openModal(text) {
+            document.querySelector('.story-modal .story-content').textContent = text;
+            document.getElementById('storyModal').classList.remove('hidden');
+        }
 
-window.onload = loadFriends;
-  </script>
+        function closeModal() {
+            document.getElementById('storyModal').classList.add('hidden');
+        }
+
+        window.onload = loadFriends;
+    </script>
 </body>
+
 </html>

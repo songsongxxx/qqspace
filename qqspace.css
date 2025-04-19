@@ -49,6 +49,7 @@ body {
     /*border: 2px solid #fff;*/
     cursor: pointer;
     transition: background-color 0.3s ease;
+    font-size: 8px;
 }
 
 #controls .button:hover {
