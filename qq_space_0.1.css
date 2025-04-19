@@ -221,3 +221,40 @@
     color: #fff;
   }
   
+
+ /* 整体英文样式 */
+  
+  /* tooltip 显示框样式 */
+  .tooltip {
+    position: relative;
+    cursor: help;
+    border-bottom: 1px dashed #999;
+  }
+  
+  /* 中文提示框 */
+  .tooltip::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    left: 50%;
+    bottom: 125%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.8);
+    color: #fff;
+    padding: 6px 10px;
+    border-radius: 6px;
+    white-space: nowrap;
+    font-size: 12px;
+    font-family: 'Noto Sans SC', sans-serif; /* 中文字体 */
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+    z-index: 999;
+  }
+  
+  /* 鼠标悬停时显示 tooltip */
+  .tooltip:hover::after {
+    opacity: 1;
+  }
+  
+
+  

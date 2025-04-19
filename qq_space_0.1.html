@@ -7,7 +7,10 @@
     <title>0.01</title>
     <link rel="stylesheet" href="qq_space_0.1.css">
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet" />
-    <style>
+    <!-- 可爱中文字体：阿里巴巴普惠体 -->
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;700&display=swap" rel="stylesheet">
+
+<style>
 
     </style>
 </head>
@@ -25,40 +28,43 @@
         <button onclick="closeModal()">Close</button>
     </div>
 
-
     <div class="poem-section">
-        <h1>A guide for sculpting what cannot be named</h1>
+        <h1 class="tooltip" data-tooltip="无法被命名之物的塑形指南">A guide for sculpting what cannot be named</h1>
         <div class="typing-container">
-            <p>Entity_qq_space#:<input id="b1" /> <br /><br />
-                This is a world of <input id="b2" />.<br />
-                not because they are invisible,<br />
-                but because the intention of contour is never fixed—<br />
-                it slips, softens, and spins within the folds of time.<br /><br />
-
-                Their bodies feel like sensations,<br />
-                or the memory of a form that may have once existed.<br />
-                In the corner of a room,<br />
-                in the gaps between forgotten dust,<br />
-                something begins to stir.<br /><br />
-
-                A <input id="b3" /> that cannot be remembered is slowly forming.<br />
-                You begin from what you believe is familiar: perhaps a structure made of <input id="b4" />,<br />
-                it may <input id="b5" />, or it may also <input id="b6" />.<br /><br />
-
-                Its surface resembles <input id="b7" />, <br />
-                and within time it continues to <input id="b8" />.<br /><br />
-
-                But soon, it will move beyond your understanding—<br />
-                it might split into another version of itself,<br />
-                or collapse into endless folds,<br />
-                or emit an echo from within, though no sound can be heard.<br /><br />
-
-                It does not exist in order to survive,<br />
-                but to <input id="b9" />.<br />
-            </p>
-            <button class="submit-button" onclick="submitPoem()">Submit</button>
+          <p>
+            <span class="tooltip" data-tooltip="实体编号">Entity_qq_space#:</span><input id="b1" /> <br /><br />
+      
+            <span class="tooltip" data-tooltip="这是一个……的世界">This is a world of</span> <input id="b2" />.<br />
+            <span class="tooltip" data-tooltip="不是因为它们不可见">not because they are invisible,</span><br />
+            <span class="tooltip" data-tooltip="而是因为轮廓的意图从不固定">but because the intention of contour is never fixed—</span><br />
+            <span class="tooltip" data-tooltip="它滑动、软化，在时间的褶皱中旋转">it slips, softens, and spins within the folds of time.</span><br /><br />
+      
+            <span class="tooltip" data-tooltip="它们的身体像是一种感受，">Their bodies feel like sensations,</span><br />
+            <span class="tooltip" data-tooltip="或是一段形状曾经存在的记忆">or the memory of a form that may have once existed.</span><br />
+            <span class="tooltip" data-tooltip="在房间的角落里，">In the corner of a room,</span><br />
+            <span class="tooltip" data-tooltip="在被遗忘的尘埃缝隙中，">in the gaps between forgotten dust,</span><br />
+            <span class="tooltip" data-tooltip="某种东西开始蠕动">something begins to stir.</span><br /><br />
+      
+            <span class="tooltip" data-tooltip="一种无法被记住的……">A</span> <input id="b3" /> <span title="正在缓慢生成">that cannot be remembered is slowly forming.</span><br />
+            <span class="tooltip" data-tooltip="你从一个自以为熟悉的起点开始：">You begin from what you believe is familiar:</span>
+            <span class="tooltip" data-tooltip="也许是一种由……构成的结构">perhaps a structure made of</span> <input id="b4" />,<br />
+            <span class="tooltip" data-tooltip="它可能会……，也可能会……">it may</span> <input id="b5" />, <span title="也可能会">or it may also</span> <input id="b6" />.<br /><br />
+      
+            <span class="tooltip" data-tooltip="它的表面仿佛……">Its surface resembles</span> <input id="b7" />, <br />
+            <span class="tooltip" data-tooltip="在时间中不断……">and through time, it continues to</span> <input id="b8" />.<br /><br />
+      
+            <span class="tooltip" data-tooltip="但很快，它会超出你的理解：">But soon, it will move beyond your understanding—</span><br />
+            <span class="tooltip" data-tooltip="它可能会分裂为另一个自己，">it might split into another version of itself,</span><br />
+            <span class="tooltip" data-tooltip="或塌陷成无数褶层，">or collapse into endless folds,</span><br />
+            <span class="tooltip" data-tooltip="或从内部发出无声的回音。">or emit an echo from within, though no sound can be heard.</span><br /><br />
+      
+            <span class="tooltip" data-tooltip="它不是为了生存而存在，">It does not exist in order to survive,</span><br />
+            <span class="tooltip" data-tooltip="而是为了……而存在">but to</span> <input id="b9" />.<br />
+          </p>
+          <button class="submit-button" onclick="submitPoem()">Submit</button>
         </div>
-    </div>
+      </div>
+      
 
     <script>
 
@@ -104,7 +110,7 @@
                         const poem = `This is a world of ${entry.b1}...`; // 简短 preview
 
                         const fullPoem = `Entity_qq_space#:${entry.b1} 
-                        
+
 This is a world of ${entry.b2}.
 not because they are invisible,
 but because the intention of contour is never fixed—
