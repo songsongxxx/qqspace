@@ -1,323 +1,130 @@
 <!DOCTYPE html>
-<html lang="zh">
+<html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>index</title>
-    <!-- 复古字体 -->
-    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>0.01</title>
+  <link rel="stylesheet" href="qq_space_0.1.css">
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet" />
+  <style>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128/examples/js/loaders/GLTFLoader.js"></script> <!-- GLTF 加载器 -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/examples/js/loaders/GLTFLoader.js"></script>
-
-    <style>
-        /* 基础样式 */
-        body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            background-color: #ffffff;
-            overflow: hidden;
-            flex-direction: column;
-            position: relative;
-            margin: 0;
-            font-family: 'Press Start 2P', 'Comic Sans MS', 'Verdana', sans-serif;
-            font-size: clamp(10px, 1vw, 16px);
-        }
-
-        /* 泡泡容器 */
-        .bubble-container {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            z-index: 200;
-            /* 👈 这个是关键！比 typing-container 更高 */
-        }
-
-        /* 泡泡设计 */
-        .bubble {
-            position: absolute;
-            width: 8vw;
-            max-width: 100px;
-            height: 8vw;
-            max-height: 100px;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: clamp(6px, 1vw, 12px);
-            text-align: center;
-            color: rgb(252, 252, 255);
-            font-weight: bold;
-            cursor: pointer;
-            padding: 10px;
-            box-shadow: 4px 4px 0px #383838;
-
-            /* 半透明的背景色 */
-            background: rgba(157, 159, 160, 0.5);
-            /* 背景为半透明 */
-
-            /* 添加磨砂效果 */
-            backdrop-filter: blur(5px);
-
-            /* 外发光效果（边框替换为外发光） */
-            box-shadow: 0 0 40px 10px rgba(255, 255, 255, 0.7);
-            /* 白色外发光 */
-            transition: all 0.3s ease-in-out;
-        }
-
-        /* 悬停效果 */
-        .bubble:hover {
-            transform: scale(1.15);
-            box-shadow: 5px 5px 0px #666;
-            background: rgba(98, 101, 146, 0.8);
-            /* 悬停时背景色变化，并且保持透明 */
-            color: rgb(160, 159, 179);
-        }
-
-
-        /* 移动端优化 */
-        @media (max-width: 768px) {
-            .bubble {
-                width: 14vw;
-                height: 14vw;
-                font-size: clamp(8px, 2vw, 14px);
-            }
-        }
-
-
-        /* 主页介绍 */
-        body {
-            background-color: #0f0f0f;
-            color: #eaeaea;
-            font-family: 'Press Start 2P', monospace;
-            padding: 50px;
-            font-size: 20px;
-            line-height: 1.6;
-        }
-
-        .typing {
-            white-space: pre-line;
-        }
-
-        .cursor {
-            display: inline-block;
-            width: 10px;
-            animation: blink 1s step-start infinite;
-        }
-
-        @keyframes blink {
-            50% {
-                opacity: 0;
-            }
-        }
-
-        .typing-container {
-            font-size: 20px;
-            /* 默认电脑端 */
-            position: absolute;
-            top: 10vh;
-            left: 10vw;
-            z-index: 10;
-            max-width: 80vw;
-            color: #eaeaea;
-            font-family: 'Press Start 2P', monospace;
-            text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.8);
-            font-size: 20px;
-            line-height: 1.6;
-        }
-
-        @media (max-width: 768px) {
-            .typing-container {
-                font-size: 14px;
-                /* 手机端 */
-            }
-        }
-
-        /* 泡泡颜色随时间轻微波动 */
-        @keyframes floatPulse {
-
-            0%,
-            100% {
-                background: linear-gradient(120deg,
-                        rgba(138, 135, 135, 0.4),
-                        rgba(114, 115, 115, 0.5),
-                        rgba(255, 255, 255, 0.4));
-            }
-
-            50% {
-                background: rgba(180, 182, 200, 0.6);
-            }
-        }
-
-        .bubble {
-            animation: floatPulse 6s ease-in-out infinite;
-        }
-    </style>
+  </style>
 </head>
 
 <body>
+  <div class="chat-sidebar">
+    <h2>stories</h2>
+    <div id="friendList"></div>
+  </div>
 
+  <div id="storyModal" class="story-modal hidden">
+    <div class="story-content"></div>
+    <button onclick="closeModal()">Close</button>
+  </div>
+
+  
+  <div class="poem-section">
+    <h1>A guide for sculpting what cannot be named</h1>
     <div class="typing-container">
-        <div class="typing" id="typewriter"></div><span class="cursor">|</span>
+      <p>This is a world of <input id="b1" />.<br />
+        Not because its creatures are invisible, but because <input id="b2" /> is never fixed—<br />
+        it slides, softens, and turns within the folds of time.<br />
+        Their bodies feel like sensations, or the memory of a form that may have once existed.<br />
+        In the corner of a room, in the gaps between forgotten dust, something begins to stir.<br />
+        A <input id="b3" /> that cannot be remembered is slowly forming.<br />
+        You begin from what you believe is familiar: perhaps a structure made of <input id="b4" />,<br />
+        it may <input id="b5" />, or it may also <input id="b6" />.<br />
+        Its surface resembles <input id="b7" />, and within time it continues to <input id="b8" />.<br />
+        But soon, it will move beyond your understanding—<br />
+        it might split into another version of itself,<br />
+        or collapse into endless folds,<br />
+        or emit an echo from within, though no sound can be heard.<br />
+        It does not exist in order to survive, but to <input id="b9" />.
+      </p>
+      <button class="submit-button" onclick="submitPoem()">Submit</button>
 
-        <script>
-            const text = `Building...\na share site with no space, no time limits,\na place to connect with friends and strangers.\na drifting psychic device.\nIt can be infected, parasitized, layered.\nThis is a place for dreaming.\n\nan unstable psychic apparatus.\nPerception is being reorganized.\nDream is the only real.`;
-
-            let i = 0;
-            const speed = 40; // 主页介绍
-            const typewriter = document.getElementById("typewriter");
-
-            function typeText() {
-                if (i < text.length) {
-                    typewriter.textContent += text.charAt(i);
-                    i++;
-                    setTimeout(typeText, speed);
-                }
-            }
-
-            typeText();
-        </script>
     </div>
+  </div>
+
+  <script>
+
+    function submitPoem() {
+
+    console.log("🚀 准备发送数据！");
+
+    const formData = new FormData();
+    formData.append('entry.1337640561', document.getElementById('b1').value);
+    formData.append('entry.92386776', document.getElementById('b2').value);
+    formData.append('entry.1122794289', document.getElementById('b3').value);
+    formData.append('entry.895074014', document.getElementById('b4').value);
+    formData.append('entry.1429670293', document.getElementById('b5').value);
+    formData.append('entry.597940394', document.getElementById('b6').value);
+    formData.append('entry.1337463375', document.getElementById('b7').value);
+    formData.append('entry.824810926', document.getElementById('b8').value);
+    formData.append('entry.1131995474', document.getElementById('b9').value);
+
+    fetch('https://docs.google.com/forms/d/e/1FAIpQLSd6Ah71JE9D-0SWYAhTBVEjUQTeMklL69DVlxNfDmF16UiE1A/formResponse', 
 
 
-    <div class="bubble-container">
-        <div class="bubble" onclick="navigateTo('dreamintro')">dream</div>
-        <div class="bubble" onclick="navigateTo('qq_space')">qq space</div>
-        <div class="bubble" onclick="navigateTo('Daydream')">daydream chat</div>
-    </div>
+    {
+      method: 'POST',
+      mode: 'no-cors',
+      body: formData
+    }).then(() => {
+      alert("✅ 提交成功！");
+    }).catch(err => {
+      console.error("❌ 提交失败", err);
+    });
+  }
 
 
-    <script>
-        function navigateTo(page) {
-            window.location.href = `${page}.html`;
-        }
+  const SHEET_API_URL = 'https://script.google.com/macros/s/AKfycbzpQ8vTe8IBofsIog4TLZThhzReBvyb5SxZTqeYJSwUJW9jRo-AOUR4SZZxMWEggiud/exec'; // 用你刚刚部署的链接
 
-        // 让泡泡在网页上随机运动并碰壁反弹
-        document.addEventListener("DOMContentLoaded", function () {
-            const bubbles = document.querySelectorAll('.bubble');
-            const container = document.querySelector('.bubble-container');
+function loadFriends() {
+  fetch(SHEET_API_URL)
+    .then(res => res.json())
+    .then(data => {
+      const container = document.getElementById('friendList');
+      container.innerHTML = '';
+      data.forEach((entry, index) => {
+          const poem = `This is a world of ${entry.b1}...`; // 简短 preview
 
-            bubbles.forEach(bubble => {
-                // 随机初始位置
-                let x = Math.random() * (window.innerWidth - 100);
-                let y = Math.random() * (window.innerHeight - 100);
-                let speedX = (Math.random() - 0.5) * 2; // 速度范围 -1 到 1
-                let speedY = (Math.random() - 0.5) * 2;
+          const fullPoem = `This is a world of ${entry.b1}.
+Not because its creatures are invisible, but because ${entry.b2} is never fixed—
+it slides, softens, and turns within the folds of time.
+Their bodies feel like sensations, or the memory of a form that may have once existed.
+In the corner of a room, in the gaps between forgotten dust, something begins to stir.
+A ${entry.b3} that cannot be remembered is slowly forming.
+You begin from what you believe is familiar: perhaps a structure made of ${entry.b4},
+it may ${entry.b5}, or it may also ${entry.b6}.
+Its surface resembles ${entry.b7}, and within time it continues to ${entry.b8}.
+But soon, it will move beyond your understanding—
+it might split into another version of itself,
+or collapse into endless folds,
+or emit an echo from within, though no sound can be heard.
+It does not exist in order to survive, but to ${entry.b9}.`;
 
-
-                bubble.style.left = `${x}px`;
-                bubble.style.top = `${y}px`;
-
-                function moveBubble() {
-                    x += speedX;
-                    y += speedY;
-
-                    // 碰到左右墙壁反弹
-                    if (x <= 0 || x + bubble.offsetWidth >= window.innerWidth) {
-                        speedX *= -1; // 反转方向
-                    }
-                    // 碰到上下边界反弹
-                    if (y <= 0 || y + bubble.offsetHeight >= window.innerHeight) {
-                        speedY *= -1;
-                    }
-
-                    bubble.style.left = `${x}px`;
-                    bubble.style.top = `${y}px`;
-
-                    requestAnimationFrame(moveBubble);
-                }
-
-                moveBubble();
-            });
+          const div = document.createElement('div');
+          div.className = 'friend';
+          div.textContent = 'Story ' + (index + 1);
+          div.onclick = () => openModal(fullPoem);
+          container.appendChild(div);
         });
-    </script>
+      })
+      .catch(err => console.error("加载失败", err));
+  }
 
-    <script>
-        // 把three.js 挤掉了
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        renderer.setPixelRatio(window.devicePixelRatio); // 更清晰显示
-        renderer.domElement.style.position = 'absolute'; // 👈 确保是绝对定位
-        renderer.domElement.style.top = '0';
-        renderer.domElement.style.left = '0';
-        renderer.domElement.style.zIndex = '0'; // 确保在最底层
-        document.body.appendChild(renderer.domElement);
+   function openModal(text) {
+    document.querySelector('.story-modal .story-content').textContent = text;
+    document.getElementById('storyModal').classList.remove('hidden');
+  }
 
+  function closeModal() {
+    document.getElementById('storyModal').classList.add('hidden');
+  }
 
-        // 初始化 Three.js 场景
-        const scene = new THREE.Scene();
-        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-        const renderer = new THREE.WebGLRenderer({ antialias: true });
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        document.body.appendChild(renderer.domElement);
-
-        // 🌞 添加光照（GLTF 需要光照）
-        const ambientLight = new THREE.AmbientLight(0xffffff, 1); // 环境光
-        scene.add(ambientLight);
-        const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
-        directionalLight.position.set(5, 10, 7);
-        scene.add(directionalLight);
-
-
-        // 🎯 加载 GLB 模型
-        const loader = new THREE.GLTFLoader();
-        let model; // 在加载之前定义一个全局变量
-
-        loader.load('key.glb', function (gltf) {
-            model = gltf.scene;
-
-            model.traverse((child) => {
-                if (child.isMesh) {
-                    child.material.transparent = false;
-                    child.material.opacity = 1;
-                }
-            });
-
-            const box = new THREE.Box3().setFromObject(model);
-            const center = new THREE.Vector3();
-            box.getCenter(center);
-            model.position.sub(center);
-
-            const pointLight = new THREE.PointLight(0xffffff, 10);
-            pointLight.position.set(0, 5, 0);
-            scene.add(pointLight);
-
-            model.position.set(0, 0, 0);
-            model.scale.set(10, 10, 10);
-
-            scene.add(model);
-            console.log("✅ Model Loaded:", model);
-            animate();
-        }, undefined, function (error) {
-            console.error("❌ GLB 加载失败:", error);
-        });
-
-        function animate() {
-            requestAnimationFrame(animate);
-
-            // 如果模型已加载，将其旋转
-            if (model) {
-                model.rotation.y += 0.01; // 每帧绕 Y 轴旋转 0.01 弧度
-            }
-
-            renderer.render(scene, camera);
-        }
-
-        // 🔄 监听窗口大小调整
-        window.addEventListener('resize', () => {
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-        });</script>
-
-
-
+window.onload = loadFriends;
+  </script>
 </body>
-
 </html>

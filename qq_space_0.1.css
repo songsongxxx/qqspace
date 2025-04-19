@@ -1,85 +1,145 @@
-/* 全局样式 */
-body {
-    font-family: 'Press Start 2P', 'Comic Sans MS', 'Verdana', sans-serif;
-    text-align: center;
-    background-color: #f0f8ff;
-    overflow: hidden;
+* {
+    box-sizing: border-box;
     margin: 0;
-    height: 100vh;
-}
+    padding: 0;
+  }
 
-#loading {
-    color: #ff0000;
+  html {
+    font-size: clamp(10px, 1.2vw, 16px);
+  }
+
+  body {
+    font-family: 'Press Start 2P', monospace;
+    background-color: #000;  /* 黑色背景 */
+    color: #fff;             /* 白色文字 */
+    display: flex;
+    flex-direction: row;
+    height: 100vh;
+    font-size: 1rem;
+  }
+
+  .bubble-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: flex-start;
+  }
+
+  .poem-section {
+    flex: 4;
+    padding: 40px;
+    overflow-y: auto;
+    background-color: #000;  /* 黑色背景 */
+  }
+
+  .typing-container input {
+    border: 1px dashed #999;
+    padding: 2px 4px;
+    font-family: 'Press Start 2P';
+    font-size: 10px;
+    width: 100px;
+    margin: 2px;
+  }
+
+  .typing-container button {
+    margin-top: 20px;
+    padding: 10px 20px;
+    font-size: 0.8rem;
+    font-family: 'Press Start 2P';
+    background-color: #000;  /* 黑色背景 */
+    border: 2px solid #444;
+    cursor: pointer;
+  }
+
+  .chat-sidebar {
+    flex: 1;
+    background-color: #000;  /* 黑色背景 */
+    border-right: 3px solid #888;
+    display: flex;
+    flex-direction: column;
+    padding: 2rem;
+    overflow-y: auto;
+  }
+
+  .chat-sidebar h2 {
+    padding: 20px;
+    font-size: 1rem;
+    margin-bottom: 10px;
+  }
+
+  .friend {
+    width: 80px;
+    height: 80px;
+    background-color: #000;  /* 黑色背景 */
+    font-size: 10px;
+    border: 2px solid #444;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 2px 2px 0 #888;
+    transition: transform 0.2s;
+    word-break: break-word;
+    text-align: center;
+  }
+
+  .friend:hover {
+    transform: scale(1.1);
+  }
+
+  .story-modal {
     position: fixed;
     top: 50%;
     left: 50%;
-    font-family: 'Press Start 2P';
     transform: translate(-50%, -50%);
+    background: #fff;
+    color: #000;
+    padding: 2rem;
+    border: 2px solid #444;
+    border-radius: 1rem;
+    box-shadow: 4px 4px 0 #888;
     z-index: 999;
-    font-size: 6px;
+    width: 60%;
+    max-height: 80%;
+    overflow-y: auto;
   }
-
   
-/* 导航栏 */
-.navbar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    backdrop-filter: blur(10px);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-wrap: wrap;
-    padding: 10px 0;
-    z-index: 100;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-    font-size: clamp(12px, 1.5vw, 18px);
-}
-
-.navbar a {
-    color: rgb(228, 226, 226);
-    text-decoration: none;
-    padding: clamp(6px, 1vw, 12px) clamp(8px, 1.5vw, 16px);
-    font-size: clamp(12px, 1.5vw, 18px);
-    font-weight: 500;
-    transition: 0.3s;
-}
-
-/* 控制面板 */
-#controls {
-    position: absolute;
-    backdrop-filter: blur(10px);
-    padding: clamp(10px, 2vw, 20px);
-    border-radius: 15px;
-    display: flex;
-    gap: 10px;
-    left: 50%;
-    transform: translateX(-50%);
-}
-
-/* 媒体查询: 针对小屏幕设备 (如手机) 调整位置 */
-@media (max-width: 768px) {
-    #controls {
-        top: 80%;  /* 控制面板在手机端的底部 */
-    }
-}
-
-/* 媒体查询: 针对大屏设备 (如桌面) 调整位置 */
-@media (min-width: 769px) {
-    #controls {
-        top: 15%;  /* 控制面板在桌面端的位置 */
-    }
-}
-
-#controls span {
-    color: #ff0000;
+  .story-modal.hidden {
+    display: none;
+  }
+  
+  .story-content {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 0.7rem;
+    white-space: pre-line;
+    margin-bottom: 1rem;
+  }
+  
+  .story-modal button {
+    padding: 0.5rem 1rem;
+    font-family: 'Press Start 2P';
+    font-size: 0.7rem;
+    background: #000;
+    color: #fff;
+    border: 2px solid #444;
     cursor: pointer;
-    font-size: 20px;
-    font-weight: bold;
-    transition: 0.3s;
-}
-
-#controls span:hover {
-    color: #faf2f1;
-}
+  }
+  
+  .submit-button {
+    margin-top: 20px;
+    padding: 10px 20px;
+    font-size: 0.8rem;
+    font-family: 'Press Start 2P';
+    background-color: #000000;  /* 背景颜色 */
+    color: #ffffff;             /* 字体颜色 */
+    border: 2px solid #444;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+  }
+  
+  .submit-button:hover {
+    background-color: #444;
+    color: #fff;
+  }
+  
