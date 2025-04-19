@@ -52,11 +52,12 @@ container.appendChild(renderer.domElement);
 const light = new THREE.AmbientLight(0xffffff, 1.2);
 scene.add(light);
 
-// Load .glb button
+// Load .glb button    /dreamimages/furbyanimation.glb
 const loader = new THREE.GLTFLoader();
 let buttonMesh;
 
-loader.load('/dreamimages/furbyanimation.glb', (gltf) => {
+
+loader.load('/dreamimages/heart.glb', (gltf) => {
   buttonMesh = gltf.scene;
   // ✅ 缩放到合适大小
   buttonMesh.scale.set(0.003, 0.003, 0.003);
