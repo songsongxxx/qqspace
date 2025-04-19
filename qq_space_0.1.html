@@ -7,10 +7,10 @@
     <title>0.01</title>
     <link rel="stylesheet" href="qq_space_0.1.css">
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet" />
-    <!-- 可爱中文字体：阿里巴巴普惠体 -->
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;700&display=swap" rel="stylesheet">
+    <!-- 加载 PDF.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
 
-<style>
+    <style>
 
     </style>
 </head>
@@ -31,40 +31,66 @@
     <div class="poem-section">
         <h1 class="tooltip" data-tooltip="无法被命名之物的塑形指南">A guide for sculpting what cannot be named</h1>
         <div class="typing-container">
-          <p>
-            <span class="tooltip" data-tooltip="实体编号">Entity_qq_space#:</span><input id="b1" /> <br /><br />
-      
-            <span class="tooltip" data-tooltip="这是一个……的世界">This is a world of</span> <input id="b2" />.<br />
-            <span class="tooltip" data-tooltip="不是因为它们不可见">not because they are invisible,</span><br />
-            <span class="tooltip" data-tooltip="而是因为轮廓的意图从不固定">but because the intention of contour is never fixed—</span><br />
-            <span class="tooltip" data-tooltip="它滑动、软化，在时间的褶皱中旋转">it slips, softens, and spins within the folds of time.</span><br /><br />
-      
-            <span class="tooltip" data-tooltip="它们的身体像是一种感受，">Their bodies feel like sensations,</span><br />
-            <span class="tooltip" data-tooltip="或是一段形状曾经存在的记忆">or the memory of a form that may have once existed.</span><br />
-            <span class="tooltip" data-tooltip="在房间的角落里，">In the corner of a room,</span><br />
-            <span class="tooltip" data-tooltip="在被遗忘的尘埃缝隙中，">in the gaps between forgotten dust,</span><br />
-            <span class="tooltip" data-tooltip="某种东西开始蠕动">something begins to stir.</span><br /><br />
-      
-            <span class="tooltip" data-tooltip="一种无法被记住的……">A</span> <input id="b3" /> <span title="正在缓慢生成">that cannot be remembered is slowly forming.</span><br />
-            <span class="tooltip" data-tooltip="你从一个自以为熟悉的起点开始：">You begin from what you believe is familiar:</span>
-            <span class="tooltip" data-tooltip="也许是一种由……构成的结构">perhaps a structure made of</span> <input id="b4" />,<br />
-            <span class="tooltip" data-tooltip="它可能会……，也可能会……">it may</span> <input id="b5" />, <span title="也可能会">or it may also</span> <input id="b6" />.<br /><br />
-      
-            <span class="tooltip" data-tooltip="它的表面仿佛……">Its surface resembles</span> <input id="b7" />, <br />
-            <span class="tooltip" data-tooltip="在时间中不断……">and through time, it continues to</span> <input id="b8" />.<br /><br />
-      
-            <span class="tooltip" data-tooltip="但很快，它会超出你的理解：">But soon, it will move beyond your understanding—</span><br />
-            <span class="tooltip" data-tooltip="它可能会分裂为另一个自己，">it might split into another version of itself,</span><br />
-            <span class="tooltip" data-tooltip="或塌陷成无数褶层，">or collapse into endless folds,</span><br />
-            <span class="tooltip" data-tooltip="或从内部发出无声的回音。">or emit an echo from within, though no sound can be heard.</span><br /><br />
-      
-            <span class="tooltip" data-tooltip="它不是为了生存而存在，">It does not exist in order to survive,</span><br />
-            <span class="tooltip" data-tooltip="而是为了……而存在">but to</span> <input id="b9" />.<br />
-          </p>
-          <button class="submit-button" onclick="submitPoem()">Submit</button>
+            <p>
+                <span class="tooltip" data-tooltip="实体编号">Entity_qq_space#:</span><input id="b1" /> <br /><br />
+
+                <span class="tooltip" data-tooltip="这是一个……的世界">This is a world of</span> <input id="b2" />.<br />
+                <span class="tooltip" data-tooltip="不是因为它们不可见">not because they are invisible,</span><br />
+                <span class="tooltip" data-tooltip="而是因为轮廓的意图从不固定">but because the intention of contour is never
+                    fixed—</span><br />
+                <span class="tooltip" data-tooltip="它滑动、软化，在时间的褶皱中旋转">it slips, softens, and spins within the folds of
+                    time.</span><br /><br />
+
+                <span class="tooltip" data-tooltip="它们的身体像是一种感受，">Their bodies feel like sensations,</span><br />
+                <span class="tooltip" data-tooltip="或是一段形状曾经存在的记忆">or the memory of a form that may have once
+                    existed.</span><br />
+                <span class="tooltip" data-tooltip="在房间的角落里，">In the corner of a room,</span><br />
+                <span class="tooltip" data-tooltip="在被遗忘的尘埃缝隙中，">in the gaps between forgotten dust,</span><br />
+                <span class="tooltip" data-tooltip="某种东西开始蠕动">something begins to stir.</span><br /><br />
+
+                <span class="tooltip" data-tooltip="一种无法被记住的……">A</span> <input id="b3" /> <span title="正在缓慢生成">that
+                    cannot be remembered is slowly forming.</span><br />
+                <span class="tooltip" data-tooltip="你从一个自以为熟悉的起点开始：">You begin from what you believe is familiar:</span>
+                <span class="tooltip" data-tooltip="也许是一种由……构成的结构">perhaps a structure made of</span> <input
+                    id="b4" />,<br />
+                <span class="tooltip" data-tooltip="它可能会……，也可能会……">it may</span> <input id="b5" />, <span
+                    title="也可能会">or it may also</span> <input id="b6" />.<br /><br />
+
+                <span class="tooltip" data-tooltip="它的表面仿佛……">Its surface resembles</span> <input id="b7" />, <br />
+                <span class="tooltip" data-tooltip="在时间中不断……">and through time, it continues to</span> <input
+                    id="b8" />.<br /><br />
+
+                <span class="tooltip" data-tooltip="但很快，它会超出你的理解：">But soon, it will move beyond your
+                    understanding—</span><br />
+                <span class="tooltip" data-tooltip="它可能会分裂为另一个自己，">it might split into another version of
+                    itself,</span><br />
+                <span class="tooltip" data-tooltip="或塌陷成无数褶层，">or collapse into endless folds,</span><br />
+                <span class="tooltip" data-tooltip="或从内部发出无声的回音。">or emit an echo from within, though no sound can be
+                    heard.</span><br /><br />
+
+                <span class="tooltip" data-tooltip="它不是为了生存而存在，">It does not exist in order to survive,</span><br />
+                <span class="tooltip" data-tooltip="而是为了……而存在">but to</span> <input id="b9" />.<br />
+            </p>
+            <button class="submit-button" onclick="submitPoem()">Submit</button>
         </div>
-      </div>
-      
+
+
+        <!-- 打开 PDF 的图标按钮 -->
+        <img id="openPdfIcon" src="book.png" alt="打开 PDF" title="点我打开 PDF" />
+
+
+        <!-- PDF 弹出容器 -->
+        <div id="pdfModal">
+            <button id="closePdf">Close ✖</button>
+            <canvas id="pdfCanvas"></canvas>
+            <div class="pdf-controls">
+                <button id="prevPage">◀ Prev</button>
+                <span id="pageNum">1</span> / <span id="pageCount">?</span>
+                <button id="nextPage">Next ▶</button>
+            </div>
+        </div>
+    </div>
+
 
     <script>
 
@@ -159,7 +185,70 @@ but to ${entry.b9}.`;
         }
 
         window.onload = loadFriends;
+
+
+        // 👈  PDF 
+        let pdfDoc = null,
+            pageNum = 1,
+            canvas = document.getElementById('pdfCanvas'),
+            ctx = canvas.getContext('2d');
+
+        const url = 'pdf.pdf'; // 👈 你的本地 PDF 路径
+
+        function renderPage(num) {
+            pdfDoc.getPage(num).then(function (page) {
+                const viewport = page.getViewport({ scale: 1.5 });
+                canvas.height = viewport.height;
+                canvas.width = viewport.width;
+
+                let renderContext = {
+                    canvasContext: ctx,
+                    viewport: viewport
+                };
+                page.render(renderContext);
+                document.getElementById('pageNum').textContent = num;
+            });
+        }
+
+        // 加载 PDF
+        function openPdfViewer() {
+            document.getElementById('pdfModal').style.display = 'block';
+            if (!pdfDoc) {
+                pdfjsLib.getDocument(url).promise.then(function (pdf) {
+                    pdfDoc = pdf;
+                    document.getElementById('pageCount').textContent = pdf.numPages;
+                    renderPage(pageNum);
+                });
+            } else {
+                renderPage(pageNum);
+            }
+        }
+
+        // 按钮功能
+        document.getElementById('openPdfIcon').onclick = openPdfViewer;
+
+        document.getElementById('closePdf').onclick = () => {
+            document.getElementById('pdfModal').style.display = 'none';
+        };
+
+        document.getElementById('prevPage').onclick = () => {
+            if (pageNum <= 1) return;
+            pageNum--;
+            renderPage(pageNum);
+        };
+
+        document.getElementById('nextPage').onclick = () => {
+            if (pageNum >= pdfDoc.numPages) return;
+            pageNum++;
+            renderPage(pageNum);
+        };
+
     </script>
+
+
+
+
+
 </body>
 
 </html>
