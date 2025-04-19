@@ -40,6 +40,21 @@ body {
     font-size: clamp(12px, 1.5vw, 18px);
 }
 
+#controls .button {
+    display: block; /* ✅ 让每个 span 单独一行 */
+    margin-top: 10px;
+    padding: 6px 12px;
+    /*background-color: #222;*/
+    color: #ff0000;
+    /*border: 2px solid #fff;*/
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+#controls .button:hover {
+    background-color: #444;
+}
+
 .navbar a {
     color: rgb(228, 226, 226);
     text-decoration: none;
@@ -59,30 +74,30 @@ body {
     gap: 10px;
     left: 50%;
     transform: translateX(-50%);
+    z-index: 10;
 }
 
 /* 媒体查询: 针对小屏幕设备 (如手机) 调整位置 */
+/* 📱 手机端优化按钮尺寸和字体 */
 @media (max-width: 768px) {
     #controls {
-        top: 80%;  /* 控制面板在手机端的底部 */
+        top: 10%;
+        flex-direction: column;  /* ✅ 按钮竖排排列 */
+        align-items: center;     /* ✅ 居中对齐 */
+        gap: 6px;                /* 间距缩小 */
     }
-}
 
-/* 媒体查询: 针对大屏设备 (如桌面) 调整位置 */
-@media (min-width: 769px) {
-    #controls {
-        top: 15%;  /* 控制面板在桌面端的位置 */
+    #controls .button {
+        font-size: 8px;          /* ✅ 更小字体 */
+        padding: 4px 8px;        /* ✅ 更小按钮 */
+        border-width: 1px;
     }
-}
 
-#controls span {
-    color: #ff0000;
-    cursor: pointer;
-    font-size: 20px;
-    font-weight: bold;
-    transition: 0.3s;
-}
+    #controls span {
+        font-size: 10px;
+    }
 
-#controls span:hover {
-    color: #faf2f1;
+    #loading {
+        font-size: 4px;
+    }
 }

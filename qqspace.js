@@ -112,8 +112,14 @@ window.addEventListener('resize', () => {
     camera.updateProjectionMatrix();
 });
 
-document.querySelector('#controls').addEventListener('click', () => {
+// 点击 "Dark Cave" 跳转
+document.querySelector('#dark-cave').addEventListener('click', () => {
   window.location.href = 'qq_space_darkcave.html';
+});
+
+// 点击 "A guide for sculpting what cannot be named" 跳转
+document.querySelector('#sculpting-guide').addEventListener('click', () => {
+  window.location.href = 'qq_space_0.1.html';  // 你要跳的页面路径
 });
 
 

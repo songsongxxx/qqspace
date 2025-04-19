@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>index</title>
+    <!-- 复古字体 -->
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128/examples/js/loaders/GLTFLoader.js"></script> <!-- GLTF 加载器 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/examples/js/loaders/GLTFLoader.js"></script>
+
+    <style>
+        /* 基础样式 */
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #ffffff;
+            overflow: hidden;
+            flex-direction: column;
+            position: relative;
+            margin: 0;
+            font-family: 'Press Start 2P', 'Comic Sans MS', 'Verdana', sans-serif;
+            font-size: clamp(10px, 1vw, 16px);
+        }
+
+        /* 泡泡容器 */
+        .bubble-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 200;
+            /* 👈 这个是关键！比 typing-container 更高 */
+        }
+
+        /* 泡泡设计 */
+        .bubble {
+            position: absolute;
+            width: 8vw;
+            max-width: 100px;
+            height: 8vw;
+            max-height: 100px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: clamp(6px, 1vw, 12px);
+            text-align: center;
+            color: rgb(252, 252, 255);
+            font-weight: bold;
+            cursor: pointer;
+            padding: 10px;
+            box-shadow: 4px 4px 0px #383838;
+
+            /* 半透明的背景色 */
+            background: rgba(157, 159, 160, 0.5);
+            /* 背景为半透明 */
+
+            /* 添加磨砂效果 */
+            backdrop-filter: blur(5px);
+
+            /* 外发光效果（边框替换为外发光） */
+            box-shadow: 0 0 40px 10px rgba(255, 255, 255, 0.7);
+            /* 白色外发光 */
+            transition: all 0.3s ease-in-out;
+        }
+
+        /* 悬停效果 */
+        .bubble:hover {
+            transform: scale(1.15);
+            box-shadow: 5px 5px 0px #666;
+            background: rgba(98, 101, 146, 0.8);
+            /* 悬停时背景色变化，并且保持透明 */
+            color: rgb(160, 159, 179);
+        }
+
+
+        /* 移动端优化 */
+        @media (max-width: 768px) {
+            .bubble {
+                width: 14vw;
+                height: 14vw;
+                font-size: clamp(8px, 2vw, 14px);
+            }
+        }
+
+
+        /* 主页介绍 */
+        body {
+            background-color: #0f0f0f;
+            color: #eaeaea;
+            font-family: 'Press Start 2P', monospace;
+            padding: 50px;
+            font-size: 20px;
+            line-height: 1.6;
+        }
+
+        .typing {
+            white-space: pre-line;
+        }
+
+        .cursor {
+            display: inline-block;
+            width: 10px;
+            animation: blink 1s step-start infinite;
+        }
+
+        @keyframes blink {
+            50% {
+                opacity: 0;
+            }
+        }
+
+        .typing-container {
+            font-size: 20px;
+            /* 默认电脑端 */
+            position: absolute;
+            top: 10vh;
+            left: 10vw;
+            z-index: 10;
+            max-width: 80vw;
+            color: #eaeaea;
+            font-family: 'Press Start 2P', monospace;
+            text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.8);
+            font-size: 20px;
+            line-height: 1.6;
+        }
+
+        @media (max-width: 768px) {
+            .typing-container {
+                font-size: 14px;
+                /* 手机端 */
+            }
+        }
+
+        /* 泡泡颜色随时间轻微波动 */
+        @keyframes floatPulse {
+
+            0%,
+            100% {
+                background: linear-gradient(120deg,
+                        rgba(138, 135, 135, 0.4),
+                        rgba(114, 115, 115, 0.5),
+                        rgba(255, 255, 255, 0.4));
+            }
+
+            50% {
+                background: rgba(180, 182, 200, 0.6);
+            }
+        }
+
+        .bubble {
+            animation: floatPulse 6s ease-in-out infinite;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="typing-container">
+        <div class="typing" id="typewriter"></div><span class="cursor">|</span>
+
+        <script>
+            const text = `Building...\na share site with no space, no time limits,\na place to connect with friends and strangers.\na drifting psychic device.\nIt can be infected, parasitized, layered.\nThis is a place for dreaming.\n\nan unstable psychic apparatus.\nPerception is being reorganized.\nDream is the only real.`;
+
+            let i = 0;
+            const speed = 40; // 主页介绍
+            const typewriter = document.getElementById("typewriter");
+
+            function typeText() {
+                if (i < text.length) {
+                    typewriter.textContent += text.charAt(i);
+                    i++;
+                    setTimeout(typeText, speed);
+                }
+            }
+
+            typeText();
+        </script>
+    </div>
+
+
+    <div class="bubble-container">
+        <div class="bubble" onclick="navigateTo('dreamintro')">dream</div>
+        <div class="bubble" onclick="navigateTo('qq_space')">qq space</div>
+        <div class="bubble" onclick="navigateTo('Daydream')">daydream chat</div>
+    </div>
+
+
+    <script>
+        function navigateTo(page) {
+            window.location.href = `${page}.html`;
+        }
+
+        // 让泡泡在网页上随机运动并碰壁反弹
+        document.addEventListener("DOMContentLoaded", function () {
+            const bubbles = document.querySelectorAll('.bubble');
+            const container = document.querySelector('.bubble-container');
+
+            bubbles.forEach(bubble => {
+                // 随机初始位置
+                let x = Math.random() * (window.innerWidth - 100);
+                let y = Math.random() * (window.innerHeight - 100);
+                let speedX = (Math.random() - 0.5) * 2; // 速度范围 -1 到 1
+                let speedY = (Math.random() - 0.5) * 2;
+
+
+                bubble.style.left = `${x}px`;
+                bubble.style.top = `${y}px`;
+
+                function moveBubble() {
+                    x += speedX;
+                    y += speedY;
+
+                    // 碰到左右墙壁反弹
+                    if (x <= 0 || x + bubble.offsetWidth >= window.innerWidth) {
+                        speedX *= -1; // 反转方向
+                    }
+                    // 碰到上下边界反弹
+                    if (y <= 0 || y + bubble.offsetHeight >= window.innerHeight) {
+                        speedY *= -1;
+                    }
+
+                    bubble.style.left = `${x}px`;
+                    bubble.style.top = `${y}px`;
+
+                    requestAnimationFrame(moveBubble);
+                }
+
+                moveBubble();
+            });
+        });
+    </script>
+
+    <script>
+        // 把three.js 挤掉了
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(window.devicePixelRatio); // 更清晰显示
+        renderer.domElement.style.position = 'absolute'; // 👈 确保是绝对定位
+        renderer.domElement.style.top = '0';
+        renderer.domElement.style.left = '0';
+        renderer.domElement.style.zIndex = '0'; // 确保在最底层
+        document.body.appendChild(renderer.domElement);
+
+
+        // 初始化 Three.js 场景
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        // 🌞 添加光照（GLTF 需要光照）
+        const ambientLight = new THREE.AmbientLight(0xffffff, 1); // 环境光
+        scene.add(ambientLight);
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+        directionalLight.position.set(5, 10, 7);
+        scene.add(directionalLight);
+
+
+        // 🎯 加载 GLB 模型
+        const loader = new THREE.GLTFLoader();
+        let model; // 在加载之前定义一个全局变量
+
+        loader.load('key.glb', function (gltf) {
+            model = gltf.scene;
+
+            model.traverse((child) => {
+                if (child.isMesh) {
+                    child.material.transparent = false;
+                    child.material.opacity = 1;
+                }
+            });
+
+            const box = new THREE.Box3().setFromObject(model);
+            const center = new THREE.Vector3();
+            box.getCenter(center);
+            model.position.sub(center);
+
+            const pointLight = new THREE.PointLight(0xffffff, 10);
+            pointLight.position.set(0, 5, 0);
+            scene.add(pointLight);
+
+            model.position.set(0, 0, 0);
+            model.scale.set(10, 10, 10);
+
+            scene.add(model);
+            console.log("✅ Model Loaded:", model);
+            animate();
+        }, undefined, function (error) {
+            console.error("❌ GLB 加载失败:", error);
+        });
+
+        function animate() {
+            requestAnimationFrame(animate);
+
+            // 如果模型已加载，将其旋转
+            if (model) {
+                model.rotation.y += 0.01; // 每帧绕 Y 轴旋转 0.01 弧度
+            }
+
+            renderer.render(scene, camera);
+        }
+
+        // 🔄 监听窗口大小调整
+        window.addEventListener('resize', () => {
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+        });</script>
+
+
+
+</body>
+
+</html>
