@@ -44,6 +44,7 @@ body {
 .poem-section p {
     font-size: 12px;
     line-height: 1.6;
+    letter-spacing: 0.08em;  /* 加大字间距，默认 0，推荐 0.05em - 0.1em */
 }
 
 .poem-section input {
@@ -61,6 +62,7 @@ body {
     .poem-section p {
         font-size: 6px;
         line-height: 1.5;
+        letter-spacing: 0.06em; /* 小屏字距稍小 */
     }
 
     .poem-section input {
@@ -148,24 +150,20 @@ body {
 
 
 .friend {
-    width: 80px;
-    height: 80px;
+    position: relative;
     background-color: #000;
-    /* 黑色背景 */
-    font-size: 10px;
-    border: 2px solid #444;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    box-shadow: 2px 2px 0 #888;
-    transition: transform 0.2s;
-    word-break: break-word;
-    text-align: center;
+    box-shadow:
+      0 0 0 2px #444,
+      4px 4px 0 #888;
+    border: none;
+    border-radius: 0;
+    font-family: 'Press Start 2P', monospace;
+    image-rendering: pixelated;
+  
 
     animation: pixelWiggle 0.3s infinite steps(1, end);
-}
+  }
+
 
 #friendList {
     display: flex;
@@ -216,6 +214,8 @@ body {
     font-size: 0.7rem;
     white-space: pre-line;
     margin-bottom: 1rem;
+
+    letter-spacing: 0.1em; /* ⬅️ 增加字间距 */
 }
 
 .story-modal button {
