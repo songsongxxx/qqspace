@@ -5,6 +5,13 @@
   font-style: normal;
 }
 
+@font-face {
+  font-family: 'StarryFonts';
+  src: url('https://raw.githubusercontent.com/songsongxxx/qqspace/main/fontsassets/starry_fonts.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
 body {
     font-family: 'PencilPete', sans-serif;
     background-color: #f1f1f1;
