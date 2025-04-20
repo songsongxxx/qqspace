@@ -12,8 +12,15 @@
   font-style: normal;
 }
 
+@font-face {
+  font-family: 'Inkdrop';
+  src: url('https://raw.githubusercontent.com/songsongxxx/qqspace/main/fontsassets/inkdrop.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
 body {
-    font-family: 'PencilPete', sans-serif;
+    font-family: 'Inkdrop', sans-serif;
     background-color: #f1f1f1;
     text-align: center;
     margin: 0;
@@ -117,7 +124,7 @@ button {
     box-shadow: none;     /* 去掉阴影 */
     padding: 0.6rem 1.2rem;
     margin-top: 1rem;
-    font-family: 'PencilPete', sans-serif;
+    font-family: 'Inkdrop', sans-serif;
     font-size: 1rem;
     color: #333;
     cursor: pointer;

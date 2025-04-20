@@ -14,8 +14,16 @@
   font-style: normal;
 }
 
+@font-face {
+  font-family: 'Inkdrop';
+  src: url('https://raw.githubusercontent.com/songsongxxx/qqspace/main/fontsassets/inkdrop.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+
 body {
-    font-family: 'StarryFonts', sans-serif;
+    font-family: 'Starryfonts', sans-serif;
     text-align: center;
     background-color: #fefefe;
     overflow: hidden;
@@ -38,7 +46,7 @@ body {
         0 8px 20px rgba(0, 0, 0, 0.1),
         inset 0 0 12px rgba(255, 255, 255, 0.6),
         0 0 30px rgba(255, 255, 255, 0.5);
-    font-family: 'StarryFonts', sans-serif;
+    font-family: 'Inkdrop', sans-serif;
     font-size: 14px;
     color: #333;
     z-index: 10;
@@ -51,7 +59,7 @@ body {
 #toneControls label {
     display: block;
 margin-bottom: 14px;
-    font-size: 14px;
+    font-size: 18px;
     color: #444;
 }
 
@@ -120,7 +128,7 @@ margin-bottom: 14px;
     padding: 10px 15px;
     border-radius: 50%;
     text-align: center;
-    font-size: clamp(2px, 1.5vw, 12px);
+    font-size: clamp(4px, 1.5vw, 15px);
     display: flex;
     border-radius: 30px; /* 稍微圆润一些更柔和 */
     align-items: center;
@@ -347,7 +355,7 @@ margin-bottom: 14px;
     inset 0 0 6px rgba(255, 255, 255, 0.3),
     0 4px 8px rgba(220, 220, 220, 0.2);
   color: #444;
-  font-family: 'StarryFonts', sans-serif;
+  font-family: 'Inkdrop', sans-serif;
   transition: all 0.3s ease;
   backdrop-filter: blur(6px);
   display: flex;
@@ -390,7 +398,7 @@ margin-bottom: 14px;
     color: #444;
     font-size: 12px;
     font-weight: bold;
-    font-family: 'PencilPete', sans-serif;
+    font-family: 'StarryFonts', sans-serif;
     box-shadow:
       2px 2px 0 #aaa,
       inset 0 0 6px rgba(255, 255, 255, 0.6);
@@ -426,8 +434,8 @@ margin-bottom: 14px;
   /* 🌈 统一按钮和输入框的梦幻泡泡风格 */
 #controls input[type="text"],
 #controls button {
-  font-size: 16px;
-  padding: 14px 20px;
+  font-size: 22px;
+  padding: 12px 20px;
   height: 48px;
   border-radius: 30px;
   width: 100%;
@@ -437,10 +445,14 @@ margin-bottom: 14px;
     inset 0 0 8px rgba(255, 255, 255, 0.4),
     0 4px 12px rgba(200, 200, 200, 0.2);
   color: #444;
-  font-family: 'StarryFonts', sans-serif;
+  font-family: 'Inkdrop', sans-serif;
   transition: all 0.3s ease;
   backdrop-filter: blur(8px);
   cursor: pointer;
+  display: flex;
+  justify-content: center; /* Horizontally center text */
+  align-items: center; /* Vertically center text */
+  text-align: center;
 }
 
 /* 🩷 鼠标悬停时放大一点 */
@@ -465,7 +477,7 @@ margin-bottom: 14px;
 /* ☁️ placeholder 更温柔 */
 #controls input::placeholder {
   color: #aaa;
-  font-size: 12px;
+  font-size: 19px;
   font-style: italic;
   opacity: 0.7;
 }
