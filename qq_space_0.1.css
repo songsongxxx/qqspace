@@ -358,3 +358,27 @@ body {
       transform: translateY(-6px) scale(1.05);
     }
   }
+
+  /* 返回 */
+  .close-button {
+    position: fixed;
+    top: 10px;
+    left: 10px;
+    color: white;
+    text-decoration: none;
+    font-size: 18px;
+    background-color: rgba(0, 0, 0, 0.6);
+    padding: 4px 8px;
+    font-family: 'Press Start 2P', monospace;
+    border: 1px solid white;
+    border-radius: 2px;
+    z-index: 999;
+    transition: background 0.2s;
+  }
+  
+  .close-button:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: #ff0000;
+    border-color: #ff0000;
+  }
+  

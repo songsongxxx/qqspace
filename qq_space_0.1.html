@@ -16,6 +16,10 @@
 </head>
 
 <body>
+    <a href="qq_space.html" class="close-button" title="返回 qq_space">
+        ✕
+      </a>
+      
     <div class="chat-sidebar">
         <h2>(́순◞౪◟순‵)</h2>
         <div class="sidebar-inner">
@@ -48,11 +52,13 @@
                 <span class="tooltip" data-tooltip="在被遗忘的尘埃缝隙中，，">in the gaps between forgotten dust,</span><br />
                 <span class="tooltip" data-tooltip="某种东西正在蠕动。">something begins to stir.</span><br /><br />
 
-                <span class="tooltip" data-tooltip="一种（名词）">A (noun)</span> <input id="b3" /> <span class="tooltip" data-tooltip="不被记住的……正在缓慢生成">that cannot be remembered is slowly forming.</span><br />
+                <span class="tooltip" data-tooltip="一种（名词）">A (noun)</span> <input id="b3" /> <span class="tooltip"
+                    data-tooltip="不被记住的……正在缓慢生成">that cannot be remembered is slowly forming.</span><br />
                 <span class="tooltip" data-tooltip="你从一个自以为熟悉的起点开始：">You begin from what you believe is familiar:</span>
                 <span class="tooltip" data-tooltip="也许是一种由……构成的结构">perhaps a structure made of</span> <input
                     id="b4" />,<br />
-                <span class="tooltip" data-tooltip="它可能会……，也可能会……">it may</span> <input id="b5" />, <span class="tooltip" data-tooltip="也可能会">or it may also</span> <input id="b6" />.<br /><br />
+                <span class="tooltip" data-tooltip="它可能会……，也可能会……">it may</span> <input id="b5" />, <span
+                    class="tooltip" data-tooltip="也可能会">or it may also</span> <input id="b6" />.<br /><br />
 
                 <span class="tooltip" data-tooltip="它的表面仿佛……">Its surface resembles</span> <input id="b7" />, <br />
                 <span class="tooltip" data-tooltip="在时间中不断……">and through time, it continues to</span> <input
@@ -131,9 +137,9 @@
                     const container = document.getElementById('friendList');
                     container.innerHTML = '';
                     data.forEach((entry, index) => {
-                                // 如果这一行有任意字段为空，跳过
-        if (!entry.b1 || !entry.b2 || !entry.b3 || !entry.b4 || !entry.b5 || !entry.b6) return;
-        
+                        // 如果这一行有任意字段为空，跳过
+                        if (!entry.b1 || !entry.b2 || !entry.b3 || !entry.b4 || !entry.b5 || !entry.b6) return;
+
                         const poem = `This is a world of ${entry.b1}...`; // 简短 preview
 
                         const fullPoem = `Entity_qq_space#:${entry.b1} 
