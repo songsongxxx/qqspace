@@ -33,6 +33,15 @@ body {
     overflow-y: auto;
     background-color: #000;
     /* 黑色背景 */
+
+      /* 写字本横向虚线背景 */
+  background-image: repeating-linear-gradient(
+    to bottom,
+    transparent,
+    transparent 24px,
+    rgba(255, 255, 255, 0.15) 25px,
+    transparent 26px
+  );
 }
 
 .poem-section h1 {
