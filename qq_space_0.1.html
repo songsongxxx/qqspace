@@ -131,6 +131,9 @@
                     const container = document.getElementById('friendList');
                     container.innerHTML = '';
                     data.forEach((entry, index) => {
+                                // 如果这一行有任意字段为空，跳过
+        if (!entry.b1 || !entry.b2 || !entry.b3 || !entry.b4 || !entry.b5 || !entry.b6) return;
+        
                         const poem = `This is a world of ${entry.b1}...`; // 简短 preview
 
                         const fullPoem = `Entity_qq_space#:${entry.b1} 
