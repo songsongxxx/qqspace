@@ -240,7 +240,7 @@ export function createBubble(id, text, audioBase64 = null) {
     bubble.style.border = "1px solid black";
     bubble.style.borderRadius = "8px";
     bubble.style.padding = "8px";
-    bubble.style.fontFamily = "'StarryFonts', sans-serif";
+    bubble.style.fontFamily = "'Inkdrop', sans-serif";
 
 
     if (!audioBase64) {

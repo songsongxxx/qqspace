@@ -23,7 +23,7 @@
 
 
 body {
-    font-family: 'Starryfonts', sans-serif;
+    font-family: 'Inkdrop', sans-serif;
     text-align: center;
     background-color: #fefefe;
     overflow: hidden;
@@ -155,7 +155,7 @@ margin-bottom: 14px;
 
 /* 鼠标悬停 */
 .bubble:hover {
-    transform: scale(1.15);
+    transform: scale(2.15);
     box-shadow: 5px 5px 0px #666;
     background: #626592;
     color: rgb(160, 159, 179);
@@ -485,6 +485,6 @@ margin-bottom: 14px;
 
 /* play */
 .play-btn {
-  font-family: 'StarryFonts', sans-serif;
+  font-family: 'Inkdrop', sans-serif;
   font-size: 13px; /* 可调整 */
 }
