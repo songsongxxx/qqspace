@@ -7,11 +7,11 @@ const scenes = [
     {
         text: "(sigil)",
         image: "/dreamimages/sigil.png",  // GitHub URL for image
-        delay: 3 // 秒（测试用）
+        delay: 0 // 秒（测试用）
     },
     {
         text: "By day the village is translucent, shifting gently in the light. Reality appears only at night. Days feel thin, like diluted memories, humming softly at the edges. When darkness falls, dreams settle into homes, streets, and skin.",
-        image: "/dreamimages/george.png",  // GitHub URL for image
+        image: "/dreamimages/george.jpg",  // GitHub URL for image
         delay: 5 // 秒
     },
     {
@@ -228,7 +228,7 @@ const countdown = setInterval(() => {
     hintLight.color.set("0xffffff"); // 试试亮一点的粉紫色
 
     button.classList.add("active");
-    button.textContent = "Continue the story ➤";
+    button.textContent = "wwWwwait a minute➤";
     
   } else {
     button.textContent = `Waiting ${remaining} seconds...`;
