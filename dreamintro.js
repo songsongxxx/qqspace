@@ -16,7 +16,7 @@ const scenes = [
     },
     {
         text: "You are new here and sleepless. You don’t remember why you came. The line between dream and daylight blurs, and slowly, the dreams of others seep into your skin.",
-        image: "https://raw.githubusercontent.com/username/repository-name/main/images/forest_light.jpg",  // GitHub URL for image
+        image: "/dreamimages/HOUSE.mp4",  // GitHub URL for image
         delay: 5 // 秒
     },
     {
@@ -49,9 +49,11 @@ renderer.setSize(container.clientWidth, container.clientHeight);
 container.appendChild(renderer.domElement);
 
 // Light
-const directionalLight = new THREE.DirectionalLight(0xffffff, 1.2);
-directionalLight.position.set(1, 2, 2); // 光从右上方打来
-scene.add(directionalLight);
+const directionalLight = new THREE.DirectionalLight(0xffffff, 0.2);
+//directionalLight.position.set(1, 2, 2); // 光从右上方打来
+//scene.add(directionalLight);
+const ambientLight = new THREE.AmbientLight(0xffffff, 3.5); // 柔和白光
+scene.add(ambientLight);
 
 
 // Load .glb button    /dreamimages/furbyanimation.glb
@@ -155,6 +157,44 @@ function updateStory() {
     const textElement = document.getElementById("story-text");
     const button = document.getElementById("next-button");
     
+    const imageUrl = scene.image.toLowerCase(); // 统一为小写方便判断
+
+    if (imageUrl.endsWith(".mp4")) {
+        const video = document.createElement("video");
+        video.src = scene.image;
+        video.autoplay = true;
+        video.loop = true;
+        video.muted = true;
+        video.playsInline = true;
+        video.style.width = "100%";
+        video.style.height = "auto";
+        video.style.objectFit = "cover";
+    
+        imageElement.replaceWith(video);
+        video.id = "scene-image";
+    } else if (
+        imageUrl.endsWith(".png") ||
+        imageUrl.endsWith(".jpg") ||
+        imageUrl.endsWith(".jpeg") ||
+        imageUrl.endsWith(".gif")
+    ) {
+        // 如果已经是 <img>，直接改 src，否则重新创建一个 img
+        if (imageElement.tagName.toLowerCase() === "img") {
+            imageElement.src = scene.image;
+        } else {
+            const img = document.createElement("img");
+            img.src = scene.image;
+            img.alt = "Scene Image";
+            img.style.width = "100%";
+            img.style.height = "auto";
+            img.style.objectFit = "cover";
+    
+            imageElement.replaceWith(img);
+            img.id = "scene-image";
+        }
+    }
+
+  
     // Fade out
     imageElement.style.opacity = 0;
     textElement.style.opacity = 0;
