@@ -6,12 +6,12 @@ let redirectReady = false; // ✅ 是否准备跳转 dream.html
 const scenes = [
     {
         text: "(sigil)",
-        image: "https://raw.githubusercontent.com/songsongxxx/qqspace/main/dreamimages/sigil.png",  // GitHub URL for image
+        image: "/dreamimages/sigil.png",  // GitHub URL for image
         delay: 3 // 秒（测试用）
     },
     {
         text: "By day the village is translucent, shifting gently in the light. Reality appears only at night. Days feel thin, like diluted memories, humming softly at the edges. When darkness falls, dreams settle into homes, streets, and skin.",
-        image: "https://raw.githubusercontent.com/songsongxxx/qqspace/main/dreamimages/9.png",  // GitHub URL for image
+        image: "/dreamimages/george.png",  // GitHub URL for image
         delay: 5 // 秒
     },
     {
@@ -21,7 +21,7 @@ const scenes = [
     },
     {
         text: "'Somna Spores,' neural spores shed quietly from villagers’ bodies, float briefly through the air, seeking hosts whose minds match their rhythm. Inside you, Somna Spores weave patiently, layering through your flesh, stretching quietly across time.",
-        image: "https://raw.githubusercontent.com/songsongxxx/qqspace/main/dreamimages/somna_spores.png",  // GitHub URL for image
+        image: "/dreamimages/somna_spores.png",  // GitHub URL for image
         delay: 5 // 秒
     },
     {
@@ -49,20 +49,22 @@ renderer.setSize(container.clientWidth, container.clientHeight);
 container.appendChild(renderer.domElement);
 
 // Light
-const light = new THREE.AmbientLight(0xffffff, 1.2);
-scene.add(light);
+const directionalLight = new THREE.DirectionalLight(0xffffff, 1.2);
+directionalLight.position.set(1, 2, 2); // 光从右上方打来
+scene.add(directionalLight);
+
 
 // Load .glb button    /dreamimages/furbyanimation.glb
 const loader = new THREE.GLTFLoader();
 let buttonMesh;
 
 
-loader.load('/dreamimages/heart.glb', (gltf) => {
+loader.load('/dreamimages/icon1.glb', (gltf) => {
   buttonMesh = gltf.scene;
   // ✅ 缩放到合适大小
-  buttonMesh.scale.set(0.003, 0.003, 0.003);
+  buttonMesh.scale.set(0.3, 0.3, 0.3);
 
-  // ✅ 位置居中
+  // ✅ 位置居中 y x z
   buttonMesh.position.set(0, 0, 0);
 
   // ✅ 如果模型自身有偏移，可试试居中几何体（可选）
