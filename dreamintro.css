@@ -47,6 +47,9 @@ body {
     border-radius: 16px;
     margin-top: 1rem;
     box-shadow: 0 0 12px rgba(0, 0, 0, 0.2);
+    background-color: #111111; /* 深色背景防止闪白 */
+    object-fit: cover;
+    transition: opacity 0.5s ease;
   
     /* ✅ 关键：保证居中 */
     display: block;

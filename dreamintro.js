@@ -16,7 +16,7 @@ const scenes = [
     },
     {
         text: "You are new here and sleepless. You don’t remember why you came. The line between dream and daylight blurs, and slowly, the dreams of others seep into your skin.",
-        image: "/dreamimages/HOUSE.mp4",  // GitHub URL for image
+        image: "/dreamimages/HOUSEGIF.gif",  // GitHub URL for image
         delay: 5 // 秒
     },
     {
@@ -26,7 +26,7 @@ const scenes = [
     },
     {
         text: "You feel them coax your skin inward, your cells swelling gently, opening channels. A mouse sleeps on floating moss. A baby drifts through a weightless river, skin dissolving softly into the water.",
-        image: "https://raw.githubusercontent.com/username/repository-name/main/images/end.jpg",  // GitHub URL for image
+        image: "/dreamimages/Somna Spores.mp4",  // GitHub URL for image
         delay: 5 // 秒
     },
     {
