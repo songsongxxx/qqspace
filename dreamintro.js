@@ -31,7 +31,7 @@ const scenes = [
     },
     {
         text: "Skin might be the ultimate vessel of empathy—you don’t know. But you've become a container for dreams. Sensations gather within you until your boundaries blur, and you no longer know which feelings are yours, and which belong to others.",
-        image: "https://raw.githubusercontent.com/username/repository-name/main/images/end.jpg",  // GitHub URL for image
+        image: "/dreamimages/SORR.png",  // GitHub URL for image
         delay: 5 // 秒
     }
 ];
@@ -49,12 +49,14 @@ renderer.setSize(container.clientWidth, container.clientHeight);
 container.appendChild(renderer.domElement);
 
 // Light
-const directionalLight = new THREE.DirectionalLight(0xffffff, 0.2);
-//directionalLight.position.set(1, 2, 2); // 光从右上方打来
-//scene.add(directionalLight);
-const ambientLight = new THREE.AmbientLight(0xffffff, 3.5); // 柔和白光
+// 修改这里
+const ambientLight = new THREE.AmbientLight(0xffffff, 1.5);
 scene.add(ambientLight);
 
+// 可选：加一个轻微的补光
+const hintLight = new THREE.PointLight(0xffffff, 0, 5); // 把 distance 改成 5
+hintLight.position.set(0, 0.3, 1); // 离模型近一点
+scene.add(hintLight);
 
 // Load .glb button    /dreamimages/furbyanimation.glb
 const loader = new THREE.GLTFLoader();
@@ -67,7 +69,7 @@ loader.load('/dreamimages/icon1.glb', (gltf) => {
   buttonMesh.scale.set(0.3, 0.3, 0.3);
 
   // ✅ 位置居中 y x z
-  buttonMesh.position.set(0, 0, 0);
+  buttonMesh.position.set(0, 0.1, 0);
 
   // ✅ 如果模型自身有偏移，可试试居中几何体（可选）
   buttonMesh.traverse(function (child) {
@@ -222,12 +224,19 @@ const countdown = setInterval(() => {
   if (remaining <= 0) {
     clearInterval(countdown);
     buttonUnlocked = true; // ✅ 模型现在可点击了！
+    hintLight.intensity = 4;
+    hintLight.color.set("0xffffff"); // 试试亮一点的粉紫色
 
     button.classList.add("active");
     button.textContent = "Continue the story ➤";
+    
   } else {
     button.textContent = `Waiting ${remaining} seconds...`;
   }
+
+
+
+
 }, 1000);
 
 }
@@ -268,6 +277,9 @@ document.getElementById("next-button").addEventListener("click", () => {
       nextScene(); // ✅ 只有在模型被允许点击时才继续
       buttonUnlocked = false; // ✅ 马上锁回去，避免连点
     }
+    hintLight.intensity = 0;
+
+    
   }
 
 // Initialize the story
