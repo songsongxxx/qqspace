@@ -5,8 +5,8 @@ let redirectReady = false; // ✅ 是否准备跳转 dream.html
 
 const scenes = [
     {
-        text: "(sigil)",
-        image: "/dreamimages/sigil.png",  // GitHub URL for image
+        text: "__",
+        image: "/dreamimages/sigil.gif",  // GitHub URL for image
         delay: 0 // 秒（测试用）
     },
     {
