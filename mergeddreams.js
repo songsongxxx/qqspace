@@ -6,27 +6,40 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 });
 
-// Function to display one processed dream at a time
 function displayProcessedDream() {
     const processedText = JSON.parse(localStorage.getItem("processedTextFragments"));
-    const processedAudio = JSON.parse(localStorage.getItem("processedAudioFragments"));
+    const processedAudio = localStorage.getItem("processedAudioFragments");
 
-    if (!processedText || !processedAudio) {
-        document.getElementById("processedText").textContent = "No processed dreams available.";
+    if (!processedText || processedText.length === 0) {
+        document.getElementById("processedText").textContent = "No processed dream text found.";
         return;
     }
 
-    // Get a random processed text and audio fragment
+    if (!processedAudio) {
+        document.getElementById("processedAudio").textContent = "No audio available.";
+        return;
+    }
+
+    // Randomly pick one sentence from the processedText array
     const randomTextIndex = Math.floor(Math.random() * processedText.length);
-    const randomAudioIndex = Math.floor(Math.random() * processedAudio.length);
+    const selectedText = processedText[randomTextIndex];
 
-    // Display the random text
-    document.getElementById("processedText").textContent = processedText[randomTextIndex];
+    document.getElementById("processedText").textContent = selectedText;
 
-    // Display the random audio
-    const audioElem = document.createElement('audio');
-    audioElem.src = processedAudio[randomAudioIndex];
-    audioElem.controls = true;  // Enable controls for playback
-    document.getElementById("processedAudio").innerHTML = ''; // Clear previous audio
-    document.getElementById("processedAudio").appendChild(audioElem);
+    // Display the reconstructed audio
+    const audioElem = document.createElement("audio");
+    audioElem.src = processedAudio;
+    audioElem.controls = true;
+
+    const audioContainer = document.getElementById("processedAudio");
+    audioContainer.innerHTML = ''; // Clear previous audio
+    audioContainer.appendChild(audioElem);
 }
+
+document.addEventListener("DOMContentLoaded", () => {
+    displayProcessedDream();
+
+    document.getElementById("nextDreamBtn").addEventListener("click", () => {
+        displayProcessedDream(); // Show a new randomized dream on click
+    });
+});

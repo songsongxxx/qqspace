@@ -201,7 +201,6 @@ export async function loadBubbles() {
         .from("dreams")
         .select("*")
         .order("created_at", { ascending: false })
-        .limit(10);
 
     if (error) {
         console.error("❌ 读取失败:", error.message);
@@ -412,42 +411,63 @@ function animateBubble(bubble) {
 }
 
 // Add event listener for the "Merge Dreams" button
-document.getElementById("mergeDreamsBtn").addEventListener("click", () => {
-    processAndStoreDreams(); // Process and store the results
-    window.location.href = "mergeddreams.html"; // Redirect to the new page with processed results
+document.getElementById("mergeDreamsBtn").addEventListener("click", async () => {
+    await processAndStoreDreams(); // fetch + process + store
+    window.location.href = "mergeddreams.html";
 });
 
-// Function to process and store the dreams
-function processAndStoreDreams() {
-    const bubbles = document.querySelectorAll(".bubble"); // Assuming you're using the bubble class for dream entries
+
+async function processAndStoreDreams() {
     let allTextFragments = [];
     let allAudioFragments = [];
 
-    bubbles.forEach((bubble) => {
-        const textElem = bubble.querySelector("div"); // Assuming the text is inside a div element
-        const text = textElem ? textElem.textContent : '';
+    // Fetch bubble data directly from Supabase (same as loadBubbles)
+    const { data, error } = await supabase
+        .from("dreams")
+        .select("*")
+        .order("created_at", { ascending: false });
 
-        if (text) {
-            const fragments = splitText(text); // Split the text into fragments
-            const scrambledText = scrambleArray(fragments); // Randomly reorder the text fragments
-            allTextFragments.push(scrambledText.join(" ")); // Add scrambled text to the array
+    if (error) {
+        console.error("❌ Supabase fetch failed:", error.message);
+        return;
+    }
+
+    if (!data || data.length === 0) {
+        console.warn("⚠️ No bubble data found.");
+        return;
+    }
+
+    // Process each entry from Supabase
+    data.forEach(entry => {
+        if (entry.text) {
+            const words = entry.text.trim().split(/\s+/);
+            allTextFragments.push(...words); // Push all words individually
         }
 
-        // Process audio fragments if they exist
-        const audioBase64 = bubble.querySelector("audio")?.src;
-        if (audioBase64) {
-            allAudioFragments.push(audioBase64);  // Add the audio URL to the array
+        if (entry.audio_url) {
+            allAudioFragments.push(entry.audio_url); // Add audio URL
         }
     });
 
-    // Store the scrambled text and audio fragments in localStorage
-    localStorage.setItem("processedTextFragments", JSON.stringify(allTextFragments));
-    localStorage.setItem("processedAudioFragments", JSON.stringify(allAudioFragments));
-}
+    console.log("✨ Collected words:", allTextFragments.length);
+    console.log("🎧 Collected audio:", allAudioFragments.length);
 
-// Helper functions for splitting and scrambling text
-function splitText(text) {
-    return text.split(/\s+/); // Split by space to get words as fragments
+    // Scramble all words
+    const scrambledWords = scrambleArray(allTextFragments);
+
+    // Create grouped sentences
+    const groupedSentences = [];
+    const groupSize = 7;
+    for (let i = 0; i < scrambledWords.length; i += groupSize) {
+        groupedSentences.push(scrambledWords.slice(i, i + groupSize).join(" "));
+    }
+
+    // Reconstruct long audio
+    const longAudio = await reconstructLongAudio(allAudioFragments);
+
+    // Save to localStorage
+    localStorage.setItem("processedTextFragments", JSON.stringify(groupedSentences));
+    localStorage.setItem("processedAudioFragments", JSON.stringify(longAudio));
 }
 
 function scrambleArray(arr) {
@@ -457,3 +477,85 @@ function scrambleArray(arr) {
     }
     return arr;
 }
+
+async function reconstructLongAudio(audioFragments) {
+    if (!audioFragments || audioFragments.length === 0) return null;
+
+    let allAudioBuffers = [];
+
+    // Fetch and decode each audio fragment
+    for (let audioUrl of audioFragments) {
+        const response = await fetch(audioUrl);
+        const audioBlob = await response.blob();
+        const arrayBuffer = await audioBlob.arrayBuffer();
+        const buffer = await Tone.context.decodeAudioData(arrayBuffer);
+        allAudioBuffers.push(buffer);
+    }
+
+    const sampleRate = Tone.context.sampleRate;
+    const totalDuration = 60; // seconds
+    const longBuffer = Tone.context.createBuffer(1, sampleRate * totalDuration, sampleRate);
+    const output = longBuffer.getChannelData(0);
+
+    let currentSample = 0;
+    while (currentSample < output.length) {
+        const randomBuffer = allAudioBuffers[Math.floor(Math.random() * allAudioBuffers.length)];
+        const input = randomBuffer.getChannelData(0);
+
+        for (let i = 0; i < input.length && currentSample < output.length; i++) {
+            output[currentSample++] = input[i];
+        }
+    }
+
+    // Convert to Blob and URL
+    const audioBlob = await bufferToWavBlob(longBuffer);
+    return URL.createObjectURL(audioBlob);
+}
+
+function bufferToWavBlob(buffer) {
+    const wav = encodeWAV(buffer);
+    return new Blob([wav], { type: 'audio/wav' });
+}
+
+// Minimal audioBufferToWav implementation (1 channel only for simplicity)
+function encodeWAV(buffer) {
+    const numOfChan = buffer.numberOfChannels;
+    const length = buffer.length * numOfChan * 2 + 44;
+    const view = new DataView(new ArrayBuffer(length));
+    const sampleRate = buffer.sampleRate;
+
+    function writeString(view, offset, str) {
+        for (let i = 0; i < str.length; i++) {
+            view.setUint8(offset + i, str.charCodeAt(i));
+        }
+    }
+
+    let offset = 0;
+    writeString(view, offset, 'RIFF'); offset += 4;
+    view.setUint32(offset, length - 8, true); offset += 4;
+    writeString(view, offset, 'WAVE'); offset += 4;
+    writeString(view, offset, 'fmt '); offset += 4;
+    view.setUint32(offset, 16, true); offset += 4;
+    view.setUint16(offset, 1, true); offset += 2;
+    view.setUint16(offset, numOfChan, true); offset += 2;
+    view.setUint32(offset, sampleRate, true); offset += 4;
+    view.setUint32(offset, sampleRate * numOfChan * 2, true); offset += 4;
+    view.setUint16(offset, numOfChan * 2, true); offset += 2;
+    view.setUint16(offset, 16, true); offset += 2;
+    writeString(view, offset, 'data'); offset += 4;
+    view.setUint32(offset, length - offset - 4, true); offset += 4;
+
+    for (let i = 0; i < buffer.length; i++) {
+        for (let channel = 0; channel < numOfChan; channel++) {
+            const sample = buffer.getChannelData(channel)[i];
+            const s = Math.max(-1, Math.min(1, sample));
+            view.setInt16(offset, s < 0 ? s * 0x8000 : s * 0x7FFF, true);
+            offset += 2;
+        }
+    }
+
+    return view;
+}
+
+
+
