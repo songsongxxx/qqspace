@@ -410,3 +410,50 @@ function animateBubble(bubble) {
 
     requestAnimationFrame(move);
 }
+
+// Add event listener for the "Merge Dreams" button
+document.getElementById("mergeDreamsBtn").addEventListener("click", () => {
+    processAndStoreDreams(); // Process and store the results
+    window.location.href = "mergeddreams.html"; // Redirect to the new page with processed results
+});
+
+// Function to process and store the dreams
+function processAndStoreDreams() {
+    const bubbles = document.querySelectorAll(".bubble"); // Assuming you're using the bubble class for dream entries
+    let allTextFragments = [];
+    let allAudioFragments = [];
+
+    bubbles.forEach((bubble) => {
+        const textElem = bubble.querySelector("div"); // Assuming the text is inside a div element
+        const text = textElem ? textElem.textContent : '';
+
+        if (text) {
+            const fragments = splitText(text); // Split the text into fragments
+            const scrambledText = scrambleArray(fragments); // Randomly reorder the text fragments
+            allTextFragments.push(scrambledText.join(" ")); // Add scrambled text to the array
+        }
+
+        // Process audio fragments if they exist
+        const audioBase64 = bubble.querySelector("audio")?.src;
+        if (audioBase64) {
+            allAudioFragments.push(audioBase64);  // Add the audio URL to the array
+        }
+    });
+
+    // Store the scrambled text and audio fragments in localStorage
+    localStorage.setItem("processedTextFragments", JSON.stringify(allTextFragments));
+    localStorage.setItem("processedAudioFragments", JSON.stringify(allAudioFragments));
+}
+
+// Helper functions for splitting and scrambling text
+function splitText(text) {
+    return text.split(/\s+/); // Split by space to get words as fragments
+}
+
+function scrambleArray(arr) {
+    for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]]; // Swap elements
+    }
+    return arr;
+}
