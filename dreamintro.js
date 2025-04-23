@@ -11,7 +11,7 @@ const scenes = [
     },
     {
         text: "By day the village is translucent, shifting gently in the light. Reality appears only at night. Days feel thin, like diluted memories, humming softly at the edges. When darkness falls, dreams settle into homes, streets, and skin.",
-        image: "/dreamimages/george.jpg",  // GitHub URL for image
+        image: "/dreamimages/george.gif",  // GitHub URL for image
         delay: 5 // 秒
     },
     {
