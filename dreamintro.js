@@ -228,7 +228,7 @@ const countdown = setInterval(() => {
     hintLight.color.set("0xffffff"); // 试试亮一点的粉紫色
 
     button.classList.add("active");
-    button.textContent = "wwWwwait a minute➤";
+    button.textContent = "wwWwwait seconds➤";
     
   } else {
     button.textContent = `Waiting ${remaining} seconds...`;
@@ -287,3 +287,7 @@ window.onload = () => {
     updateStory();
   };
   
+  document.getElementById("loader").style.opacity = 0;
+setTimeout(() => {
+  document.getElementById("loader").style.display = "none";
+}, 500);
