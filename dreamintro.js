@@ -3,55 +3,65 @@ let mixer;
 let buttonUnlocked = false; // 模型按钮是否可点
 let redirectReady = false; // ✅ 是否准备跳转 dream.html
 // 🎵 白噪音
-let noise, noiseVolume;
+let noise, bitCrusher, reverb, filter, volume, lfo;
 
 
 async function startBackgroundNoise() {
-    if (!noise) {
-        await Tone.start(); // 开启音频上下文
-        noise = new Tone.Noise('white').start();
-        noiseVolume = new Tone.Volume(-35).toDestination(); // 设置小音量
-        noise.connect(noiseVolume);
-        console.log("🌬️ 白噪音已开始");
-    }
+  if (noise) return; // 避免重复启动
+  await Tone.start(); // 开启音频上下文
+
+  // 创建白噪音
+  noise = new Tone.Noise('white').start();
+
+  // BitCrusher
+  bitCrusher = new Tone.BitCrusher(4);
+
+  // Reverb
+  reverb = new Tone.Reverb({
+      decay: 5,
+      preDelay: 0.01
+  }).toDestination();
+
+  // Filter
+  filter = new Tone.Filter(800, "lowpass");
+
+  // Volume
+  volume = new Tone.Volume(-20);
+
+  // LFO
+  lfo = new Tone.LFO({
+      frequency: 0.08,
+      min: -25,
+      max: -10
+  }).start();
+
+  // 链接
+  noise.chain(volume, bitCrusher, filter, reverb);
+
+  // LFO控制音量
+  lfo.connect(volume.volume);
+
+  console.log("🌫️ Whisper背景声启动");
 }
 
 
-async function speakText(text) {
-  // 🪐 每次说话的时候，确保白噪音也有
-  if (!noise) {
-      await Tone.start(); // 开启 Tone.js 音频上下文（如果没启动）
-      
-      // 创建白噪音
-      noise = new Tone.Noise('white').start();
 
-      // 低通滤波，让声音柔软
-      const filter = new Tone.Filter(800, "lowpass").toDestination();
 
-      // 音量控制
-      noiseVolume = new Tone.Volume(-20).connect(filter);
-
-      // 连接
-      noise.connect(noiseVolume);
-
-      // 加一个 LFO，让音量忽大忽小
-      const lfo = new Tone.LFO({
-          frequency: 0.1, // 很慢的起伏
-          min: -20,
-          max: -5
-      }).start();
-      lfo.connect(noiseVolume.volume);
-
-      console.log("🌫️ Whisper 背景声已启动");
-  }
-
-  // 📖 用 speechSynthesis 读文本（可以小小声）
+function speakText(text) {
+  // 📖 用 speechSynthesis 读文本
   const utterance = new SpeechSynthesisUtterance(text);
   utterance.lang = "en-US";
-  utterance.pitch = 12;   // 提高一点点，偏小女生
-  utterance.rate = 1;   // 慢慢说
-  utterance.volume = 1;  // 小小声，避免盖过whisper噪音
-  speechSynthesis.cancel(); // 取消之前的朗读
+
+  utterance.voice = speechSynthesis.getVoices().find(voice => 
+    voice.lang === "en-US" && voice.name.includes('Female') // 找女生的
+  ) || null;
+
+  utterance.bitCrusher = 2.2; 
+  utterance.pitch = 2.2;   // 稍微高一点，更轻盈
+  utterance.rate = 0.95;   // 微慢一点
+  utterance.volume = 0.6;  // 更柔和，不要压过背景声
+
+  speechSynthesis.cancel(); // 防止叠音
   speechSynthesis.speak(utterance);
 
   console.log("📖 开始朗读:", text.slice(0, 20) + "...");
@@ -159,13 +169,13 @@ function onClick(event) {
   raycaster.setFromCamera(mouse, camera);
 
   const intersects = raycaster.intersectObjects(scene.children, true);
-  if (intersects.length > 0) {
-    const nextBtn = document.getElementById("next-button");
-    if (!nextBtn.disabled) {
-      nextScene(); // 调用原有逻辑
-    }
+  if (intersects.length > 0 && buttonUnlocked) {
+    nextScene(); 
+    buttonUnlocked = false; // 及时锁回去，避免连点
   }
+  hintLight.intensity = 0;
 }
+
 
 renderer.domElement.addEventListener('click', onClick);
 
@@ -300,8 +310,7 @@ const countdown = setInterval(() => {
 
 
 document.getElementById("next-button").addEventListener("click", () => {
-    if (document.getElementById("next-button").disabled) return;
-
+  if (document.getElementById("next-button").disabled || !buttonUnlocked) return;
     if (currentScene < scenes.length - 1) {
       currentScene++;
       updateStory();
