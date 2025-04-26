@@ -187,6 +187,14 @@ export async function saveBubbleToSupabase(text, audioBase64 = null) {
 
 // 录音处理
 export function startRecording() {
+
+        // 录音开始前，先暂停白噪音
+        if (backgroundNoise) {
+            backgroundNoise.stop();
+            console.log('🌫️ 白噪音暂停录音中...');
+        }
+    
+        
     navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
         recordingStream = stream;
         allChunks = [];
@@ -204,6 +212,13 @@ export function startRecording() {
 }
 
 export function stopRecording() {
+
+        // 录音结束后，恢复白噪音
+        if (backgroundNoise) {
+            backgroundNoise.start();
+            console.log('🌫️ 白噪音恢复播放');
+        }
+        
     if (mediaRecorder && recordingStream) {
         mediaRecorder.stop();
         recordingStream.getTracks().forEach(t => t.stop());
