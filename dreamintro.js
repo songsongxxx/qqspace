@@ -2,6 +2,62 @@ let currentScene = 0;
 let mixer;
 let buttonUnlocked = false; // 模型按钮是否可点
 let redirectReady = false; // ✅ 是否准备跳转 dream.html
+// 🎵 白噪音
+let noise, noiseVolume;
+
+
+async function startBackgroundNoise() {
+    if (!noise) {
+        await Tone.start(); // 开启音频上下文
+        noise = new Tone.Noise('white').start();
+        noiseVolume = new Tone.Volume(-35).toDestination(); // 设置小音量
+        noise.connect(noiseVolume);
+        console.log("🌬️ 白噪音已开始");
+    }
+}
+
+
+async function speakText(text) {
+  // 🪐 每次说话的时候，确保白噪音也有
+  if (!noise) {
+      await Tone.start(); // 开启 Tone.js 音频上下文（如果没启动）
+      
+      // 创建白噪音
+      noise = new Tone.Noise('white').start();
+
+      // 低通滤波，让声音柔软
+      const filter = new Tone.Filter(800, "lowpass").toDestination();
+
+      // 音量控制
+      noiseVolume = new Tone.Volume(-20).connect(filter);
+
+      // 连接
+      noise.connect(noiseVolume);
+
+      // 加一个 LFO，让音量忽大忽小
+      const lfo = new Tone.LFO({
+          frequency: 0.1, // 很慢的起伏
+          min: -20,
+          max: -5
+      }).start();
+      lfo.connect(noiseVolume.volume);
+
+      console.log("🌫️ Whisper 背景声已启动");
+  }
+
+  // 📖 用 speechSynthesis 读文本（可以小小声）
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.lang = "en-US";
+  utterance.pitch = 12;   // 提高一点点，偏小女生
+  utterance.rate = 1;   // 慢慢说
+  utterance.volume = 1;  // 小小声，避免盖过whisper噪音
+  speechSynthesis.cancel(); // 取消之前的朗读
+  speechSynthesis.speak(utterance);
+
+  console.log("📖 开始朗读:", text.slice(0, 20) + "...");
+}
+
+
 
 const scenes = [
     {
@@ -63,7 +119,7 @@ const loader = new THREE.GLTFLoader();
 let buttonMesh;
 
 
-loader.load('/dreamimages/icon1.glb', (gltf) => {
+loader.load('dreamimages/icon1.glb', (gltf) => {
   buttonMesh = gltf.scene;
   // ✅ 缩放到合适大小
   buttonMesh.scale.set(0.3, 0.3, 0.3);
@@ -233,11 +289,12 @@ const countdown = setInterval(() => {
   } else {
     button.textContent = `Waiting ${remaining} seconds...`;
   }
-
-
-
-
 }, 1000);
+
+ // 新增：🔊 每次切换场景时朗读文本
+    if (scene.text && scene.text.trim() !== "") {
+        speakText(scene.text);
+    }
 
 }
 
@@ -291,3 +348,18 @@ window.onload = () => {
 setTimeout(() => {
   document.getElementById("loader").style.display = "none";
 }, 500);
+
+
+
+// 页面加载完就准备播放（尽量不等用户点击）
+window.addEventListener('load', async () => {
+  try {
+      await startBackgroundNoise();
+  } catch (e) {
+      console.warn('⚠️ 自动播放被浏览器拦截，需要用户手动触发！');
+      // 等用户第一次交互后再触发
+      document.addEventListener('click', async () => {
+          await startBackgroundNoise();
+      }, { once: true });
+  }
+});
