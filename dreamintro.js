@@ -198,7 +198,7 @@ const ambientLight = new THREE.AmbientLight(0xffffff, 203.5);
 scene.add(ambientLight);
 
 // 可选：加一个轻微的补光
-const hintLight = new THREE.PointLight(0xffffff, 0, 52); // 把 distance 改成 5
+const hintLight = new THREE.PointLight(0xffffff, 2, 10); 
 hintLight.position.set(0, 0.3, 1); // 离模型近一点
 scene.add(hintLight);
 
@@ -210,7 +210,7 @@ let buttonMesh;
 loader.load('dreamimages/bubbles.glb', (gltf) => {
   buttonMesh = gltf.scene;
   // ✅ 缩放到合适大小
-  buttonMesh.scale.set(0.003, 0.003, 0.003);
+  buttonMesh.scale.set(0.002, 0.002, 0.002);
 
   // ✅ 位置居中 y x z
   buttonMesh.position.set(0, 0, 0);
