@@ -13,6 +13,10 @@ let allWords = [];
 let allAudioClips = [];
 
 
+let collectedTexts = [];
+let collectedAudioBuffers = [];
+let currentSentence = null;
+let currentAudioBuffer = null;
 
 // 🌟 弹出进入梦境提示
 function createDreamOverlay() {
@@ -197,23 +201,23 @@ async function displayProcessedDream() {
     textContainer.innerHTML = '';
     audioContainer.innerHTML = '';
 
-    // 📝 随机组合文字
     const groupSize = 7;
+
     if (allWords.length >= groupSize) {
         const startIndex = Math.floor(Math.random() * (allWords.length - groupSize));
-        const sentence = allWords.slice(startIndex, startIndex + groupSize).join(' ');
+        currentSentence = allWords.slice(startIndex, startIndex + groupSize).join(' ');
 
         const textElem = document.createElement("div");
-        textElem.textContent = sentence;
+        textElem.textContent = currentSentence;
         textContainer.appendChild(textElem);
     } else {
         textContainer.textContent = "⚠️ 不够单词生成句子";
+        currentSentence = null;
     }
 
-    // 🎵 随机选一段音频片段
     if (allAudioClips.length > 0) {
-        const randomClip = allAudioClips[Math.floor(Math.random() * allAudioClips.length)];
-        const clipBlob = await bufferToWavBlob(randomClip);
+        currentAudioBuffer = allAudioClips[Math.floor(Math.random() * allAudioClips.length)];
+        const clipBlob = await bufferToWavBlob(currentAudioBuffer);
         const clipUrl = URL.createObjectURL(clipBlob);
 
         const audioElem = document.createElement("audio");
@@ -221,12 +225,14 @@ async function displayProcessedDream() {
         audioElem.controls = true;
         audioElem.preload = "auto";
         audioElem.autoplay = true;
-
         audioContainer.appendChild(audioElem);
     } else {
         audioContainer.textContent = "⚠️ 没有音频片段";
+        currentAudioBuffer = null;
     }
 }
+
+
 
 // --- 小工具
 function scrambleArray(arr) {
@@ -291,3 +297,159 @@ function encodeWAV(buffer) {
 
     return view;
 }
+
+
+// 拿到按钮元素
+const collectBtn = document.getElementById("collectDreamBtn");
+const mergeBtn = document.getElementById("mergeDreamsBtn");
+
+// 再绑定监听
+collectBtn.addEventListener("click", async () => {
+    if (currentSentence && currentAudioBuffer) {
+        collectedTexts.push(currentSentence);
+        collectedAudioBuffers.push(currentAudioBuffer);
+
+        console.log("🌟 已收集一条 dream");
+
+        // 新建一个小框来显示收集的dream
+        const collectedContainer = document.getElementById("collectedDreams");
+
+        const dreamCard = document.createElement("div");
+        dreamCard.classList.add("dream-card");
+
+        const dreamIndex = collectedTexts.length; // 第几条
+
+        // 加文字
+        const textElem = document.createElement("div");
+        textElem.textContent = `Dream ${dreamIndex}: ${currentSentence}`;
+        textElem.style.marginBottom = "8px";
+
+        // 加音频
+        const clipBlob = await bufferToWavBlob(currentAudioBuffer);
+        const clipUrl = URL.createObjectURL(clipBlob);
+        const audioElem = document.createElement("audio");
+        audioElem.src = clipUrl;
+        audioElem.controls = true;
+        audioElem.preload = "auto";
+
+        dreamCard.appendChild(textElem);
+        dreamCard.appendChild(audioElem);
+
+        // 加到收集容器里
+        collectedContainer.appendChild(dreamCard);
+
+    } else {
+        console.warn("⚠️ 当前没有可收集的内容");
+    }
+});
+
+
+mergeBtn.addEventListener("click", async () => {
+    if (collectedTexts.length === 0) {
+        alert("⚠️ 你还没有收集任何dream！");
+        return;
+    }
+
+    // 合并文字
+    const longText = collectedTexts.join(' ');
+
+    // 合并音频
+    const sampleRate = Tone.context.sampleRate;
+    const totalSamples = collectedAudioBuffers.reduce((sum, buffer) => sum + buffer.length, 0);
+    const mergedBuffer = Tone.context.createBuffer(1, totalSamples, sampleRate);
+    const output = mergedBuffer.getChannelData(0);
+
+    let offset = 0;
+    for (const buffer of collectedAudioBuffers) {
+        const input = buffer.getChannelData(0);
+        for (let i = 0; i < input.length; i++) {
+            output[offset++] = input[i];
+        }
+    }
+
+    // 🌟 找到 mergedResult，并清空
+    const mergedResultContainer = document.getElementById("mergedResult");
+    mergedResultContainer.innerHTML = '';
+
+    // 🌟 新建一块漂亮的容器
+    const mergedTextElem = document.createElement("div");
+    mergedTextElem.textContent = longText;
+    mergedTextElem.style.marginTop = "40px";
+    mergedTextElem.style.padding = "20px";
+    mergedTextElem.style.background = "rgba(255,255,255,0.7)";
+    mergedTextElem.style.backdropFilter = "blur(6px)";
+    mergedTextElem.style.borderRadius = "20px";
+    mergedTextElem.style.boxShadow = "0 4px 12px rgba(0,0,0,0.1)";
+    mergedTextElem.style.fontSize = "20px";
+    mergedTextElem.style.color = "#444";
+    mergedTextElem.style.maxWidth = "800px";
+    mergedTextElem.style.marginLeft = "auto";
+    mergedTextElem.style.marginRight = "auto";
+
+    // 生成音频播放器
+    const mergedBlob = await bufferToWavBlob(mergedBuffer);
+    const mergedUrl = URL.createObjectURL(mergedBlob);
+
+    const mergedAudioElem = document.createElement("audio");
+    mergedAudioElem.src = mergedUrl;
+    mergedAudioElem.controls = true;
+    mergedAudioElem.preload = "auto";
+    mergedAudioElem.style.width = "100%";
+    mergedAudioElem.style.maxWidth = "600px";
+    mergedAudioElem.style.marginTop = "20px";
+    mergedAudioElem.style.display = "block";
+    mergedAudioElem.style.marginLeft = "auto";
+    mergedAudioElem.style.marginRight = "auto";
+
+    // 插入
+    mergedResultContainer.appendChild(mergedTextElem);
+    mergedResultContainer.appendChild(mergedAudioElem);
+    setupVisualizer(mergedAudioElem);
+    console.log("✅ 合成完成，已展示在页面下方");
+});
+
+
+function setupVisualizer(audioElement) {
+    const canvas = document.createElement('canvas');
+    canvas.width = 600;
+    canvas.height = 100;
+    canvas.style.display = 'block';
+    canvas.style.margin = '20px auto';
+    canvas.style.background = 'rgba(255,255,255,0.6)';
+    canvas.style.borderRadius = '20px';
+    canvas.style.backdropFilter = 'blur(6px)';
+    document.getElementById("mergedResult").appendChild(canvas);
+
+    const ctx = canvas.getContext('2d');
+
+    const audioContext = Tone.context.rawContext;
+    const source = audioContext.createMediaElementSource(audioElement);
+    const analyser = audioContext.createAnalyser();
+    analyser.fftSize = 256; // 💡 更细一点可以多取一点数据
+    source.connect(analyser);
+    analyser.connect(audioContext.destination);
+
+    const bufferLength = analyser.frequencyBinCount;
+    const dataArray = new Uint8Array(bufferLength);
+
+    function draw() {
+        requestAnimationFrame(draw);
+        analyser.getByteFrequencyData(dataArray);
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        const barWidth = canvas.width / bufferLength;
+        dataArray.forEach((v, i) => {
+            const x = i * barWidth;
+            const y = v / 2; 
+
+
+            ctx.fillStyle = '#ff99cc'; // 🌸 粉粉嫩嫩
+
+            ctx.fillRect(x, canvas.height - y, barWidth * 0.3, y); 
+            // ✨ bar宽度 * 0.3 更细，只剩三分之一宽度
+        });
+    }
+
+    draw();
+}
+
