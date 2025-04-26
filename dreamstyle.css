@@ -23,7 +23,8 @@
 
 
 body {
-    font-family: 'Inkdrop', sans-serif;
+  font-family: 'PencilPete', sans-serif;
+  font-weight: bold; /* 让浏览器伪加粗一点点 */
     text-align: center;
     background-color: #fefefe;
     margin: 0;
@@ -47,7 +48,8 @@ body {
         0 8px 20px rgba(0, 0, 0, 0.1),
         inset 0 0 12px rgba(255, 255, 255, 0.6),
         0 0 30px rgba(255, 255, 255, 0.5);
-    font-family: 'Inkdrop', sans-serif;
+    font-family: 'PencilPete', sans-serif;
+    font-weight: bold; /* 让浏览器伪加粗一点点 */
     font-size: 14px;
     color: #333;
     z-index: 10;
@@ -222,11 +224,13 @@ margin-bottom: 14px;
   justify-content: center;
   margin-top: 20px;
   padding-bottom: 10px;
-    font-family: 'Inkdrop', sans-serif;
+  font-family: 'PencilPete', sans-serif;
+  font-weight: bold; /* 让浏览器伪加粗一点点 */
 }
 
 #mergeDreamsBtn {
-  font-family: 'Inkdrop', sans-serif;
+  font-family: 'PencilPete', sans-serif;
+  font-weight: bold; /* 让浏览器伪加粗一点点 */
   font-size: 22px;
   padding: 12px 20px;
   height: 48px;
@@ -296,7 +300,8 @@ margin-bottom: 14px;
     inset 0 0 6px rgba(255, 255, 255, 0.3),
     0 4px 8px rgba(220, 220, 220, 0.2);
   color: #444;
-  font-family: 'Inkdrop', sans-serif;
+  font-family: 'PencilPete', sans-serif;
+  font-weight: bold; /* 让浏览器伪加粗一点点 */
   transition: all 0.3s ease;
   backdrop-filter: blur(6px);
   display: flex;
@@ -386,7 +391,8 @@ margin-bottom: 14px;
     inset 0 0 8px rgba(255, 255, 255, 0.4),
     0 4px 12px rgba(200, 200, 200, 0.2);
   color: #444;
-  font-family: 'Inkdrop', sans-serif;
+  font-family: 'PencilPete', sans-serif;
+  font-weight: bold; /* 让浏览器伪加粗一点点 */
   transition: all 0.3s ease;
   backdrop-filter: blur(8px);
   cursor: pointer;
@@ -425,7 +431,8 @@ margin-bottom: 14px;
 
 /* play */
 .play-btn {
-  font-family: 'Inkdrop', sans-serif;
+  font-family: 'PencilPete', sans-serif;
+  font-weight: bold; /* 让浏览器伪加粗一点点 */
   font-size: 13px; /* 可调整 */
 }
 

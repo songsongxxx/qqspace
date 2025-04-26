@@ -6,6 +6,14 @@
     font-weight: normal;
     font-style: normal;
   }
+
+  @font-face {
+    font-family: 'PencilPete';
+    src: url('PencilPete TRIAL/PencilPeteFONT.woff2') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+  }
+
   /* 🫧 Processed Results Page Styling */
 
 #processedResults {
@@ -18,7 +26,8 @@
         inset 0 0 8px rgba(255, 255, 255, 0.4),
         0 4px 12px rgba(200, 200, 200, 0.2);
     text-align: center;
-    font-family: 'Inkdrop', sans-serif;
+  font-family: 'PencilPete', sans-serif;
+  font-weight: bold; /* 让浏览器伪加粗一点点 */
     max-width: 700px;
     margin-left: auto;
     margin-right: auto;
@@ -51,7 +60,8 @@
 
 /* 按钮美化 */
 #processedResults button {
-    font-family: 'Inkdrop', sans-serif;
+    font-family: 'PencilPete', sans-serif;
+    font-weight: bold; /* 让浏览器伪加粗一点点 */
     font-size: 20px;
     padding: 12px 20px;
     background: rgba(255, 255, 255, 0.5);

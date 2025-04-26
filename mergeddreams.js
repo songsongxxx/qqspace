@@ -12,6 +12,83 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 let allWords = [];
 let allAudioClips = [];
 
+
+
+// 🌟 弹出进入梦境提示
+function createDreamOverlay() {
+    const overlay = document.createElement("div");
+    overlay.id = "dream-overlay";
+    overlay.style.position = "fixed";
+    overlay.style.top = "0";
+    overlay.style.left = "0";
+    overlay.style.width = "100vw";
+    overlay.style.height = "100vh";
+    overlay.style.background = "rgba(255, 255, 255, 0.8)";
+    overlay.style.backdropFilter = "blur(10px)";
+    overlay.style.display = "flex";
+    overlay.style.flexDirection = "column";
+    overlay.style.justifyContent = "center";
+    overlay.style.alignItems = "center";
+    overlay.style.zIndex = "9999";
+    overlay.style.cursor = "pointer";
+    overlay.innerHTML = `<div style="
+    font-family: 'PencilPete', sans-serif;
+font-weight: bold; /* 让浏览器伪加粗一点点 */
+        font-size: 24px;
+        color: #444;
+        padding: 20px 30px;
+        background: rgba(255, 255, 255, 0.6);
+        border-radius: 20px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        text-align: center;
+        backdrop-filter: blur(8px);
+        ">Merge dreams</div>`;
+
+    document.body.appendChild(overlay);
+
+    overlay.addEventListener("click", async () => {
+        await Tone.start();
+        await startBackgroundNoise();
+        overlay.remove(); // 移除提示层
+        console.log("🌟 Dream started");
+    });
+}
+
+// 页面加载完弹出
+window.addEventListener("DOMContentLoaded", () => {
+    createDreamOverlay();
+});
+
+
+// 🌟 持续的背景白噪音
+let backgroundNoise, backgroundFilter;
+let isBackgroundNoiseStarted = false;
+
+async function startBackgroundNoise() {
+    await Tone.start(); // 启动 Tone.js 音频上下文
+    backgroundNoise = new Tone.Noise('white').start();
+    backgroundFilter = new Tone.Filter(800, "lowpass").toDestination();
+    backgroundNoise.connect(backgroundFilter);
+    backgroundNoise.volume.value = -10;
+    console.log("🎵 背景白噪音已启动");
+}
+
+// 检查并启动白噪音
+function ensureBackgroundNoise() {
+    if (!isBackgroundNoiseStarted) {
+        startBackgroundNoise();
+        isBackgroundNoiseStarted = true;
+    }
+}
+
+// 页面加载完成时，监听第一次用户交互
+window.addEventListener("DOMContentLoaded", () => {
+    document.body.addEventListener("click", ensureBackgroundNoise, { once: true });
+    document.body.addEventListener("touchstart", ensureBackgroundNoise, { once: true });
+});
+
+
+
 document.addEventListener("DOMContentLoaded", async () => {
     const dreams = await fetchDreamBubbles();
 
