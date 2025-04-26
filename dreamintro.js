@@ -5,6 +5,19 @@ let redirectReady = false; // ✅ 是否准备跳转 dream.html
 // 🎵 白噪音
 let noise, bitCrusher, reverb, filter, volume, lfo;
 
+let voicesReady = false;
+
+// 页面一开始就监听voices是否加载完成
+window.speechSynthesis.onvoiceschanged = () => {
+  voicesReady = true;
+  console.log("✅ 声音库加载完毕，可以用可爱声音了！");
+};
+
+// 页面加载时，绑定一次点击
+window.addEventListener('click', async () => {
+  await ensureAudioStarted();
+}, { once: true });
+
 
 async function startBackgroundNoise() {
   if (noise) return; // 避免重复启动
@@ -46,27 +59,68 @@ async function startBackgroundNoise() {
 
 
 
-
-function speakText(text) {
-  // 📖 用 speechSynthesis 读文本
-  const utterance = new SpeechSynthesisUtterance(text);
-  utterance.lang = "en-US";
-
-  utterance.voice = speechSynthesis.getVoices().find(voice => 
-    voice.lang === "en-US" && voice.name.includes('Female') // 找女生的
-  ) || null;
-
-  utterance.bitCrusher = 2.2; 
-  utterance.pitch = 2.2;   // 稍微高一点，更轻盈
-  utterance.rate = 0.95;   // 微慢一点
-  utterance.volume = 0.6;  // 更柔和，不要压过背景声
-
-  speechSynthesis.cancel(); // 防止叠音
-  speechSynthesis.speak(utterance);
-
-  console.log("📖 开始朗读:", text.slice(0, 20) + "...");
+async function initToneEffects() {
+  await Tone.start();
+  bitCrusher = new Tone.BitCrusher(4).toDestination();
+  reverb = new Tone.Reverb({ decay: 5, preDelay: 0.01 }).toDestination();
+  filter = new Tone.Filter(800, "lowpass").toDestination();
+  volume = new Tone.Volume(-20).toDestination();
+  lfo = new Tone.LFO({ frequency: 0.08, min: -25, max: -10 }).start();
+  lfo.connect(volume.volume);
 }
 
+async function playRobotVoice(text) {
+  await Tone.start();
+  
+  if (!voicesReady) {
+    console.warn("⚠️ Voices还没加载好，稍等再说话！");
+    return;
+  }
+
+  const synth = window.speechSynthesis;
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.lang = 'en-US';
+
+  const voices = synth.getVoices();
+  utterance.voice = voices.find(voice =>
+    voice.name.toLowerCase().includes('female') ||
+    voice.name.toLowerCase().includes('zira') ||
+    voice.name.toLowerCase().includes('victoria')
+  ) || null;
+
+  utterance.pitch = 8.5;   
+  utterance.rate = 0.55;   
+  utterance.volume = 1;   
+
+  // 核心！！创建 audio context 的 MediaStreamDestination
+  const audioContext = Tone.context;
+  const destination = audioContext.createMediaStreamDestination();
+
+  // 把 SpeechSynthesis 输出到 destination
+  const utterThis = utterance;
+  utterThis.onstart = () => {
+    console.log("🤖🎀 开始播放可爱机器人声音...");
+  };
+  
+  const audio = new Audio();
+  audio.srcObject = destination.stream;
+  audio.play();
+
+  // 创建音频源接入 Tone.js 效果链
+  const source = audioContext.createMediaStreamSource(destination.stream);
+
+  const gain = new Tone.Gain(0.9);
+  const delay = new Tone.FeedbackDelay("8n", 0.5);
+  const reverb = new Tone.Reverb(4).toDestination();
+  
+  source.connect(gain);
+  gain.connect(delay);
+  delay.connect(reverb);
+  
+
+  // ✅ 让浏览器说话
+  synth.speak(utterance);
+}
 
 
 const scenes = [
@@ -116,11 +170,11 @@ container.appendChild(renderer.domElement);
 
 // Light
 // 修改这里
-const ambientLight = new THREE.AmbientLight(0xffffff, 1.5);
+const ambientLight = new THREE.AmbientLight(0xffffff, 203.5);
 scene.add(ambientLight);
 
 // 可选：加一个轻微的补光
-const hintLight = new THREE.PointLight(0xffffff, 0, 5); // 把 distance 改成 5
+const hintLight = new THREE.PointLight(0xffffff, 0, 52); // 把 distance 改成 5
 hintLight.position.set(0, 0.3, 1); // 离模型近一点
 scene.add(hintLight);
 
@@ -128,14 +182,14 @@ scene.add(hintLight);
 const loader = new THREE.GLTFLoader();
 let buttonMesh;
 
-
-loader.load('dreamimages/icon1.glb', (gltf) => {
+// dreamimages/icon1.glb
+loader.load('dreamimages/bubbles.glb', (gltf) => {
   buttonMesh = gltf.scene;
   // ✅ 缩放到合适大小
-  buttonMesh.scale.set(0.3, 0.3, 0.3);
+  buttonMesh.scale.set(0.003, 0.003, 0.003);
 
   // ✅ 位置居中 y x z
-  buttonMesh.position.set(0, 0.1, 0);
+  buttonMesh.position.set(0, 0, 0);
 
   // ✅ 如果模型自身有偏移，可试试居中几何体（可选）
   buttonMesh.traverse(function (child) {
@@ -170,12 +224,11 @@ function onClick(event) {
 
   const intersects = raycaster.intersectObjects(scene.children, true);
   if (intersects.length > 0 && buttonUnlocked) {
-    nextScene(); 
-    buttonUnlocked = false; // 及时锁回去，避免连点
+    nextScene();
+    buttonUnlocked = false; // 点击后锁住
   }
   hintLight.intensity = 0;
 }
-
 
 renderer.domElement.addEventListener('click', onClick);
 
@@ -291,7 +344,8 @@ const countdown = setInterval(() => {
     clearInterval(countdown);
     buttonUnlocked = true; // ✅ 模型现在可点击了！
     hintLight.intensity = 4;
-    hintLight.color.set("0xffffff"); // 试试亮一点的粉紫色
+    hintLight.color.set(0xffffff);
+ // 试试亮一点的粉紫色
 
     button.classList.add("active");
     button.textContent = "wwWwwait seconds➤";
@@ -301,16 +355,17 @@ const countdown = setInterval(() => {
   }
 }, 1000);
 
- // 新增：🔊 每次切换场景时朗读文本
+    // 🔥 改这里！！调用playRobotVoice
     if (scene.text && scene.text.trim() !== "") {
-        speakText(scene.text);
-    }
+      playRobotVoice(scene.text);
+  }
 
 }
 
 
 document.getElementById("next-button").addEventListener("click", () => {
-  if (document.getElementById("next-button").disabled || !buttonUnlocked) return;
+  if (document.getElementById("next-button").disabled || !buttonUnlocked) return; 
+
     if (currentScene < scenes.length - 1) {
       currentScene++;
       updateStory();
