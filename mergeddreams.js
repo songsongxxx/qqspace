@@ -78,7 +78,7 @@ async function prepareWordsAndAudio(dreams) {
 
                 const audioBuffer = await Tone.context.decodeAudioData(arrayBuffer);
 
-                const clipDuration = 5; // 秒
+                const clipDuration = 10; // 秒
                 const totalClips = Math.floor(audioBuffer.duration / clipDuration);
 
                 for (let i = 0; i < totalClips; i++) {

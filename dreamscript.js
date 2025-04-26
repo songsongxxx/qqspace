@@ -172,7 +172,7 @@ async function processAudioWithTone(audioBlob, text = "") {
     const base64 = await blobToBase64(processedBlob);
 
     // 存入数据库
-    await saveBubbleToSupabase(text || "🎵 变声录音", base64);
+    await saveBubbleToSupabase(text || "", base64);
 
     // ✅ 立即在页面添加泡泡
     // ❌ 不需要再次 createAndAppendBubble，这一步 Supabase 会处理
