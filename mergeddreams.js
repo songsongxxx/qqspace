@@ -224,7 +224,7 @@ async function displayProcessedDream() {
         audioElem.src = clipUrl;
         audioElem.controls = true;
         audioElem.preload = "auto";
-        audioElem.autoplay = true;
+        // audioElem.autoplay = true;
         audioContainer.appendChild(audioElem);
     } else {
         audioContainer.textContent = "⚠️ 没有音频片段";
