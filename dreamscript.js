@@ -101,7 +101,7 @@ export async function saveBubbleToSupabase(text, audioBase64 = null) {
         // ✅ 新增：立即生成泡泡
         if (!error) {
             console.log("✅ 已存入 Supabase:", data);
-            const bubbleText = text || "🎵 变声录音";
+            const bubbleText = text || "";
             createAndAppendBubble(bubbleText, audioBase64); // 直接用传入的数据生成泡泡
         }
     }
