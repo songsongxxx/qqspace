@@ -26,18 +26,19 @@ body {
     font-family: 'Inkdrop', sans-serif;
     text-align: center;
     background-color: #fefefe;
-    overflow: hidden;
     margin: 0;
-    height: 100vh;
+    height: auto; /* ✅ 不要 height: 100vh，改成自动适应内容 */
+    min-height: 100vh; /* ✅ 保底是满屏，不小于1屏 */
+    overflow-x: hidden; /* ✅ 横向禁止滚动，纵向可以滚 */
 }
 
 
 #toneControls {
-    position: absolute;
-    top: calc(50% + 0px);
-    /* 比原来更靠上 */
-    left: 50%;
-    transform: translateX(-50%);
+  position: relative;
+  margin-top: 400px; /* ✨距离上方留出空间 */
+  left: 50%;
+  top: auto;
+  transform: none;
     width: 200px;
     background: white;
     border-radius: 50px;
@@ -469,11 +470,11 @@ margin-bottom: 14px;
   }
 
   #toneControls {
-    top: 65%;
+    margin-top: 300px; /* ✨让它比400px小，位置更靠上 */
     transform: translate(-50%, -50%) scale(0.55);
-    width: auto;
+    width: 140px; /* 🌟 改成固定宽度，比原来小 */
     padding: 8px 12px;
-    border-radius: 30px;
+    border-radius: 20px;
     font-size: 10px;
   }
 
