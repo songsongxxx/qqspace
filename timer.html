@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Dream Clock - Black with Red Glow</title>
+<style>
+  body {
+    margin: 0;
+    overflow: hidden;
+    background: black;
+  }
+  video {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    object-fit: cover;
+    z-index: 0;
+  }
+  canvas {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: transparent;
+    z-index: 1;
+  }
+</style>
+</head>
+<body>
+
+<!-- 背景视频 -->
+<video autoplay loop muted playsinline id="backgroundVideo">
+  <source src="/dreamimages/Somna Spores.mp4" type="video/mp4">
+  Your browser does not support the video tag.
+</video>
+
+<!-- 画钟表的canvas -->
+<canvas id="clockCanvas" width="512" height="512"></canvas>
+
+<script>
+const canvas = document.getElementById('clockCanvas');
+const ctx = canvas.getContext('2d');
+
+const centerX = canvas.width / 2;
+const centerY = canvas.height / 2;
+const radius = canvas.width * 0.42; // 让表盘稍微离边留白
+
+let startTime = Date.now();
+
+function drawClock() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  // --- 画超细表盘圆圈 + 暗红发光 ---
+  ctx.save();
+  ctx.strokeStyle = "black";
+  ctx.lineWidth = 3; // 更粗
+  ctx.shadowBlur = 15; // 发光范围
+  ctx.shadowColor = "rgba(120, 20, 20, 0.6)"; // 暗红色柔光
+  ctx.beginPath();
+  ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+  ctx.stroke();
+  ctx.restore();
+
+  // --- 画刻度点（黑色 + 暗红外发光） ---
+  ctx.save();
+  for (let i = 0; i < 12; i++) {
+    const angle = (i * 30) * Math.PI / 180;
+    const dotX = centerX + radius * Math.cos(angle);
+    const dotY = centerY + radius * Math.sin(angle);
+
+    ctx.fillStyle = "black";
+    ctx.shadowBlur = 10;
+    ctx.shadowColor = "rgba(120, 20, 20, 0.6)";
+    ctx.beginPath();
+    ctx.arc(dotX, dotY, 3, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  ctx.restore();
+
+  // --- 画逆时针旋转的指针 ---
+  const elapsed = Math.max(0, (Date.now() - startTime) / 1000);
+const angle = (-0.3 * elapsed) * Math.PI / 180 - Math.PI / 2; // -90°
+
+ctx.save();
+ctx.strokeStyle = "black";
+ctx.lineWidth = 3;
+ctx.shadowBlur = 10;
+ctx.shadowColor = "rgba(120, 20, 20, 0.7)";
+ctx.beginPath();
+ctx.moveTo(centerX, centerY);
+ctx.lineTo(centerX + radius * Math.cos(angle), centerY + radius * Math.sin(angle));
+ctx.stroke();
+ctx.restore();
+
+
+  requestAnimationFrame(drawClock);
+}
+
+drawClock();
+</script>
+
+</body>
+</html>
