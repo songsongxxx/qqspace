@@ -168,7 +168,7 @@ const scenes = [
   },
   {
     text: "You feel them coax your skin inward, your cells swelling gently, opening channels. A mouse sleeps on floating moss. A baby drifts through a weightless river, skin dissolving softly into the water.",
-    image: "/dreamimages/Somna Spores.mp4",  // GitHub URL for image
+    image: "/dreamimages/somna_spore_2.gif",  // GitHub URL for image
     delay: 5 // 秒
   },
   {
@@ -354,16 +354,27 @@ function updateStory() {
 
   // Wait for fade-out to finish before changing content
   setTimeout(() => {
-    imageElement.src = scene.image;
-    textElement.textContent = scene.text;
-
-    setTimeout(() => {
-      imageElement.style.opacity = 1;
-      textElement.style.opacity = 1;
-    }, 100); // 100ms 确保文字设置后再淡入
+    const newImageElement = document.getElementById("scene-image");
+    const newTextElement = document.getElementById("story-text");
+  
+    if (newImageElement && newImageElement.tagName.toLowerCase() === "img") {
+      newImageElement.src = scene.image;
+    }
+  
+    if (newTextElement) {
+      newTextElement.textContent = scene.text;
+    }
+  
+    // ✅ Fade in the newly loaded elements, not the old ones
+    if (newImageElement) {
+      newImageElement.style.opacity = 1;
+    }
+    if (newTextElement) {
+      newTextElement.style.opacity = 1;
+    }
   }, 1000);
 
-
+  
   // 启动倒计时，激活按钮
   let remaining = scene.delay;
   const countdown = setInterval(() => {
